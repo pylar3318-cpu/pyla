@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PYLA · Admin · Tokens</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F7F3EE;
+  --warm-white: #FDFAF7;
+  --sand: #E8DDD0;
+  --sand-deep: #D4C4B0;
+  --charcoal: #1C1C1C;
+  --text-muted: #7A7068;
+  --text-light: #A89F96;
+  --rose-gold: #C9A99A;
+  --rose-gold-light: #E8D5CE;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--warm-white);
+  color: var(--charcoal);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+}
+
+/* LOGIN */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(150deg, #FDFAF7 0%, #F7F3EE 55%, #EDE4D8 100%);
+}
+.login-box {
+  width: 100%;
+  max-width: 380px;
+  padding: 48px 40px;
+  background: var(--warm-white);
+  border: 1px solid var(--sand-deep);
+  border-radius: 4px;
+  text-align: center;
+}
+.brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  letter-spacing: 0.14em;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+}
+.brand em { color: var(--rose-gold); font-style: italic; }
+.login-sub {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 32px;
+}
+.field-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 8px;
+  text-align: left;
+}
+.field-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--cream);
+  border: 1px solid var(--sand-deep);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--charcoal);
+  outline: none;
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+.field-input:focus { border-color: var(--rose-gold); }
+.btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+.btn:hover { background: var(--rose-gold); }
+.error-msg {
+  font-size: 11px;
+  color: #C44A4A;
+  margin-top: 12px;
+  display: none;
+}
+
+/* ADMIN PANEL */
+#admin-panel {
+  display: none;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 56px 48px;
+}
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--sand);
+}
+.admin-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 300;
+}
+.logout-btn {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.logout-btn:hover { color: var(--rose-gold); }
+
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 20px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-group { display: flex; flex-direction: column; }
+.select-input {
+  padding: 12px 14px;
+  background: var(--cream);
+  border: 1px solid var(--sand-deep);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--charcoal);
+  outline: none;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.select-input:focus { border-color: var(--rose-gold); }
+.btn-generate {
+  padding: 14px 32px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+.btn-generate:hover { background: var(--rose-gold); }
+
+/* Token result */
+.token-result {
+  display: none;
+  margin-top: 32px;
+  padding: 28px 32px;
+  background: var(--cream);
+  border: 1px solid var(--sand-deep);
+  border-radius: 4px;
+}
+.token-result-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 12px;
+}
+.token-url {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--charcoal);
+  background: var(--warm-white);
+  border: 1px solid var(--sand-deep);
+  border-radius: 2px;
+  padding: 12px 14px;
+  word-break: break-all;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+.token-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.btn-copy {
+  padding: 10px 24px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+.btn-copy:hover { background: var(--rose-gold); }
+.copy-confirm {
+  font-size: 11px;
+  color: var(--rose-gold);
+  margin-left: 12px;
+  display: none;
+}
+
+/* Token history */
+.history-section {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--sand);
+}
+.history-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--sand);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+.history-type {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.history-url {
+  font-size: 12px;
+  color: var(--charcoal);
+  word-break: break-all;
+}
+.history-expiry {
+  font-size: 11px;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+.badge-active {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--rose-gold-light);
+  border: 1px solid var(--rose-gold);
+  border-radius: 2px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-left: 8px;
+}
+.badge-expired {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--sand);
+  border-radius: 2px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-left: 8px;
+}
+.empty-history {
+  font-size: 12px;
+  color: var(--text-light);
+  font-style: italic;
+  padding: 16px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="brand">P<em>Y</em>LA</div>
+    <p class="login-sub">Admin · Token Generator</p>
+    <label class="field-label">Clave de acceso</label>
+    <input class="field-input" type="password" id="admin-pass" placeholder="••••••••"
+           onkeydown="if(event.key==='Enter') login()">
+    <button class="btn" onclick="login()">Ingresar</button>
+    <p class="error-msg" id="login-error">Clave incorrecta</p>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <div class="admin-header">
+    <div>
+      <div class="brand" style="font-size:26px;margin-bottom:4px;">P<em>Y</em>LA</div>
+      <h1 class="admin-title">Generador de Tokens</h1>
+    </div>
+    <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <!-- Formulario -->
+  <p class="section-label">Nuevo token de acceso</p>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label class="field-label">Tipo</label>
+      <select class="select-input" id="token-type" onchange="toggleUses()">
+        <option value="individual">Individual — 1 persona</option>
+        <option value="grupal">Grupal — múltiples personas</option>
+      </select>
+    </div>
+    <div class="form-group" id="uses-group" style="display:none;">
+      <label class="field-label">Número de usos</label>
+      <input class="field-input" type="number" id="token-uses" min="2" max="500"
+             value="30" placeholder="Ej. 30" style="margin-bottom:0;">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label class="field-label">Nota / Referencia (opcional)</label>
+      <input class="field-input" type="text" id="token-note"
+             placeholder="Ej. Colegio San José, grupo 11°" style="margin-bottom:0;">
+    </div>
+    <div class="form-group">
+      <label class="field-label">Duración</label>
+      <select class="select-input" id="token-duration">
+        <option value="48">48 horas</option>
+        <option value="72">72 horas</option>
+        <option value="168">7 días</option>
+        <option value="720">30 días</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn-generate" onclick="generateToken()">Generar link</button>
+
+  <!-- Resultado -->
+  <div class="token-result" id="token-result">
+    <p class="token-result-label">Link generado</p>
+    <div class="token-url" id="token-url-display"></div>
+    <p class="token-meta" id="token-meta-display"></p>
+    <button class="btn-copy" onclick="copyToken()">Copiar link</button>
+    <span class="copy-confirm" id="copy-confirm">✓ Copiado</span>
+  </div>
+
+  <!-- Historial -->
+  <div class="history-section">
+    <p class="section-label">Tokens generados</p>
+    <div id="token-history"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────
+const ADMIN_PASSWORD = 'PYLA2026admin'; // Cambia esto por tu clave
+const BASE_URL = 'https://pyla.yrelevate.com/?token=';
+const TOKEN_SECRET = 'PYLA2026CR'; // Debe ser igual al del index.html
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function login() {
+  const pass = document.getElementById('admin-pass').value;
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    renderHistory();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function logout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('admin-pass').value = '';
+}
+
+// ── TOGGLE USES ───────────────────────────────────────────────
+function toggleUses() {
+  const type = document.getElementById('token-type').value;
+  document.getElementById('uses-group').style.display =
+    type === 'grupal' ? 'flex' : 'none';
+}
+
+// ── HASH ──────────────────────────────────────────────────────
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+// ── GENERAR TOKEN ─────────────────────────────────────────────
+function generateToken() {
+  const type = document.getElementById('token-type').value;
+  const uses = type === 'grupal'
+    ? parseInt(document.getElementById('token-uses').value) || 30
+    : 1;
+  const note = document.getElementById('token-note').value.trim();
+  const hours = parseInt(document.getElementById('token-duration').value);
+  const duration = hours * 60 * 60 * 1000;
+  const expiry = Date.now() + duration;
+
+  const payload = `${type}|${expiry}|${uses}|${TOKEN_SECRET}`;
+  const hash = simpleHash(payload);
+  const raw = `${type}|${expiry}|${uses}|${hash}`;
+  const token = btoa(raw).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+  const url = BASE_URL + token;
+
+  // Mostrar resultado
+  document.getElementById('token-result').style.display = 'block';
+  document.getElementById('token-url-display').textContent = url;
+
+  const expiryDate = new Date(expiry);
+  const expiryStr = expiryDate.toLocaleDateString('es-CO', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  document.getElementById('token-meta-display').innerHTML =
+    `Tipo: <strong>${type}</strong> · ` +
+    (type === 'grupal' ? `Usos: <strong>${uses}</strong> · ` : '') +
+    `Vence: <strong>${expiryStr}</strong>` +
+    (note ? ` · Nota: <strong>${note}</strong>` : '');
+
+  // Guardar en historial
+  saveToHistory({ type, uses, note, expiry, url, hours });
+  renderHistory();
+}
+
+// ── COPIAR ────────────────────────────────────────────────────
+function copyToken() {
+  const url = document.getElementById('token-url-display').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    const confirm = document.getElementById('copy-confirm');
+    confirm.style.display = 'inline';
+    setTimeout(() => confirm.style.display = 'none', 2000);
+  });
+}
+
+// ── HISTORIAL ─────────────────────────────────────────────────
+function saveToHistory(data) {
+  const history = JSON.parse(localStorage.getItem('pyla_tokens') || '[]');
+  history.unshift(data);
+  // Máximo 50 tokens en historial
+  if (history.length > 50) history.pop();
+  localStorage.setItem('pyla_tokens', JSON.stringify(history));
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('pyla_tokens') || '[]');
+  const container = document.getElementById('token-history');
+
+  if (history.length === 0) {
+    container.innerHTML = '<p class="empty-history">No hay tokens generados aún.</p>';
+    return;
+  }
+
+  container.innerHTML = history.map(item => {
+    const isActive = Date.now() < item.expiry;
+    const expiryDate = new Date(item.expiry);
+    const expiryStr = expiryDate.toLocaleDateString('es-CO', {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+    return `
+      <div class="history-item">
+        <div>
+          <div class="history-type">
+            ${item.type}
+            ${item.type === 'grupal' ? `· ${item.uses} usos` : ''}
+            ${item.note ? `· ${item.note}` : ''}
+            <span class="${isActive ? 'badge-active' : 'badge-expired'}">
+              ${isActive ? 'Activo' : 'Vencido'}
+            </span>
+          </div>
+          <div class="history-url">${item.url}</div>
+        </div>
+        <div class="history-expiry">
+          Vence<br>${expiryStr}
+        </div>
+      </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
