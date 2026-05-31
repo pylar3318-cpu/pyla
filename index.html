@@ -2431,9 +2431,9 @@ function submitFeedback() {
     fb_context:   state.feedback.q6 || '',
     fb_comments:  state.feedback.q7
   };
-  // Envía al Apps Script (hoja PYLA FEEDBACK) — separado del test
-  fetch('https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec', {
+  fetch('https://hook.us2.make.com/wha043h9yb0m2tmqdxvcnmih9hmt2j5u', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   }).catch(() => {});
 }
@@ -2928,50 +2928,7 @@ function generateResults() {
 
   state.currentModule = 5;
   buildSidebars();
-  sendTestData();
   showScreen('screen-results');
-}
-
-// ── ENVÍO TEST → Apps Script (hoja PYLA RESPONSES) ───────────
-function sendTestData() {
-  const l = lang.current;
-  const aptArea = areas[l].find(a => a.id === state.colorApt);
-  const intArea = areas[l].find(a => a.id === state.standInt);
-  const aligned = state.colorApt === state.standInt;
-
-  const payload = {
-    type:         'test',
-    name:         state.name         || '',
-    email:        state.email        || '',
-    role:         state.role         || '',
-    lang:         l,
-    language:     l,
-    phase1:       state.colorApt     || '',
-    phase2:       state.standInt     || '',
-    phase3:       (state.generics    || []).join(', '),
-    phase4apt:    state.hierarchyApt || '',
-    phase4int:    state.hierarchyInt || '',
-    aptitudeArea: aptArea?.name      || '',
-    interestArea: intArea?.name      || '',
-    alignment:    aligned ? 'Aligned' : 'Divergent',
-    hierarchyApt: state.hierarchyApt || '',
-    hierarchyInt: state.hierarchyInt || ''
-  };
-
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
-
-  // Envía al Apps Script → PYLA RESPONSES
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  }).catch(() => {});
-
-  // Envía también a Make → Systeme.io (email automático)
-  fetch('https://hook.us2.make.com/wha043h9yb0m2tmqdxvcnmih9hmt2j5u', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).catch(() => {});
 }
 </script>
 </body>
