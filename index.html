@@ -2593,8 +2593,8 @@ function generateResults() {
       hGapMsg: "There is a natural distance between where your strengths currently operate and where your aspirations point. This gap is not a barrier — it is a development path. Your full PYLA report maps the steps between where you are and where you are capable of going.",
       directionLabel: "Cognitive Direction",
       careersLabel: "Aligned Professional Paths",
-      ctaTitle: "This is just the beginning.",
-      ctaDesc: "Your PYLA Level 1 report goes deeper — a fully personalized cognitive analysis with your direction plan, leadership profile, and priority recommendations. Generated instantly.",
+      ctaTitle: "This is just the starting point.",
+      ctaDesc: "The PYLA Level 1 Report translates your cognitive profile into actionable direction — the environments where you perform best, what may be limiting your performance, and a clear path toward roles and decisions aligned with your maximum professional potential.",
       ctaBtn1: "Get My Full Report",
       ctaBtn2: "Download This Summary",
       footerNote: "Projection & Learning Analysis · Pilar R Cognitive Structure · Clarity → Potential → Performance → Direction"
@@ -2621,8 +2621,8 @@ function generateResults() {
       hGapMsg: "Existe una distancia natural entre donde operan actualmente tus fortalezas y hacia donde apuntan tus aspiraciones. Esta brecha no es una barrera — es un camino de desarrollo. Tu reporte completo PYLA traza los pasos entre donde estás y hasta dónde eres capaz de llegar.",
       directionLabel: "Dirección Cognitiva",
       careersLabel: "Caminos Profesionales Afines",
-      ctaTitle: "Esto es solo el comienzo.",
-      ctaDesc: "Tu reporte PYLA Nivel 1 va más profundo — un análisis cognitivo completamente personalizado con tu plan de dirección, perfil de liderazgo y recomendaciones prioritarias. Generado al instante.",
+      ctaTitle: "Esto es solo el punto de partida.",
+      ctaDesc: "El Reporte PYLA Nivel 1 traduce tu perfil cognitivo en dirección accionable — los entornos donde rindes mejor, lo que puede estar limitando tu desempeño, y una ruta clara hacia roles y decisiones alineados con tu máximo potencial profesional.",
       ctaBtn1: "Obtener Mi Reporte Completo",
       ctaBtn2: "Descargar Este Resumen",
       footerNote: "Projection & Learning Analysis · Pilar R Cognitive Structure · Claridad → Potencial → Desempeño → Dirección"
@@ -2874,15 +2874,18 @@ function generateResults() {
             ${l === 'en' ? 'Level 1 Report · Instant delivery' : 'Reporte Nivel 1 · Entrega inmediata'}
           </p>
           <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--charcoal);margin-bottom:4px;">
-            ${l === 'en' ? 'Full cognitive analysis + direction plan' : 'Análisis cognitivo completo + plan de dirección'}
+            ${l === 'en' ? 'Deeper cognitive analysis + development recommendations' : 'Análisis cognitivo más profundo + recomendaciones de desarrollo'}
           </p>
           <p style="font-size:11px;color:var(--text-muted);margin-bottom:16px;">
-            ${l === 'en' ? '800–1,200 words · fully personalized · delivered instantly' : '800–1,200 palabras · completamente personalizado · entregado al instante'}
+            ${l === 'en' ? 'Environments where you perform best · cognitive blind spots · clear direction — delivered instantly' : 'Entornos donde rindes mejor · puntos ciegos cognitivos · dirección clara — entregado al instante'}
           </p>
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-            <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--charcoal);">$37</span>
-            <button class="btn-cta-primary" id="btn-level1" onclick="window.open('https://www.yrelevate.com/34a8a80c','_blank')" style="margin:0;">
-              ${l === 'en' ? 'Get My Full Report →' : 'Obtener Mi Reporte Completo →'}
+            <div>
+              <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--charcoal);">$97</span>
+              <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">${l === 'en' ? 'launch price' : 'precio de lanzamiento'}</span>
+            </div>
+            <button class="btn-cta-primary" id="btn-level1" style="margin:0;">
+              ${l === 'en' ? 'Interested? Reply to the email you will receive.' : '¿Interesado/a? Responde al correo que recibirás.'}
             </button>
           </div>
         </div>
@@ -2893,18 +2896,17 @@ function generateResults() {
             ${l === 'en' ? 'Level 2 Report · Most complete' : 'Reporte Nivel 2 · El más completo'}
           </p>
           <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--cream);margin-bottom:4px;">
-            ${l === 'en' ? 'Full analysis + leadership profile + 30/60/90 day action plan' : 'Análisis completo + perfil de liderazgo + plan de acción 30/60/90 días'}
+            ${l === 'en' ? 'Full analysis + 30/60/90 day structured action plan' : 'Análisis completo + plan de acción estructurado 30/60/90 días'}
           </p>
           <p style="font-size:11px;color:rgba(247,243,238,0.55);margin-bottom:16px;">
-            ${l === 'en' ? 'Everything in Level 1, expanded and with execution roadmap' : 'Todo lo del Nivel 1, expandido y con hoja de ruta de ejecución'}
+            ${l === 'en' ? 'Everything in Level 1 + implementation roadmap with measurable results' : 'Todo lo del Nivel 1 + hoja de ruta de implementación con resultados medibles'}
           </p>
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
             <div>
-              <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--cream);">$97</span>
-              <span style="font-size:11px;color:rgba(247,243,238,0.4);margin-left:8px;">${l === 'en' ? 'one-time' : 'pago único'}</span>
+              <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--cream);">${l === 'en' ? 'Custom' : 'A medida'}</span>
             </div>
-            <button class="btn-cta-primary" id="btn-level2" onclick="window.open('https://pyla.yrelevate.com/report-pro','_blank')" style="margin:0;background:var(--rose-gold);">
-              ${l === 'en' ? 'Get Full + Action Plan →' : 'Obtener Completo + Plan →'}
+            <button class="btn-cta-primary" id="btn-level2" onclick="window.location.href='mailto:contact@yrelevate.com?subject=Level 2 Report'" style="margin:0;background:var(--rose-gold);">
+              ${l === 'en' ? 'Request Information →' : 'Solicitar Información →'}
             </button>
           </div>
         </div>
@@ -2928,8 +2930,110 @@ function generateResults() {
 
   state.currentModule = 5;
   buildSidebars();
+  sendTestData();
   showScreen('screen-results');
 }
+
+// ── ENVÍO TEST → Apps Script ──────────────────────────────────
+function sendTestData() {
+  const l = lang.current;
+  const aptArea = areas[l].find(a => a.id === state.colorApt);
+  const intArea = areas[l].find(a => a.id === state.standInt);
+  const aligned = state.colorApt === state.standInt;
+
+  const payload = {
+    type:         'test',
+    name:         state.name         || '',
+    email:        state.email        || '',
+    role:         state.role         || '',
+    lang:         l,
+    language:     l,
+    phase1:       state.colorApt     || '',
+    phase2:       state.standInt     || '',
+    phase3:       (state.generics    || []).join(', '),
+    phase4apt:    state.hierarchyApt || '',
+    phase4int:    state.hierarchyInt || '',
+    aptitudeArea: aptArea?.name      || '',
+    interestArea: intArea?.name      || '',
+    alignment:    aligned ? 'Aligned' : 'Divergent',
+    hierarchyApt: state.hierarchyApt || '',
+    hierarchyInt: state.hierarchyInt || ''
+  };
+
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
+  fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(() => {});
+
+  fetch('https://hook.us2.make.com/wha043h9yb0m2tmqdxvcnmih9hmt2j5u', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(() => {});
+}
+
+// ── SISTEMA DE TOKENS ─────────────────────────────────────────
+const TOKEN_SECRET = 'PYLA2026CR';
+
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+function validateToken(token) {
+  try {
+    const padded = token.replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(padded);
+    const parts = raw.split('|');
+    if (parts.length !== 4) return { valid: false };
+    const [type, expiry, uses, hash] = parts;
+    const expected = simpleHash(`${type}|${expiry}|${uses}|${TOKEN_SECRET}`);
+    if (hash !== expected) return { valid: false };
+    if (Date.now() > parseInt(expiry)) return { valid: false, expired: true };
+    return { valid: true, type, uses: parseInt(uses) };
+  } catch(e) {
+    return { valid: false };
+  }
+}
+
+function checkTokenOnLoad() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  if (!token) return;
+  const result = validateToken(token);
+  if (!result.valid) {
+    if (result.expired) showTokenExpired();
+    else window.location.href = 'https://pyla.yrelevate.com';
+  }
+}
+
+function showTokenExpired() {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;
+         background:linear-gradient(150deg,#FDFAF7 0%,#F7F3EE 55%,#EDE4D8 100%);
+         font-family:'DM Sans',sans-serif;text-align:center;padding:48px 24px;">
+      <div style="max-width:420px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.14em;
+             color:#1C1C1C;margin-bottom:32px;">P<em style="color:#C9A99A;font-style:italic;">Y</em>LA</div>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;
+             color:#1C1C1C;margin-bottom:16px;">This link has expired</h1>
+        <p style="font-size:13px;color:#7A7068;line-height:1.7;margin-bottom:32px;">
+          Access to this PYLA assessment is no longer available.<br>
+          Please request a new link to complete your evaluation.
+        </p>
+        <a href="https://pyla.yrelevate.com" style="display:inline-block;padding:14px 32px;
+             background:#1C1C1C;color:#FDFAF7;font-size:11px;letter-spacing:0.18em;
+             text-transform:uppercase;text-decoration:none;border-radius:2px;">
+          Learn about PYLA
+        </a>
+      </div>
+    </div>`;
+}
+
+window.addEventListener('DOMContentLoaded', checkTokenOnLoad);
 </script>
 </body>
 </html>
