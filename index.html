@@ -2381,7 +2381,7 @@ function checkFbReady() {
   const ready = !!(state.feedback.q1 && state.feedback.q2 && state.feedback.q3 && state.feedback.q4);
   const cta = document.getElementById('fb-cta-locked');
   if (cta) {
-    if (ready && !state.feedbackDone) {
+    if (ready) {
       state.feedbackDone = true;
       cta.style.opacity = '1';
       cta.style.pointerEvents = 'all';
