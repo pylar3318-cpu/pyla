@@ -2845,6 +2845,7 @@ function generateResults() {
             ${l === 'en' ? 'Any other comments?' : '¿Algún comentario adicional?'}
           </span>
           <textarea class="fb-textarea" id="fb-q7" rows="3"
+            oninput="state.feedback.q7 = this.value.trim()"
             placeholder="${l === 'en' ? 'Optional — your words help PYLA improve.' : 'Opcional — tus palabras ayudan a mejorar PYLA.'}"></textarea>
         </div>
 
