@@ -2381,17 +2381,15 @@ function checkFbReady() {
   const ready = !!(state.feedback.q1 && state.feedback.q2 && state.feedback.q3 && state.feedback.q4);
   const cta = document.getElementById('fb-cta-locked');
   if (cta) {
-    if (ready) {
+    if (ready && !state.feedbackDone) {
       state.feedbackDone = true;
       cta.style.opacity = '1';
       cta.style.pointerEvents = 'all';
-      // Update badge text
       const badge = cta.querySelector('span[style*="rose-gold"]');
       if (badge) {
         badge.textContent = lang.current === 'en' ? '✓ Feedback complete — choose your next step' : '✓ Feedback completo — elige tu siguiente paso';
       }
-      // Submit feedback silently
-      submitFeedback();
+      setTimeout(() => { submitFeedback(); }, 800);
     }
   }
   updateFbProgress();
