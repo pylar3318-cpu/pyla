@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PYLA Nivel 02 — Reporte de Inteligencia Cognitiva Organizacional</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --dk:#111010;--dk2:#181614;--dk3:#231F1C;--dk4:#2C2724;
+  --lt:#F0EBE3;--lt2:#E8E1D8;--lt3:#DDD5CC;--lt4:#FAF7F4;
+  --rg:#C9A99A;--rg2:#E8D5CE;--rg3:#D4B8AC;
+  --gold:#C4924A;--cream:#FAF7F4;--sand:#8A8178;
+  --bdk:rgba(201,169,154,0.13);--blt:rgba(17,16,16,0.1);
+  --green:#6AAF7A;--red:#A85A5A;--amber:#C4924A;
+  --ez:cubic-bezier(0.22,1,0.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;font-weight:300;font-size:14px;line-height:1.5;background:var(--dk);}
+
+/* SIDEBAR */
+.sb{position:fixed;top:0;left:0;bottom:0;width:166px;z-index:200;background:var(--dk2);border-right:1px solid var(--bdk);display:flex;flex-direction:column;padding:24px 18px;}
+.sb-brand{font-family:'Cormorant Garamond',serif;font-size:21px;letter-spacing:0.16em;color:var(--lt);}
+.sb-brand em{color:var(--rg);font-style:italic;}
+.sb-lvl{font-size:7px;letter-spacing:0.26em;text-transform:uppercase;color:var(--sand);margin-bottom:26px;}
+.sb-nav{display:flex;flex-direction:column;gap:1px;flex:1;overflow-y:auto;}
+.sb-nav::-webkit-scrollbar{display:none;}
+.sba{display:flex;align-items:center;gap:7px;padding:6px 7px;border-radius:2px;text-decoration:none;color:var(--sand);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;transition:all 0.2s;}
+.sba:hover{color:var(--lt);background:rgba(201,169,154,0.05);}
+.sba.on{color:var(--rg);}
+.sba-d{width:5px;height:5px;border-radius:50%;border:1px solid currentColor;flex-shrink:0;}
+.sba.on .sba-d{background:var(--rg);border-color:var(--rg);}
+.sb-sep{width:1px;height:9px;background:var(--bdk);margin-left:9px;}
+.sb-foot{font-size:7px;letter-spacing:0.06em;text-transform:uppercase;color:var(--sand);line-height:1.8;}
+
+/* MAIN */
+.main{margin-left:166px;}
+
+/* SECTIONS */
+.sec{opacity:0;transform:translateY(14px);transition:opacity 0.6s var(--ez),transform 0.6s var(--ez);}
+.sec.vis{opacity:1;transform:none;}
+.dk{background:var(--dk2);color:var(--lt);border-bottom:1px solid var(--bdk);}
+.lt{background:var(--lt2);color:var(--dk);border-bottom:1px solid var(--blt);}
+.p44{padding:44px 48px;}
+.p32{padding:32px 48px;}
+
+/* EYEBROWS & TITLES */
+.ey-dk{font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--rg);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.ey-dk::after{content:'';flex:0 0 16px;height:1px;background:var(--rg);opacity:0.35;}
+.ey-lt{font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--dk3);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.ey-lt::after{content:'';flex:0 0 16px;height:1px;background:var(--dk3);opacity:0.22;}
+.sh-dk{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2vw,26px);font-weight:300;color:var(--lt);line-height:1.15;margin-bottom:4px;}
+.sh-dk em{font-style:italic;color:var(--rg);}
+.sh-lt{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2vw,26px);font-weight:300;color:var(--dk);line-height:1.15;margin-bottom:4px;}
+.sh-lt em{font-style:italic;}
+.note-dk{font-size:9px;color:var(--sand);font-style:italic;margin-bottom:20px;line-height:1.5;padding:6px 10px;background:rgba(255,255,255,0.02);border-left:1px solid rgba(201,169,154,0.2);border-radius:1px;}
+.note-lt{font-size:9px;color:var(--sand);font-style:italic;margin-bottom:20px;line-height:1.5;padding:6px 10px;background:rgba(17,16,16,0.04);border-left:1px solid rgba(17,16,16,0.14);border-radius:1px;}
+
+/* HERO */
+.hero{background:linear-gradient(145deg,var(--dk2) 0%,var(--dk3) 60%,#1E1A16 100%);border-bottom:1px solid var(--bdk);display:grid;grid-template-columns:1fr 280px;}
+.hero-l{padding:44px 48px;}
+.h-ey{font-size:8px;letter-spacing:0.32em;text-transform:uppercase;color:var(--rg);margin-bottom:14px;}
+.h-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,52px);font-weight:300;line-height:1.04;color:var(--cream);margin-bottom:8px;}
+.h-title em{font-style:italic;color:var(--rg);}
+.h-sub{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:var(--sand);margin-bottom:30px;line-height:1.5;}
+.h-meta{display:flex;gap:36px;flex-wrap:wrap;margin-bottom:36px;}
+.hm{display:flex;flex-direction:column;gap:2px;}
+.hm-l{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sand);}
+.hm-v{font-family:'Cormorant Garamond',serif;font-size:clamp(13px,1.6vw,18px);color:var(--cream);}
+
+/* methodology note */
+.method-note{padding:14px 18px;background:rgba(201,169,154,0.06);border:1px solid var(--bdk);border-left:2px solid var(--rg);border-radius:2px;font-size:10px;color:rgba(240,235,227,0.55);line-height:1.65;font-style:italic;}
+
+/* hero right — 4 key indicators */
+.hero-r{border-left:1px solid var(--bdk);background:rgba(201,169,154,0.02);padding:24px 20px;display:flex;flex-direction:column;gap:10px;}
+.ki{background:rgba(255,255,255,0.025);border:1px solid var(--bdk);border-radius:3px;padding:14px 16px;transition:all 0.3s;cursor:default;}
+.ki:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);}
+.ki-lbl{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rg);margin-bottom:4px;}
+.ki-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--cream);line-height:1;}
+.ki-val em{font-size:18px;font-style:italic;}
+.ki-desc{font-size:10px;color:var(--sand);margin-top:3px;line-height:1.4;}
+.ki-bar-t{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin-top:7px;}
+.ki-bar-f{height:100%;border-radius:1px;background:linear-gradient(to right,var(--rg),var(--rg2));transition:width 1.2s var(--ez);}
+.ki.green-ki{background:rgba(106,175,122,0.07);border-color:rgba(106,175,122,0.18);}
+.ki.green-ki .ki-lbl{color:var(--green);}
+.ki.green-ki .ki-val{color:var(--green);}
+
+/* SECTION 1: PROFILE DISTRIBUTION + MAP + COMPETENCIES */
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.cb{padding:30px 26px;border-right:1px solid var(--bdk);}
+.cb:last-child{border-right:none;}
+.cb-lt{padding:30px 26px;border-right:1px solid var(--blt);}
+.cb-lt:last-child{border-right:none;}
+.ct{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rg);margin-bottom:12px;display:flex;align-items:center;gap:5px;}
+.ct::after{content:'';flex:0 0 10px;height:1px;background:var(--rg);opacity:0.3;}
+.ct-lt{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dk3);margin-bottom:12px;display:flex;align-items:center;gap:5px;}
+.ct-lt::after{content:'';flex:0 0 10px;height:1px;background:var(--dk3);opacity:0.2;}
+
+/* profile distribution bars */
+.prof-bar-row{margin-bottom:10px;}
+.pbr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.pbr-name{font-size:11px;color:var(--lt);}
+.pbr-pct{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--rg);}
+.pbr-track{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.pbr-fill{height:100%;border-radius:2px;transition:width 1.1s var(--ez);}
+.pbr-sub{font-size:9px;color:var(--sand);margin-top:3px;font-style:italic;}
+
+/* donut */
+.donut-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.donut-legend{width:100%;display:flex;flex-direction:column;gap:5px;}
+.dl{display:flex;align-items:center;gap:7px;}
+.dl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dl-n{font-size:10px;color:var(--lt);flex:1;}
+.dl-p{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--rg);}
+
+/* competency bars */
+.comp-row{margin-bottom:12px;cursor:default;padding:8px 10px;border-radius:2px;border:1px solid transparent;transition:all 0.25s;}
+.comp-row:hover{background:rgba(17,16,16,0.05);border-color:var(--blt);}
+.comp-row.sel{background:rgba(17,16,16,0.07);border-color:rgba(17,16,16,0.18);}
+.cr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.cr-name{font-size:11px;color:var(--dk);font-weight:400;}
+.cr-pct{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dk3);}
+.cr-track{height:3px;background:rgba(17,16,16,0.1);border-radius:2px;overflow:hidden;}
+.cr-fill{height:100%;border-radius:2px;background:var(--dk3);transition:width 1.1s var(--ez);}
+.cr-def{font-size:9px;color:rgba(17,16,16,0.5);line-height:1.55;margin-top:5px;display:none;font-style:italic;}
+.comp-row.sel .cr-def{display:block;}
+.cr-hint{font-size:8px;color:rgba(17,16,16,0.35);margin-top:3px;font-style:italic;display:none;}
+.comp-row.sel .cr-hint{display:block;}
+
+/* SECTION 2: KEY INDICATORS — pattern observation */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;}
+.kpi-card{padding:20px 20px;border-radius:3px;border:1px solid var(--bdk);background:rgba(255,255,255,0.025);transition:all 0.3s;cursor:default;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--rg);opacity:0;transition:opacity 0.3s;}
+.kpi-card:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);}
+.kpi-card:hover::before{opacity:1;}
+.kc-ey{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:var(--rg);margin-bottom:5px;}
+.kc-val{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--cream);line-height:1;margin-bottom:4px;}
+.kc-val em{font-size:22px;font-style:italic;}
+.kc-label{font-size:11px;color:var(--lt);margin-bottom:4px;font-weight:400;}
+.kc-note{font-size:10px;color:rgba(240,235,227,0.42);line-height:1.55;font-style:italic;}
+.kc-source{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(201,169,154,0.4);margin-top:8px;}
+.kc-bar-t{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin:8px 0 6px;}
+.kc-bar-f{height:100%;border-radius:1px;transition:width 1.1s var(--ez);}
+.kc-bar-f.rg{background:linear-gradient(to right,var(--rg),var(--rg2));}
+.kc-bar-f.gr{background:var(--green);}
+.kc-bar-f.am{background:var(--amber);}
+
+/* SECTION 3: HEATMAP */
+.heat-wrap{overflow-x:auto;margin-top:8px;}
+table.ht{width:100%;border-collapse:separate;border-spacing:3px;}
+table.ht th{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(17,16,16,0.45);padding:5px 8px;font-weight:300;text-align:center;}
+table.ht th.rh{text-align:left;}
+table.ht td{padding:10px 8px;text-align:center;border-radius:2px;font-size:11px;font-weight:400;transition:all 0.25s;cursor:default;}
+table.ht td:hover{filter:brightness(1.1);}
+table.ht td.dept-cell{font-size:10px;color:var(--dk);text-align:left;background:rgba(17,16,16,0.04);border-radius:2px;padding-left:10px;border:1px solid var(--blt);}
+.hh{background:rgba(106,175,122,0.28);color:#2A5A35;}
+.hm2{background:rgba(196,146,74,0.22);color:#6B3D00;}
+.hl{background:rgba(168,90,90,0.2);color:#5A1A1A;}
+.align-b{display:inline-block;padding:2px 7px;border-radius:2px;font-size:9px;background:rgba(17,16,16,0.06);color:var(--dk3);border:1px solid var(--blt);}
+
+/* SECTION 4: PATTERN INSIGHTS — what it means per sector */
+.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ins-card{padding:18px 20px;border-radius:3px;border:1px solid var(--bdk);background:rgba(255,255,255,0.025);transition:all 0.3s;cursor:default;}
+.ins-card:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);}
+.ins-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ins-ico{font-size:18px;}
+.ins-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--lt);}
+.ins-body{font-size:10px;color:rgba(240,235,227,0.48);line-height:1.65;margin-bottom:8px;}
+.ins-action{font-size:10px;color:var(--rg);font-style:italic;padding-top:8px;border-top:1px solid var(--bdk);}
+
+/* SECTION 5: ROADMAP */
+.rm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.rm-ph{background:rgba(255,255,255,0.02);border:1px solid var(--bdk);border-radius:3px;overflow:hidden;transition:all 0.35s var(--ez);cursor:default;}
+.rm-ph:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.3);}
+.rm-head{padding:18px 18px 14px;border-bottom:1px solid var(--bdk);position:relative;overflow:hidden;}
+.rm-bg{position:absolute;right:-4px;top:-10px;font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;color:rgba(255,255,255,0.02);line-height:1;pointer-events:none;}
+.rm-d{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:var(--rg);margin-bottom:3px;display:block;}
+.rm-o{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);line-height:1.2;}
+.rm-body{padding:14px 18px;}
+.rm-item{display:flex;gap:7px;margin-bottom:8px;align-items:flex-start;font-size:10px;color:rgba(240,235,227,0.75);line-height:1.5;}
+.rm-ck{color:var(--rg);font-size:9px;flex-shrink:0;margin-top:2px;}
+.rm-kpi{margin-top:10px;padding:8px 10px;background:rgba(201,169,154,0.07);border-radius:2px;border-left:2px solid var(--rg);}
+.rm-kl{font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:var(--rg);margin-bottom:2px;}
+.rm-kt{font-size:9px;color:rgba(240,235,227,0.65);line-height:1.5;font-style:italic;}
+
+/* SECTION 6: RECOMMENDATIONS */
+.rec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.rec{padding:16px 18px;background:white;border:1px solid var(--blt);border-radius:3px;transition:all 0.3s;cursor:default;border-left:3px solid var(--dk3);}
+.rec:hover{background:var(--lt4);border-left-color:var(--rg3);}
+.rec-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.rec-ico{font-size:16px;}
+.rec-n{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dk);}
+.rec-b{font-size:10px;color:rgba(17,16,16,0.5);line-height:1.55;}
+
+/* COMPETENCIES PORTFOLIO SECTION */
+.comp-portfolio{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.cp-card{padding:16px 18px;border-radius:3px;border:1px solid var(--bdk);background:rgba(255,255,255,0.025);transition:all 0.3s var(--ez);cursor:default;position:relative;}
+.cp-card:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);}
+.cp-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.cp-ico{font-size:14px;}
+.cp-name{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--lt);}
+.cp-def{font-size:10px;color:rgba(240,235,227,0.45);line-height:1.55;margin-bottom:8px;}
+.cp-opp{font-size:9px;color:var(--rg);font-style:italic;padding-top:7px;border-top:1px solid var(--bdk);}
+
+/* FINAL */
+.final{background:linear-gradient(140deg,var(--dk2) 0%,var(--dk3) 100%);padding:52px 48px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center;}
+.fi-q{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,22px);font-style:italic;font-weight:300;color:var(--cream);line-height:1.75;padding-left:20px;border-left:2px solid var(--rg);}
+.fi-q cite{display:block;font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sand);margin-top:8px;font-style:normal;}
+.fi-right{display:flex;flex-direction:column;gap:10px;}
+.fi-row{padding:14px 16px;background:rgba(255,255,255,0.025);border:1px solid var(--bdk);border-radius:3px;transition:all 0.3s;}
+.fi-row:hover{background:rgba(201,169,154,0.05);border-color:var(--bdk);}
+.fi-rl{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rg);margin-bottom:3px;}
+.fi-rv{font-size:11px;color:var(--lt);line-height:1.4;}
+
+/* FOOTER */
+.footer{background:var(--lt3);border-top:1px solid var(--blt);padding:20px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.ft-b{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--dk3);letter-spacing:0.14em;}
+.ft-b em{color:var(--rg3);font-style:italic;}
+.ft-r{font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(17,16,16,0.4);text-align:right;line-height:1.9;}
+
+/* UTILS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.hdk{padding:38px 48px;border-right:1px solid var(--bdk);}
+.hdk:last-child{border-right:none;}
+.hlt{padding:38px 48px;border-right:1px solid var(--blt);}
+.hlt:last-child{border-right:none;}
+.lnk-dk{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--rg);margin-top:14px;display:inline-block;text-decoration:none;transition:opacity 0.2s;}.lnk-dk:hover{opacity:0.7;}
+.lnk-lt{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--dk3);margin-top:14px;display:inline-block;text-decoration:none;transition:opacity 0.2s;}.lnk-lt:hover{opacity:0.6;}
+
+@media(max-width:860px){
+  .sb{display:none;}.main{margin-left:0;}
+  .hero,.three-col,.two-col,.final,.insights-grid,.rec-grid,.comp-portfolio,.kpi-grid{grid-template-columns:1fr;}
+  .hero-r,.cb,.cb-lt,.hdk,.hlt{border-right:none;border-bottom:1px solid var(--bdk);}
+  .p44,.p32,.hdk,.hlt,.cb,.cb-lt{padding:28px 20px;}
+  .hero-l{padding:28px 20px;}
+  .rm-grid{grid-template-columns:1fr;}
+  .adn-grid{grid-template-columns:repeat(2,1fr);}
+  .es-grid{grid-template-columns:1fr;}
+  .footer{padding:18px 20px;}
+  .final{padding:36px 20px;}
+}
+
+/* ── EXEC SUMMARY ── */
+.exec-sum{background:var(--lt4);border-bottom:1px solid var(--blt);padding:36px 48px;}
+.es-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:16px;overflow:visible;}
+.es-col{padding:20px 22px;border-radius:3px;overflow:visible;word-break:normal;}
+.es-col.green{background:rgba(106,175,122,0.1);border:1px solid rgba(106,175,122,0.2);}
+.es-col.red{background:rgba(168,90,90,0.08);border:1px solid rgba(168,90,90,0.16);}
+.es-col.amber{background:rgba(196,146,74,0.1);border:1px solid rgba(196,146,74,0.2);}
+.es-col-title{font-size:8px;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.es-col.green .es-col-title{color:var(--green);}
+.es-col.red .es-col-title{color:var(--red);}
+.es-col.amber .es-col-title{color:var(--amber);}
+.es-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:10px;color:var(--dk);line-height:1.5;}
+.es-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.es-col.green .es-dot{background:var(--green);}
+.es-col.red .es-dot{background:var(--red);}
+.es-col.amber .es-dot{background:var(--amber);}
+
+/* ── ADN COGNITIVO ── */
+.adn-section{background:var(--dk2);border-bottom:1px solid var(--bdk);padding:44px 48px;}
+.adn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:20px;}
+.adn-card{padding:28px 22px;border-radius:3px;text-align:center;position:relative;overflow:hidden;cursor:default;transition:all 0.3s var(--ez);}
+.adn-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 60%);pointer-events:none;}
+.adn-card:hover{transform:translateY(-3px);}
+.adn-card.c1{background:rgba(201,169,154,0.08);border:1px solid rgba(201,169,154,0.22);}
+.adn-card.c2{background:rgba(106,175,122,0.08);border:1px solid rgba(106,175,122,0.2);}
+.adn-card.c3{background:rgba(196,146,74,0.08);border:1px solid rgba(196,146,74,0.18);}
+.adn-card.c4{background:rgba(90,120,168,0.08);border:1px solid rgba(90,120,168,0.18);}
+.adn-ico{font-size:22px;margin-bottom:10px;}
+.adn-lbl{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:8px;}
+.adn-card.c1 .adn-lbl{color:var(--rg);}
+.adn-card.c2 .adn-lbl{color:var(--green);}
+.adn-card.c3 .adn-lbl{color:var(--amber);}
+.adn-card.c4 .adn-lbl{color:#7A9ACA;}
+.adn-val{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1;margin-bottom:4px;}
+.adn-card.c1 .adn-val{color:var(--rg);}
+.adn-card.c2 .adn-val{color:var(--green);}
+.adn-card.c3 .adn-val{color:var(--amber);}
+.adn-card.c4 .adn-val{color:#7A9ACA;}
+.adn-val em{font-size:24px;font-style:italic;}
+.adn-name{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--lt);margin-bottom:4px;}
+.adn-desc{font-size:10px;color:rgba(240,235,227,0.4);line-height:1.5;}
+.adn-bar-t{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin-top:10px;}
+.adn-bar-f{height:100%;border-radius:1px;transition:width 1.2s var(--ez);}
+.adn-card.c1 .adn-bar-f{background:linear-gradient(to right,var(--rg),var(--rg2));}
+.adn-card.c2 .adn-bar-f{background:var(--green);}
+.adn-card.c3 .adn-bar-f{background:var(--amber);}
+.adn-card.c4 .adn-bar-f{background:#7A9ACA;}
+
+/* ── ENHANCED CONTRAST for key sections ── */
+.kpi-card{background:var(--lt4);border:1px solid var(--blt);color:var(--dk);}
+.kpi-card:hover{background:white;border-color:var(--rg3);}
+.kpi-card::before{background:var(--rg);}
+.kc-ey{color:var(--sand);}
+.kc-val{color:var(--dk2) !important;}
+.kc-label{color:var(--dk) !important;}
+.kc-note{color:rgba(17,16,16,0.55) !important;}
+
+/* insight cards on dark — beige highlight */
+.ins-card{background:rgba(240,235,227,0.04);border:1px solid var(--bdk);}
+.ins-card:hover{background:rgba(240,235,227,0.07);border-color:rgba(201,169,154,0.3);}
+.ins-title{color:var(--cream) !important;}
+.ins-action{border-top:1px solid rgba(201,169,154,0.2) !important;color:var(--rg) !important;}
+
+/* rec cards — improved contrast */
+.rec{border-left:3px solid var(--rg3) !important;}
+.rec:hover{border-left-color:var(--rg) !important;background:var(--lt2) !important;}
+.rec-n{font-size:16px !important;color:var(--dk2) !important;}
+
+/* roadmap enhanced */
+.rm-ph{background:rgba(255,255,255,0.02);border:1px solid var(--bdk) !important;}
+.rm-ph:hover{background:rgba(240,235,227,0.06);}
+
+/* portfolio cards on dark — beige accent */
+.cp-card{background:rgba(240,235,227,0.04) !important;border:1px solid var(--bdk) !important;}
+.cp-card:hover{background:rgba(240,235,227,0.07) !important;border-color:rgba(201,169,154,0.25) !important;}
+.cp-name{color:var(--cream) !important;}
+.cp-def{color:rgba(240,235,227,0.5) !important;}
+.cp-opp{color:var(--rg) !important;border-top:1px solid rgba(201,169,154,0.15) !important;}
+
+
+/* LANG TOGGLE */
+.lang-toggle{position:fixed;top:16px;right:20px;z-index:300;display:flex;gap:2px;background:rgba(24,22,20,0.92);border:1px solid var(--bdk);border-radius:2px;padding:3px;backdrop-filter:blur(12px);}
+.lang-btn{padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;background:transparent;border:none;color:var(--sand);cursor:pointer;transition:all 0.25s;border-radius:1px;}
+.lang-btn.active{background:var(--rg);color:var(--dk);}
+.lang-btn:hover:not(.active){color:var(--lt);}
+/* hide by lang */
+[data-lang="en"]{display:none;}
+[data-lang="es"]{display:block;}
+span[data-lang="en"],span[data-lang="es"],a[data-lang]{display:inline;}
+.body-en [data-lang="en"]{display:block;}
+.body-en [data-lang="es"]{display:none;}
+.body-en span[data-lang="en"],.body-en span[data-lang="es"],.body-en a[data-lang]{display:inline;}
+
+/* SESSION SECTION */
+.sess-incl{background:var(--dk2);border-bottom:1px solid var(--bdk);}
+.sess-incl-inner{padding:44px 48px;}
+.sess-banner{
+  display:grid;grid-template-columns:1fr 260px;gap:0;
+  background:rgba(201,169,154,0.06);border:1px solid var(--bdk);
+  border-left:3px solid var(--rg);border-radius:3px;overflow:hidden;
+}
+.sess-left{padding:28px 32px;}
+.sess-tag{font-size:7px;letter-spacing:0.26em;text-transform:uppercase;color:var(--rg);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.sess-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--rg);flex-shrink:0;}
+.sess-title{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2vw,24px);font-weight:300;color:var(--cream);line-height:1.2;margin-bottom:10px;}
+.sess-title em{font-style:italic;color:var(--rg);}
+.sess-desc{font-size:11px;color:rgba(240,235,227,0.55);line-height:1.7;margin-bottom:0;}
+.sess-right{border-left:1px solid var(--bdk);padding:28px 24px;display:flex;flex-direction:column;gap:10px;justify-content:center;}
+.sess-detail{display:flex;flex-direction:column;gap:2px;}
+.sess-dl{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sand);}
+.sess-dv{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);}
+@media(max-width:860px){
+  .sess-banner{grid-template-columns:1fr;}
+  .sess-right{border-left:none;border-top:1px solid var(--bdk);}
+  .sess-incl-inner{padding:28px 20px;}
+}
+
+.kc-human{font-size:11px;color:var(--dk);line-height:1.45;margin-bottom:8px;font-style:italic;padding:6px 10px;background:rgba(17,16,16,0.04);border-radius:2px;border-left:2px solid var(--rg3);}
+</style>
+</head>
+<body>
+
+<aside class="sb">
+  <div class="sb-brand">P<em>Y</em>LA</div>
+  <div class="sb-lvl">Level 02 · Org</div>
+  <nav class="sb-nav">
+    <a class="sba on" href="#hero"><span class="sba-d"></span>Cover</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-dist"><span class="sba-d"></span>Distribución de Perfiles</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-comp"><span class="sba-d"></span>Competencies</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-ind"><span class="sba-d"></span>Key Indicators</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-team"><span class="sba-d"></span>Comparación por Equipo</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-pat"><span class="sba-d"></span>Hallazgos de Patrones</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-road"><span class="sba-d"></span>Roadmap</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-rec"><span class="sba-d"></span>Recommendations</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-sess"><span class="sba-d"></span>Session</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-port"><span class="sba-d"></span>Portfolio</a>
+  </nav>
+  <div class="sb-foot"><div>PYLA</div><div>Cognitive Science</div><div>Framework</div></div>
+</aside>
+
+<div class="lang-toggle">
+  <button class="lang-btn" onclick="setLang('es')">ES</button>
+  <button class="lang-btn active" onclick="setLang('en')">EN</button>
+</div>
+<main class="main">
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-l">
+    <div>
+      <p class="h-ey" id="h-ey-txt">PYLA Level 02 · Organizational Cognitive Intelligence Report</p>
+      <h1 class="h-title" id="h-h1-txt">Inteligencia<br><em>Cognitiva Organizacional</em><br>Reporte</h1>
+      <p class="h-sub" id="h-sub-txt">Collective clarity. Strategic direction. Sustainable impact.</p>
+      <div class="h-meta">
+        <div class="hm"><span class="hm-l" id="h-meta-org">Organization</span><span class="hm-v" id="h-org">—</span></div>
+        <div class="hm"><span class="hm-l" id="h-meta-part">Total Participants</span><span class="hm-v" id="h-total">—</span></div>
+        <div class="hm"><span class="hm-l" id="h-meta-date">Evaluation Date</span><span class="hm-v" id="h-date">—</span></div>
+        <div class="hm"><span class="hm-l" id="h-meta-sec">Sector</span><span class="hm-v" id="h-sector">—</span></div>
+      </div>
+    </div>
+    <div class="method-note"><span id="h-method">Pattern observation, trend identification and data correlation from PYLA Level 0. Grounded in psychopedagogy, metacognition and color psychology — validated in GJHSS 2023, double-blind study, 300+ participants, 86% accuracy.</span></div>
+  </div>
+  <div class="hero-r">
+    <div style="font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rg);margin-bottom:6px;">Key Observations</div>
+    <div class="ki" id="ki-dom">
+      <div class="ki-lbl" id="ko-lbl-dom">Dominant Cognitive Profile</div>
+      <div class="ki-val" id="ki-dom-v" style="font-size:18px;">—</div>
+      <div class="ki-desc" id="ki-dom-d">—</div>
+    </div>
+    <div class="ki" id="ki-div">
+      <div class="ki-lbl" id="ko-lbl-div">Cognitive Diversity</div>
+      <div class="ki-val" id="ki-div-v">—<em>%</em></div>
+      <div class="ki-bar-t"><div class="ki-bar-f" id="ki-div-b" style="width:0%"></div></div>
+      <div class="ki-desc" id="ki-div-d">—</div>
+    </div>
+    <div class="ki" id="ki-align">
+      <div class="ki-lbl" id="ko-lbl-align">Alignment Index</div>
+      <div class="ki-val" id="ki-align-v">—<em>%</em></div>
+      <div class="ki-bar-t"><div class="ki-bar-f" id="ki-align-b" style="width:0%"></div></div>
+      <div class="ki-desc" id="ki-align-d">—</div>
+    </div>
+    <div class="ki green-ki" id="ki-health">
+      <div class="ki-lbl" id="ko-lbl-health">Organizational Health</div>
+      <div class="ki-val" id="ki-health-v" style="font-size:14px;">—</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- RESUMEN EJECUTIVO -->
+<section class="exec-sum" id="s-exec">
+  <div class="ey-lt" id="exec-ey">Executive Summary</div>
+  <h2 class="sh-lt" id="exec-h">Three strengths. Three risks. <em>Three priorities.</em></h2>
+  <div class="es-grid">
+    <div class="es-col green">
+      <div class="es-col-title" id="exec-str-title">◎ Main Strengths</div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-str1">High analytical precision — 38% of staff with systematic processing profile.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-str2">Strong collaboration disposition — 82% self-declare civic competencies.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-str3">High alignment index (71%) — most people operate where their profile is most efficient.</span></div>
+    </div>
+    <div class="es-col red">
+      <div class="es-col-title" id="exec-risk-title">◆ Identified Risks</div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-risk1">Low adaptability (54%) — risk in organizational transformation processes.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-risk2">Unactivated leadership potential — 34% with natural strategic orientation in non-leadership roles.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-risk3">Low creative profile diversity (5%) — blind spot in disruptive innovation.</span></div>
+    </div>
+    <div class="es-col amber">
+      <div class="es-col-title" id="exec-pri-title">▲ Strategic Priorities</div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-pri1">Activate leadership pipeline with participants showing natural strategic orientation.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-pri2">Develop adaptability and mathematical logic — highest organizational impact gaps.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-pri3">Design teams using cognitive complementarity to increase innovation capacity.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ADN COGNITIVO ORGANIZACIONAL -->
+<section class="adn-section" id="s-adn">
+  <div class="ey-dk" id="adn-ey">Organizational Cognitive DNA</div>
+  <h2 class="sh-dk" id="adn-h">The <em>cognitive signature</em> of this organization.</h2>
+  <p style="font-size:10px;color:var(--sand);font-style:italic;margin-bottom:4px;" id="adn-sub">Four indicators derived directly from instrument data.</p>
+  <div class="adn-grid" id="adnGrid">
+    <!-- built by JS -->
+  </div>
+</section>
+
+<!-- S1: DISTRIBUCIÓN DE PERFILES -->
+<section class="sec dk" id="s-dist">
+  <div class="three-col">
+    <div class="cb sec" style="opacity:1;transform:none;">
+      <div class="ct" id="dist-ey">Profile Distribution</div>
+      <p style="font-size:9px;color:var(--sand);font-style:italic;margin-bottom:14px;" id="dist-sub">Distribution of natural cognitive processing across the organization.</p>
+      <div id="profBars"></div>
+      <a class="lnk-dk" href="#s-dist">View full distribution →</a>
+    </div>
+    <div class="cb sec" style="opacity:1;transform:none;">
+      <div class="ct" id="dist-map-ey">Cognitive Profile Map</div>
+      <p style="font-size:9px;color:var(--sand);font-style:italic;margin-bottom:8px;" id="dist-map-sub">Distribución proporcional de patrones de procesamiento cognitivo en la organización.</p>
+      <div style="display:flex;justify-content:center;"><canvas id="orgRadar" width="240" height="240"></canvas></div>
+      
+    </div>
+    <div class="cb sec" style="opacity:1;transform:none;">
+      <div class="ct" id="dist-grp-ey">Pattern Groups</div>
+      <div class="donut-wrap">
+        <canvas id="donutC" width="160" height="160"></canvas>
+        <div class="donut-legend" id="donutLeg"></div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<!-- S2: COMPETENCIES — real measured data -->
+<section class="sec lt p44" id="s-comp">
+  <div class="ey-lt" id="comp-ey">Generic Competencies</div>
+  <h2 class="sh-lt" id="comp-h">The <em>minimum competencies</em> required for any role.</h2>
+  <p class="note-lt" id="comp-note">Minimum competencies for effective performance in any role. Self-declared by participants. Reveals the collective self-concept of core capabilities and identifies where structured development is most needed. Tap any competency for its definition and organizational implications.</p>
+  <div class="three-col" style="margin-top:0;">
+    <div class="cb-lt sec" style="opacity:1;transform:none;">
+      <div class="ct-lt" id="comp-lvl-ey">Competency Levels</div>
+      <div id="compBars"></div>
+    </div>
+    <div class="cb-lt sec" style="opacity:1;transform:none;">
+      <div class="ct-lt" id="comp-dept-ey">Distribution by Department</div>
+      <canvas id="compHeat" width="320" height="200"></canvas>
+    </div>
+    <div class="cb-lt sec" style="opacity:1;transform:none;">
+      <div class="ct-lt" id="comp-gaps-ey">Gap Identification</div>
+      <p style="font-size:9px;color:rgba(17,16,16,0.45);font-style:italic;margin-bottom:12px;" id="comp-gaps-sub">Las competencias por debajo del 50% representan las oportunidades de desarrollo de mayor prioridad.</p>
+      <div id="compGaps"></div>
+    </div>
+  </div>
+</section>
+
+<!-- S3: KEY INDICATORS — derived from real PYLA data -->
+<section class="sec lt p44" id="s-ind">
+  <div class="ey-lt" id="ind-ey">Key Organizational Indicators</div>
+  <h2 class="sh-lt" id="ind-h">Observable correlational <em>observations from the data.</em></h2>
+  <p class="note-lt" style="font-size:9px;" id="ind-note">Correlational observations — reading of trends and inclinations.</p>
+  <div class="kpi-grid" id="kpiGrid"></div>
+</section>
+
+<!-- S4: TEAM COMPARISON HEATMAP -->
+<section class="sec lt p44" id="s-team">
+  <div class="ey-lt" id="team-ey">Team Comparison</div>
+  <h2 class="sh-lt" id="team-h"><em>Cognitive distribution</em> by area.</h2>
+  <p class="note-lt" id="team-note">Dominant profile and alignment index by area. Green: strength · Amber: opportunity · Red: risk zone.</p>
+  <div style="display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dk3);">
+    <div style="width:12px;height:12px;border-radius:2px;background:rgba(106,175,122,0.28);border:1px solid rgba(106,175,122,0.3);flex-shrink:0;"></div>
+    <span id="heat-leg-green">Consolidated strength</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dk3);">
+    <div style="width:12px;height:12px;border-radius:2px;background:rgba(196,146,74,0.22);border:1px solid rgba(196,146,74,0.3);flex-shrink:0;"></div>
+    <span id="heat-leg-amber">Development opportunity</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dk3);">
+    <div style="width:12px;height:12px;border-radius:2px;background:rgba(168,90,90,0.2);border:1px solid rgba(168,90,90,0.25);flex-shrink:0;"></div>
+    <span id="heat-leg-red">Priority intervention area</span>
+  </div>
+</div>
+<div class="heat-wrap"><table class="ht" id="heatTbl"></table></div>
+  
+</section>
+
+<!-- S5: PATTERN INSIGHTS — sector-contextualized -->
+<section class="sec dk p44" id="s-pat">
+  <div class="ey-dk" id="ins-ey">Strategic Insights</div>
+  <h2 class="sh-dk" id="ins-h">What the data <em>reveals for this sector.</em></h2>
+  <p class="note-dk" id="ins-note">The same cognitive distribution has different implications depending on organizational context. Insights contextualized to this sector.</p>
+  <div class="insights-grid" id="insightsGrid"></div>
+</section>
+
+<!-- S6: STRATEGIC ROADMAP -->
+<section class="sec dk p44" id="s-road">
+  <div class="ey-dk" id="road-ey">Strategic Roadmap</div>
+  <h2 class="sh-dk" id="road-h">Three phases. <em>Concrete actions.</em> Measurable outcomes.</h2>
+  <p class="note-dk" style="margin-bottom:20px;" id="road-note">Activation sequence derived from the cognitive intelligence observed in this organization.</p>
+  <div class="rm-grid" id="rmGrid"></div>
+</section>
+
+<!-- S7: RECOMMENDATIONS -->
+<section class="sec lt p44" id="s-rec">
+  <div class="ey-lt" id="rec-ey">Executive Recommendations</div>
+  <h2 class="sh-lt" id="rec-h">Six actions grounded in <em>cognitive intelligence data.</em></h2>
+  <p class="note-lt" style="margin-bottom:20px;" id="rec-note">Derived from the specific profiles of this organization — not generic frameworks.</p>
+  <div class="rec-grid" id="recGrid"></div>
+</section>
+
+
+<!-- S8b: INCLUDED SESSION -->
+<section class="sess-incl sec" id="s-sess">
+  <div class="sess-incl-inner">
+    <div class="ey-dk" id="sess-ey">Included with This Report</div>
+    <h2 class="sh-dk" id="sess-h">Delivery & <em>Socialization Session.</em></h2>
+    <p class="note-dk" style="margin-bottom:18px;" id="sess-note">This session is not a service offering. It is part of the Level 2 report — designed to ensure the findings translate into real organizational action.</p>
+    <div class="sess-banner">
+      <div class="sess-left">
+        <div class="sess-tag" id="sess-tag">Included with Level 2 Report</div>
+        <h3 class="sess-title" id="sess-title">PYLA <em>Delivery &amp; Socialization</em> Session</h3>
+        <p class="sess-desc" id="sess-desc">A facilitated 90-minute session with the leadership team to interpret the findings, resolve questions and define initial priorities. The goal is not to present data — it is to convert cognitive intelligence into organizational decisions.</p>
+      </div>
+      <div class="sess-right">
+        <div class="sess-detail">
+          <span class="sess-dl" id="sess-dur-l">Duration</span>
+          <span class="sess-dv" id="sess-dur-v">90 minutes</span>
+        </div>
+        <div class="sess-detail">
+          <span class="sess-dl" id="sess-fmt-l">Format</span>
+          <span class="sess-dv" id="sess-fmt-v">Video or in-person</span>
+        </div>
+        <div class="sess-detail">
+          <span class="sess-dl" id="sess-fac-l">Facilitated by</span>
+          <span class="sess-dv">Pilar R</span>
+        </div>
+        <div class="sess-detail">
+          <span class="sess-dl" id="sess-lang-l">Language</span>
+          <span class="sess-dv">EN / ES</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S8: DEVELOPMENT PORTFOLIO — what PYLA can support -->
+<section class="sec dk p44" id="s-port">
+  <div class="ey-dk" id="port-ey">Organizational Development Portfolio</div>
+  <h2 class="sh-dk" id="port-h">Where <em>PYLA supports</em> the next phase.</h2>
+  <p class="note-dk" style="margin-bottom:20px;" id="port-note">Services available to translate findings into sustained organizational action.</p>
+  <div class="comp-portfolio" id="portGrid"></div>
+</section>
+
+<!-- FINAL -->
+<div class="final">
+  <div>
+    <p class="fi-q">
+      <span id="final-q-txt"><span id="final-q-txt">"Cognitive clarity becomes organizational direction when individual patterns are transformed into collective intelligence."</span></span>
+      <cite id="final-cite-txt">— PYLA Cognitive Science Framework</cite>
+    </p>
+  </div>
+  <div class="fi-right" id="finalRows"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="ft-b">P<em>Y</em>LA · Cognitive Science Framework</div>
+  <div class="ft-r"><div id="footer-conf">Confidential Report</div><div id="footer-rights">All rights reserved.</div><div>pyla.yrelevate.com</div></div>
+</footer>
+
+</main>
+
+<script>
+function G(k){return new URLSearchParams(window.location.search).get(k)||'';}
+
+/* \u2500\u2500 SECTOR CONFIG
+   Each sector defines which profiles are strengths vs risks
+   and contextualizes all inferences accordingly \u2500\u2500 */
+var SECTORS={
+  technology:{label:'Technology',strength:[3,5],risk:[2,6],note:'In technology organizations, analytical and creative profiles are core assets. Relational and hierarchical profiles require deliberate integration.'},
+  services:{label:'Services',strength:[1,2],risk:[5,6],note:'In service organizations, relational and results-driven profiles generate the most natural output. High technical profiles need communication bridges.'},
+  operations:{label:'Operations & Manufacturing',strength:[4,5,6],risk:[3],note:'Operational organizations benefit from systematic, disciplined and precision-oriented profiles. Creative profiles are a strategic asset if channeled into process improvement.'},
+  education:{label:'Education',strength:[2,4],risk:[1,6],note:'Educational organizations thrive with empathetic and methodical profiles. Results-only and hierarchical profiles need relational development.'},
+  sales:{label:'Sales & Commercial',strength:[1,2],risk:[5,6],note:'Sales organizations need extroverted, results-driven and relational profiles. Analytical profiles are high-value in strategy and forecasting roles.'},
+  health:{label:'Health & Wellbeing',strength:[2,4],risk:[1,6],note:'Health organizations require empathetic, precise and systematic profiles. Speed-first and authority-based profiles need calibration to the care environment.'}
+};
+
+var PROFILE_NAMES={
+  1:'Exact Sciences & Business',2:'Social Sciences & Humanities',
+  3:'Arts & Design',4:'Health & Agricultural Sciences',
+  5:'Engineering & Technology',6:'Defense & Security'
+};
+var PROFILE_SHORT={1:'Business',2:'Social',3:'Creative',4:'Health',5:'Engineering',6:'Defense'};
+var PROFILE_COLORS=['rgba(201,169,154,0.85)','rgba(160,140,130,0.8)','rgba(196,146,74,0.8)','rgba(106,175,122,0.75)','rgba(90,120,168,0.8)','rgba(168,90,90,0.75)'];
+
+/* \u2500\u2500 DEMO ORG DATA
+   Replace with real aggregated PYLA Level 0 data \u2500\u2500 */
+var ORG={
+  name:G('org')||'Acme Corporation',
+  total:parseInt(G('total'))||86,
+  sector:G('sector')||'technology',
+  /* Real data: count of each profile from colorApt responses */
+  profileDist:[
+    {id:5,pct:38},{id:1,pct:27},{id:3,pct:16},{id:4,pct:11},{id:2,pct:8}
+  ],
+  /* Real: % where colorApt === standInt */
+  alignmentPct:71,
+  /* Real: count hierarchyApt=strategic / total */
+  leadershipPct:34,
+  /* Inferred: % of profiles 1+4+5+6 (execution-oriented) */
+  executionPct:76,
+  /* Inferred: % profiles 4+5 + mathCompetency */
+  criticalThinkingPct:61,
+  /* Real: competency selection percentages */
+  competencies:[
+    {id:'literacy',name:'Reading & Writing',pct:78,def:'Minimum communication capacity \u2014 comprehension, expression and documentation. Foundation for any organizational role.',hint:'Development opportunity: structured writing and organizational communication programs.'},
+    {id:'math',name:'Mathematics & Logic',pct:65,def:'Quantitative reasoning and logical-formal thinking. Maps to analytical processing capacity and evidence-based decision making.',hint:'Development opportunity: analytical capacity and evidence-based decision making programs.'},
+    {id:'civic',name:'Civic Competencies',pct:82,def:'Teamwork, respect for collective norms and organizational coexistence. Foundation of collaboration culture.',hint:'Strong asset. Can be leveraged in cross-functional collaboration initiatives.'},
+    {id:'adapt',name:'Adaptability',pct:54,def:'Tolerance for change, flexibility in new contexts and resilience in transitions. Indicator of organizational readiness for transformation.',hint:'Development opportunity: change management and cognitive flexibility programs.'},
+    {id:'respect',name:'Respect & Tolerance',pct:88,def:'Foundation for diversity and inclusion. Enables cognitively diverse teams to function effectively.',hint:'Strong asset. Supports cognitive diversity initiatives present in the organization.'}
+  ],
+  /* Real: department data from responses */
+  departments:[
+    {n:'Sales',dom:1,domN:'Business',align:78,comp:[82,58,85,48,90]},
+    {n:'Operations',dom:5,domN:'Engineering',align:84,comp:[65,88,78,52,82]},
+    {n:'Leadership',dom:5,domN:'Engineering',align:88,comp:[75,82,92,71,88]},
+    {n:'Administration',dom:1,domN:'Business',align:73,comp:[80,62,76,44,84]},
+    {n:'Product & Tech',dom:5,domN:'Engineering',align:86,comp:[70,94,80,68,78]}
+  ],
+  /* Roadmap \u2014 derived from patterns */
+  roadmap:[
+    {d:'30 Days',n:'30',obj:'Pattern Alignment',items:['Share cognitive intelligence findings with leadership and teams','Identify the 3 departments with the highest alignment gap','Map competency development priorities from gap analysis'],kl:'Observable outcome',kt:'Leadership aligned on cognitive data. Three priority departments identified.'},
+    {d:'60 Days',n:'60',obj:'Capability Activation',items:['Launch targeted competency development in gap areas','Create cross-functional teams leveraging cognitive complementarity','Implement observable feedback loops'],kl:'Observable outcome',kt:'At least two development initiatives active. Cross-functional team structure tested.'},
+    {d:'90 Days',n:'90',obj:'Structural Direction',items:['Measure alignment improvement across departments','Activate latent leadership potential identified in the data','Define talent strategy grounded in cognitive profile distribution'],kl:'Observable outcome',kt:'Measurable shift in alignment index. Leadership pipeline activated.'}
+  ],
+  recommendations:[
+    {i:'\u25c8',n:'Talent Placement Strategy',b:'Align roles with cognitive profiles to reduce energy cost and increase natural output. The alignment index shows where this opportunity is largest.'},
+    {i:'\u25b2',n:'Leadership Pipeline',b:'The data identifies participants with natural strategic orientation in non-leadership roles. Activate this latent potential deliberately.'},
+    {i:'\u25c9',n:'Competency Development',b:'Low adaptability (54%) and mathematics/logic (65%) are the highest-priority development targets across the organization.'},
+    {i:'\u25c7',n:'Cognitive Diversity Design',b:'Strategic use of profile complementarity in team composition increases both innovation capacity and execution reliability.'},
+    {i:'\u25c6',n:'Communication Architecture',b:'High analytical-profile organizations need explicit communication bridges to translate technical output into accessible organizational language.'},
+    {i:'\u25cb',n:'Alignment-Based Redesign',b:'At 71% alignment, there is a 29% opportunity to redesign roles so people operate in the domain where their cognition is most efficient.'}
+  ],
+  portfolio:[
+    {i:'\u25ce',n:'PYLA Socialization Session',d:'Included with every Level 2 report. 90-minute session to work through findings with the leadership team and define next steps.',opp:'The report is in your hands. The session turns findings into decisions.'},
+    {i:'\u25c8',n:'Competency Development Program',d:'Structured programs targeting the specific competency gaps identified in this report. Designed for the cognitive profiles present in the organization.',opp:'Prioritize: Adaptability + Mathematics & Logic.'},
+    {i:'\u25b2',n:'Leadership Activation Program',d:'Designed to develop participants with natural strategic orientation currently in tactical or operational roles.',opp:'Opportunity identified: '+Math.round(86*0.34)+' participants with latent leadership orientation.'},
+    {i:'\u25c6',n:'Cognitive Diversity Workshop',d:'Team design sessions that leverage profile complementarity to build more resilient and innovative organizational units.',opp:'Recommended for departments with a low diversity index.'}
+  ]
+};
+
+/* \u2500\u2500 BUILDERS \u2500\u2500 */
+function initMeta(){
+  document.getElementById('h-org').textContent=ORG.name;
+  document.getElementById('h-total').textContent=ORG.total;
+  document.getElementById('h-sector').textContent=SECTORS[ORG.sector]?SECTORS[ORG.sector].label:ORG.sector;
+  document.getElementById('h-date').textContent=new Date().toLocaleDateString('en-US',{day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
+}
+
+function buildHeroKI(){
+  var dom=ORG.profileDist[0];
+  document.getElementById('ki-dom-v').textContent=PROFILE_NAMES[dom.id];
+  document.getElementById('ki-dom-d').textContent=dom.pct+'% of participants have this as their dominant cognitive aptitude profile.';
+
+  var div=ORG.profileDist.length>=5?Math.round(100-(ORG.profileDist[0].pct-20)):68;
+  document.getElementById('ki-div-v').innerHTML=div+'<em>%</em>';
+  document.getElementById('ki-div-d').textContent=div>=70?'High diversity \u2014 multiple cognitive profiles present.':div>=50?'Moderate diversity \u2014 some concentration of profiles.':'Low diversity \u2014 significant concentration in one profile.';
+
+  document.getElementById('ki-align-v').innerHTML=ORG.alignmentPct+'<em>%</em>';
+  document.getElementById('ki-align-d').textContent='Participants where aptitude and interest align in the same domain \u2014 natural fit between how they process and where they are motivated.';
+
+  var health=ORG.alignmentPct>=70?'Strong \u2014 High aptitude-interest alignment index.':'Moderate \u2014 Development opportunities clearly identified.';
+  document.getElementById('ki-health-v').textContent=health;
+
+  setTimeout(function(){
+    var db=document.getElementById('ki-div-b');if(db)db.style.width=div+'%';
+    var ab=document.getElementById('ki-align-b');if(ab)ab.style.width=ORG.alignmentPct+'%';
+  },600);
+}
+
+function buildProfileBars(){
+  var el=document.getElementById('profBars');if(!el)return;
+  var sc=SECTORS[ORG.sector]||SECTORS.technology;
+  el.innerHTML=ORG.profileDist.map(function(p){
+    var isStr=sc.strength.indexOf(p.id)>-1;
+    var isRsk=sc.risk.indexOf(p.id)>-1;
+    var tag=isStr?'<span style="font-size:7px;color:var(--green);margin-left:4px;letter-spacing:0.1em;text-transform:uppercase;">Fortaleza</span>':isRsk?'<span style="font-size:7px;color:var(--red);margin-left:4px;letter-spacing:0.1em;text-transform:uppercase;">Monitorear</span>':'';
+    var col=PROFILE_COLORS[p.id-1]||'rgba(201,169,154,0.7)';
+    return '<div class="prof-bar-row"><div class="pbr-top"><span class="pbr-name">'+PROFILE_SHORT[p.id]+tag+'</span><span class="pbr-pct">'+p.pct+'%</span></div><div class="pbr-track"><div class="pbr-fill" data-w="'+p.pct+'" style="width:0%;background:'+col+'"></div></div><div class="pbr-sub">'+p.pct+' of '+ORG.total+' participants</div></div>';
+  }).join('');
+}
+
+function drawRadar(){
+  var c=document.getElementById('orgRadar');if(!c)return;
+  var ctx=c.getContext('2d'),W=240,H=240,cx=W/2,cy=H/2,R=88,n=6;
+  var vals=ORG.profileDist.slice(0,6).map(function(p){return p.pct;});
+  while(vals.length<6)vals.push(5);
+  var lbls=['Business','Social','Creative','Health','Engineering','Defense'];
+  ctx.clearRect(0,0,W,H);
+  for(var ring=1;ring<=4;ring++){ctx.beginPath();for(var i=0;i<n;i++){var a=(i/n)*Math.PI*2-Math.PI/2;ctx.lineTo(cx+Math.cos(a)*R*ring/4,cy+Math.sin(a)*R*ring/4);}ctx.closePath();ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;ctx.stroke();}
+  for(var i=0;i<n;i++){var a=(i/n)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.stroke();}
+  ctx.beginPath();
+  for(var i=0;i<n;i++){var a=(i/n)*Math.PI*2-Math.PI/2;var r=R*Math.min(vals[i],40)/40;if(i===0)ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);else ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}
+  ctx.closePath();ctx.fillStyle='rgba(201,169,154,0.12)';ctx.fill();ctx.strokeStyle='rgba(201,169,154,0.52)';ctx.lineWidth=1.5;ctx.stroke();
+  for(var i=0;i<n;i++){
+    var a=(i/n)*Math.PI*2-Math.PI/2;var r=R*Math.min(vals[i],40)/40;
+    var x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='rgba(201,169,154,0.8)';ctx.fill();
+    var lx=cx+Math.cos(a)*(R+14),ly=cy+Math.sin(a)*(R+14);
+    ctx.font='8px DM Sans';ctx.fillStyle='rgba(240,235,227,0.38)';ctx.textAlign='center';
+    ctx.fillText(lbls[i],lx,ly+2);
+    ctx.font='bold 8px DM Sans';ctx.fillStyle='rgba(201,169,154,0.75)';
+    ctx.fillText(vals[i]+'%',lx,ly+11);
+  }
+}
+
+function drawDonut(){
+  var c=document.getElementById('donutC');if(!c)return;
+  var ctx=c.getContext('2d'),W=160,H=160,cx=W/2,cy=H/2,R=62,ri=38;
+  var data=ORG.profileDist;var total=data.reduce(function(s,d){return s+d.pct;},0);
+  var ang=-Math.PI/2;
+  data.forEach(function(d,i){
+    var sw=(d.pct/total)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,ang,ang+sw);ctx.closePath();
+    ctx.fillStyle=PROFILE_COLORS[d.id-1];ctx.fill();
+    ctx.beginPath();ctx.arc(cx,cy,ri,0,Math.PI*2);ctx.fillStyle='#181614';ctx.fill();
+    ang+=sw;
+  });
+  ctx.font='bold 13px Cormorant Garamond';ctx.fillStyle='rgba(201,169,154,0.8)';ctx.textAlign='center';ctx.fillText(ORG.total,cx,cy+4);
+  ctx.font='7px DM Sans';ctx.fillStyle='rgba(240,235,227,0.35)';ctx.fillText('TOTAL',cx,cy+13);
+  var leg=document.getElementById('donutLeg');if(!leg)return;
+  leg.innerHTML=data.map(function(d){
+    return '<div class="dl"><div class="dl-dot" style="background:'+PROFILE_COLORS[d.id-1]+'"></div><span class="dl-n">'+PROFILE_SHORT[d.id]+'</span><span class="dl-p">'+d.pct+'%</span></div>';
+  }).join('');
+}
+
+function buildCompBars(lang){
+  var el=document.getElementById('compBars');if(!el)return;
+  var l=lang||currentLang||'es';
+  var names_en={literacy:'Reading & Writing',math:'Mathematics & Logic',civic:'Civic Competencies',adapt:'Adaptability',respect:'Respect & Tolerance'};
+  var defs_en={literacy:'Minimum communication capacity - comprehension, expression and documentation.',math:'Quantitative reasoning and logical-formal thinking. Maps to analytical processing capacity.',civic:'Teamwork, respect for collective norms and organizational coexistence. Foundation of collaboration culture.',adapt:'Tolerance for change, flexibility in new contexts and resilience in transitions.',respect:'Foundation for diversity and inclusion. Enables cognitively diverse teams to function effectively.'};
+  var hints_en={literacy:'Development opportunity: writing and organizational communication programs.',math:'Development opportunity: analytical capacity and evidence-based decision making.',civic:'Strong asset. Leverage in cross-functional collaboration initiatives.',adapt:'Development opportunity: change management and cognitive flexibility programs.',respect:'Strong asset. Supports cognitive diversity initiatives.'};
+  el.innerHTML=ORG.competencies.map(function(c,i){
+    var nm=l==='en'?(names_en[c.id]||c.name):c.name;
+    var df=l==='en'?(defs_en[c.id]||c.def):c.def;
+    var ht=l==='en'?(hints_en[c.id]||c.hint):c.hint;
+    return '<div class="comp-row" onclick="toggleComp(this)"><div class="cr-top"><span class="cr-name">'+nm+'</span><span class="cr-pct">'+c.pct+'%</span></div><div class="cr-track"><div class="cr-fill" data-w="'+c.pct+'" style="width:0%"></div></div><div class="cr-def">'+df+'</div><div class="cr-hint">\u2192 '+ht+'</div></div>';
+  }).join('');
+}
+function toggleComp(el){document.querySelectorAll('.comp-row').forEach(function(r){r.classList.remove('sel');});el.classList.toggle('sel');}
+
+function buildCompGaps(){
+  var el=document.getElementById('compGaps');if(!el)return;
+  var sorted=ORG.competencies.slice().sort(function(a,b){return a.pct-b.pct;});
+  el.innerHTML=sorted.map(function(c){
+    var cls=c.pct<50?'it-h':c.pct<70?'it-m':'it-l';
+    var col=c.pct<50?'var(--red)':c.pct<70?'var(--amber)':'var(--green)';
+    var tag=c.pct<50?'Priority':'Develop';
+    return '<div style="margin-bottom:12px;padding:10px 12px;background:rgba(17,16,16,0.04);border-radius:2px;border:1px solid var(--blt);border-left:2px solid '+col+';"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;"><span style="font-size:11px;color:var(--dk);font-weight:400;">'+c.name+'</span><span style="font-size:8px;padding:2px 6px;border-radius:2px;background:rgba(17,16,16,0.06);color:'+col+';">'+tag+'</span></div><div style="font-size:10px;color:rgba(17,16,16,0.45);">'+c.pct+'% declared \u00b7 '+c.hint+'</div></div>';
+  }).join('');
+}
+
+function buildKPIGrid(lang){
+  var el=document.getElementById('kpiGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var indicators=l==='en'?[
+    {ey:'Natural strategic orientation',val:ORG.leadershipPct+'%',bar:ORG.leadershipPct,bc:'rg',label:'Leadership Potential',human:'People with a natural orientation toward strategic and leadership functions.',note:'Participants with natural cognitive orientation toward strategic roles. Identifies where leadership development potential exists.'},
+    {ey:'Operational orientation and structural discipline',val:ORG.executionPct+'%',bar:ORG.executionPct,bc:'rg',label:'Execution Tendency',human:'Collective capacity to convert ideas and plans into concrete actions.',note:'Participants with profiles oriented toward precise delivery, discipline and structure. Correlated with operational performance.'},
+    {ey:'Systematic analysis and logical reasoning',val:ORG.criticalThinkingPct+'%',bar:ORG.criticalThinkingPct,bc:'am',label:'Critical Thinking Indicator',human:'Capacity for structured, evidence-based analysis and problem solving.',note:'Participants combining analytical-systematic profile with self-declared quantitative competency. Indicator of structured problem-solving capacity.'},
+    {ey:'Self-declared competency',val:ORG.competencies.find(function(c){return c.id==='adapt';}).pct+'%',bar:ORG.competencies.find(function(c){return c.id==='adapt';}).pct,bc:'am',label:'Organizational Adaptability',human:'Readiness to embrace change, new contexts and organizational transitions.',note:'Participants who identify adaptability as a developed competency. Indicates cultural readiness for change initiatives.'},
+    {ey:'Collective coexistence competency',val:ORG.competencies.find(function(c){return c.id==='civic';}).pct+'%',bar:ORG.competencies.find(function(c){return c.id==='civic';}).pct,bc:'gr',label:'Collaboration Readiness',human:'Foundation for cross-functional teamwork and collective initiative.',note:'Participants self-declaring civic and coexistence competencies. Foundation of cross-functional collaboration initiatives.'},
+    {ey:'Aptitude and functional interest alignment',val:ORG.alignmentPct+'%',bar:ORG.alignmentPct,bc:'gr',label:'Role-Profile Alignment',human:'People working in areas aligned with their natural way of processing information.',note:'Participants where cognitive aptitude and functional interest coincide in the same domain - indicating natural role fit.'}
+  ]:[
+    {ey:'Natural strategic orientation',val:ORG.leadershipPct+'%',bar:ORG.leadershipPct,bc:'rg',label:'Leadership Potential',human:'People with a natural orientation toward strategic and leadership functions.',note:'Participantes con orientaci\u00f3n cognitiva natural hacia roles estrat\u00e9gicos. Identifica d\u00f3nde existe potencial de desarrollo de liderazgo en la organizaci\u00f3n.'},
+    {ey:'Operational orientation and structural discipline',val:ORG.executionPct+'%',bar:ORG.executionPct,bc:'rg',label:'Execution Tendency',human:'Collective capacity to convert ideas and plans into concrete actions.',note:'Participantes con perfiles orientados a la entrega precisa, la disciplina y la estructura. Correlacionado con desempe\u00f1o operativo en entornos de alta exigencia.'},
+    {ey:'Systematic analysis and logical reasoning',val:ORG.criticalThinkingPct+'%',bar:ORG.criticalThinkingPct,bc:'am',label:'Critical Thinking Indicator',human:'Capacity for structured, evidence-based analysis and problem solving.',note:'Participantes que combinan perfil anal\u00edtico-sistem\u00e1tico con capacidad l\u00f3gico-cuantitativa autodeclarada. Indicador de capacidad de resoluci\u00f3n estructurada de problemas.'},
+    {ey:'Self-declared competency',val:ORG.competencies.find(function(c){return c.id==='adapt';}).pct+'%',bar:ORG.competencies.find(function(c){return c.id==='adapt';}).pct,bc:'am',label:'Organizational Adaptability',human:'Readiness to embrace change, new contexts and organizational transitions.',note:'Participantes que identifican la adaptabilidad como competencia desarrollada. Indica la preparaci\u00f3n cultural de la organizaci\u00f3n ante iniciativas de cambio.'},
+    {ey:'Collective coexistence competency',val:ORG.competencies.find(function(c){return c.id==='civic';}).pct+'%',bar:ORG.competencies.find(function(c){return c.id==='civic';}).pct,bc:'gr',label:'Collaboration Readiness',human:'Foundation for cross-functional teamwork and collective initiative.',note:'Participantes que autodeclaran competencias c\u00edvicas y de convivencia \u2014 trabajo en equipo, normas colectivas, coexistencia. Base de las iniciativas de colaboraci\u00f3n interfuncional.'},
+    {ey:'Aptitude and functional interest alignment',val:ORG.alignmentPct+'%',bar:ORG.alignmentPct,bc:'gr',label:'Role-Profile Alignment',human:'People working in areas aligned with their natural way of processing information.',note:'Participantes donde la aptitud cognitiva y el inter\u00e9s funcional coinciden en el mismo dominio \u2014 indicando ajuste natural entre c\u00f3mo procesan y hacia d\u00f3nde est\u00e1n motivados.'}
+  ];
+  el.innerHTML=indicators.map(function(ind){
+    return '<div class="kpi-card"><div class="kc-ey">'+ind.ey+'</div><div class="kc-val">'+ind.val+'</div><div class="kc-label">'+ind.label+'</div>'+(ind.human?'<div class="kc-human">'+ind.human+'</div>':'')+'<div class="kc-bar-t"><div class="kc-bar-f '+ind.bc+'" data-w="'+ind.bar+'" style="width:0%"></div></div><div class="kc-note">'+ind.note+'</div></div>';
+  }).join('');
+}
+
+function buildHeatmap(){
+  var tbl=document.getElementById('heatTbl');if(!tbl)return;
+  var comps=ORG.competencies.map(function(c){var nm=c.name;if(nm==='Lectoescritura')return 'Lectura';if(nm==='Matem\u00e1ticas y L\u00f3gica')return 'Matem\u00e1ticas';if(nm==='Competencias C\u00edvicas')return 'C\u00edvicas';if(nm==='Adaptabilidad')return 'Adaptabilidad';if(nm==='Respeto y Tolerancia')return 'Respeto';return nm.split(' ').slice(0,2).join(' ');});
+  var th='<tr><th class="rh">Department</th><th>Dominant Profile</th><th>Alignment</th>'+comps.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';
+  var rows=ORG.departments.map(function(d){
+    var compCells=d.comp.map(function(v){var cls=v>=75?'hh':v>=58?'hm2':'hl';return '<td class="'+cls+'">'+v+'%</td>';}).join('');
+    var aCls=d.align>=80?'hh':d.align>=68?'hm2':'hl';
+    return '<tr><td class="dept-cell">'+d.n+'</td><td style="background:rgba(201,169,154,0.12);color:var(--dk3);border-radius:2px;font-size:10px;text-align:center;">'+d.domN+'</td><td class="'+aCls+'" style="font-weight:400;">'+d.align+'%</td>'+compCells+'</tr>';
+  }).join('');
+  tbl.innerHTML=th+rows;
+}
+
+function buildInsights(lang){
+  var el=document.getElementById('insightsGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var sc=SECTORS[ORG.sector]||SECTORS.technology;
+  var dom=ORG.profileDist[0];
+  var pname=l==='en'?({1:'Exact Sciences & Business',2:'Social Sciences',3:'Arts & Design',4:'Health Sciences',5:'Engineering & Technology',6:'Defense & Security'}[dom.id]||dom.id):(({"1":'Ciencias Exactas y Administrativas',"2":'Ciencias Sociales y Humanas',"3":'Artes y Dise\u00f1o',"4":'Ciencias de la Salud y Agrarias',"5":'Ingenier\u00eda y Computaci\u00f3n',"6":'Defensa y Seguridad'})[String(dom.id)]||dom.id);
+  var insights=l==='en'?[
+    {i:'\u25c8',title:'Dominant Profile in Context',body:'With '+dom.pct+'% '+pname+' profiles, this organization has strong processing capacity in this domain. '+sc.note,action:'Leverage this profile in roles and processes that require its natural strengths.'},
+    {i:'\u25c6',title:'Alignment Opportunity',body:ORG.alignmentPct+'% alignment index means '+(100-ORG.alignmentPct)+'% of participants have a gap between where they process best and where they are motivated. This is a structural design opportunity.',action:'Map roles and people in the misalignment group. Redesign or reassign where feasible.'},
+    {i:'\u25b2',title:'Leadership Potential Not Activated',body:ORG.leadershipPct+'% of participants have natural cognitive orientation toward strategic roles. If the majority are in operational or tactical positions, there is latent leadership capacity available.',action:'Identify participants with natural strategic orientation in non-leadership roles. Design a deliberate development path.'},
+    {i:'\u25cb',title:'Adaptability Gap',body:'Only '+ORG.competencies.find(function(c){return c.id==='adapt';}).pct+'% self-declare adaptability. In a sector experiencing continuous transformation, this is the highest-priority gap identified in this report.',action:'Prioritize cognitive flexibility and change management programs.'}
+  ]:[
+    {i:'\u25c8',title:'Patr\u00f3n Dominante en Contexto',body:'With '+dom.pct+'% '+PROFILE_NAMES[dom.id]+' profiles, this organization has strong '+PROFILE_NAMES[dom.id].split(' ')[0]+'-oriented cognitive capacity. '+sc.note,action:'Aprovechar este patr\u00f3n en roles y procesos que requieren sus fortalezas naturales.'},
+    {i:'\u25c6',title:'Oportunidad de Alineaci\u00f3n',body:ORG.alignmentPct+'% alignment index means '+(100-ORG.alignmentPct)+'% de participantes tienen una brecha entre d\u00f3nde procesan mejor y d\u00f3nde est\u00e1n motivados. No es un problema de personas \u2014 es una oportunidad de dise\u00f1o estructural.',action:'Mapear los roles y personas espec\u00edficas en el grupo de desalineaci\u00f3n. Redise\u00f1ar o reasignar donde sea viable.'},
+    {i:'\u25b2',title:'Potencial de Liderazgo No Activado',body:ORG.leadershipPct+'% de participantes muestran orientaci\u00f3n estrat\u00e9gica natural. Si m\u00e1s de la mitad ocupa roles operativos o t\u00e1cticos, hay capacidad de liderazgo latente disponible.',action:'Identificar participantes con orientaci\u00f3n estrat\u00e9gica natural en roles no directivos. Dise\u00f1ar un camino de desarrollo deliberado.'},
+    {i:'\u25cb',title:'Brecha de Adaptabilidad: Riesgo de Preparaci\u00f3n al Cambio',body:'Only '+ORG.competencies.find(function(c){return c.id==='adapt';}).pct+'% autodeclaran adaptabilidad. En un sector que experimenta transformaci\u00f3n continua, este es el riesgo organizacional de mayor prioridad identificado en este reporte.',action:'Priorizar programas de flexibilidad cognitiva y gesti\u00f3n del cambio. Enfoque en perfiles 5 y 6 donde esta brecha es m\u00e1s pronunciada.'}
+  ];
+  el.innerHTML=insights.map(function(ins){
+    return '<div class="ins-card"><div class="ins-top"><span class="ins-ico">'+ins.i+'</span><span class="ins-title">'+ins.title+'</span></div><div class="ins-body">'+ins.body+'</div><div class="ins-action">\u2192 '+ins.action+'</div></div>';
+  }).join('');
+}
+
+function buildRoadmap(lang){
+  var el=document.getElementById('rmGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var roadmap_en=[
+    {d:'30 Days',n:'30',obj:'Pattern Alignment',items:['Share cognitive intelligence findings with leadership and teams','Identify the 3 departments with the highest alignment gap','Map competency development priorities from gap analysis'],kl:'Observable outcome',kt:'Leadership aligned on cognitive data. Three priority departments identified.'},
+    {d:'60 Days',n:'60',obj:'Capability Activation',items:['Launch targeted competency development in gap areas','Create cross-functional teams leveraging cognitive complementarity','Implement observable feedback loops'],kl:'Observable outcome',kt:'At least two development initiatives active. Cross-functional team structure tested.'},
+    {d:'90 Days',n:'90',obj:'Strategic Direction',items:['Measure alignment improvement across departments','Activate latent leadership potential identified in the data','Define talent strategy grounded in cognitive profile distribution'],kl:'Observable outcome',kt:'Measurable shift in alignment index. Leadership pipeline activated.'}
+  ];
+  var data=l==='en'?roadmap_en:ORG.roadmap;
+  el.innerHTML=data.map(function(ph){
+    var items=ph.items.map(function(it){return '<div class="rm-item"><span class="rm-ck">\u2713</span>'+it+'</div>';}).join('');
+    return '<div class="rm-ph"><div class="rm-head"><div class="rm-bg">'+ph.n+'</div><span class="rm-d">'+ph.d+'</span><div class="rm-o">'+ph.obj+'</div></div><div class="rm-body">'+items+'<div class="rm-kpi"><div class="rm-kl">'+ph.kl+'</div><div class="rm-kt">'+ph.kt+'</div></div></div></div>';
+  }).join('');
+}
+
+function buildRec(lang){
+  var el=document.getElementById('recGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var recs_en=[
+    {i:'\u25c8',n:'Talent Placement Strategy',b:'Align roles with cognitive profiles to reduce energy cost and increase natural output. The alignment index shows where this opportunity is largest.'},
+    {i:'\u25b2',n:'Leadership Pipeline',b:'The data identifies participants with natural strategic orientation in non-leadership roles. Activate this latent potential deliberately.'},
+    {i:'\u25c9',n:'Competency Development',b:'Low adaptability (54%) and mathematics/logic (65%) are the highest-priority development targets across the organization.'},
+    {i:'\u25c7',n:'Cognitive Diversity Design',b:'Strategic use of profile complementarity in team composition increases both innovation capacity and execution reliability.'},
+    {i:'\u25c6',n:'Communication Architecture',b:'High analytical-profile organizations need explicit communication bridges to translate technical output into accessible organizational language.'},
+    {i:'\u25cb',n:'Alignment-Based Redesign',b:'At 71% alignment, there is a 29% opportunity to redesign roles so people operate in the domain where their cognition is most efficient.'}
+  ];
+  var data=l==='en'?recs_en:ORG.recommendations;
+  el.innerHTML=data.map(function(r){
+    return '<div class="rec"><div class="rec-top"><span class="rec-ico">'+r.i+'</span><span class="rec-n">'+r.n+'</span></div><div class="rec-b">'+r.b+'</div></div>';
+  }).join('');
+}
+
+function buildPortfolio(lang){
+  var el=document.getElementById('portGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var port_en=[
+    {i:'\u25c8',n:'Competency Development Program',b:'Structured programs targeting the specific competency gaps identified in this report. Designed for the cognitive profiles present in the organization.',opp:'Prioritize: Adaptability + Mathematics & Logic.'},
+    {i:'\u25b2',n:'Leadership Activation Program',d:'Designed to develop participants with natural strategic orientation currently in tactical or operational roles.',opp:'Opportunity identified: '+Math.round(ORG.total*0.34)+' participants with latent leadership orientation.'},
+    {i:'\u25c6',n:'Cognitive Diversity Workshop',d:'Team design sessions that leverage profile complementarity to build more resilient and innovative organizational units.',opp:'Recommended for departments with a low diversity index.'}
+  ];
+  var data=l==='en'?port_en:ORG.portfolio;
+  el.innerHTML=data.map(function(p){
+    return '<div class="cp-card"><div class="cp-top"><span class="cp-ico">'+p.i+'</span><span class="cp-name">'+p.n+'</span></div><div class="cp-def">'+p.d+'</div><div class="cp-opp">\u2192 '+p.opp+'</div></div>';
+  }).join('');
+}
+
+function buildFinalRows(){
+  var el=document.getElementById('finalRows');if(!el)return;
+  var rows=[
+    {l:'Organization',v:ORG.name},
+    {l:'Total Participants',v:ORG.total+' evaluated'},
+    {l:'Alignment Index',v:ORG.alignmentPct+'% natural aptitude-profile fit'},
+    {l:'Highest Priority',v:'Adaptability development + leadership activation'},
+    {l:'Immediate Next Step',v:'PYLA Socialization Session \u2014 included with this report'}
+  ];
+  el.innerHTML=rows.map(function(r){
+    return '<div class="fi-row"><div class="fi-rl">'+r.l+'</div><div class="fi-rv">'+r.v+'</div></div>';
+  }).join('');
+}
+
+/* ANIMATE ALL BARS */
+var animated=false;
+function animBars(){
+  if(animated)return;animated=true;
+  document.querySelectorAll('[data-w]').forEach(function(b,i){
+    setTimeout(function(){b.style.transition='width 1s cubic-bezier(0.22,1,0.36,1)';b.style.width=b.getAttribute('data-w')+'%';},i*55);
+  });
+}
+
+/* SCROLL REVEAL */
+var rd={};
+function initReveal(){
+  var els=document.querySelectorAll('.sec');
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('vis');
+        if(!rd[e.target.id]){rd[e.target.id]=true;setTimeout(animBars,200);}
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.06});
+  els.forEach(function(s){obs.observe(s);});
+}
+
+/* SCROLL SPY */
+function initSpy(){
+  var links=document.querySelectorAll('.sba');
+  var ids=['hero','s-exec','s-adn','s-dist','s-comp','s-ind','s-team','s-pat','s-road','s-rec','s-sess','s-port'];
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+80,active='hero';
+    ids.forEach(function(id){var el=document.getElementById(id);if(el&&el.offsetTop<=sy)active=id;});
+    links.forEach(function(lk){lk.classList.toggle('on',lk.getAttribute('href')==='#'+active);});
+  },{passive:true});
+}
+
+
+function buildADN(){
+  var el=document.getElementById('adnGrid');if(!el)return;
+  var dom=ORG.profileDist[0];
+  var div=ORG.profileDist.length>=5?Math.round(100-(ORG.profileDist[0].pct-20)):68;
+  var items=[
+    {cls:'c1',ico:'\u25c8',lbl:'Aptitud Cognitiva Dominante',val:'',name:PROFILE_NAMES[dom.id]||'\u2014',desc:dom.pct+'% of participants share this cognitive aptitude profile.',bar:dom.pct,isText:true},
+    {cls:'c2',ico:'\u25ce',lbl:'Diversidad Cognitiva',val:div+'%',name:div>=70?'High':'Moderate',desc:div>=70?'Multiple profiles present \u2014 high potential adaptability.':'Moderate concentration \u2014 some predictable blind spots.',bar:div,isText:false},
+    {cls:'c3',ico:'\u25b2',lbl:'\u00cdndice de Alineaci\u00f3n',val:ORG.alignmentPct+'%',name:ORG.alignmentPct>=70?'High':'Moderate',desc:'Participants where aptitude and interest coincide in the same domain.',bar:ORG.alignmentPct,isText:false},
+    {cls:'c4',ico:'\u25c6',lbl:'Salud Organizacional',val:'',name:ORG.alignmentPct>=70?'Strong':'Moderate',desc:ORG.alignmentPct>=70?'High alignment index \u2014 most people operate where their cognitive profile is most efficient.':'Development opportunities clearly identified in the data.',bar:ORG.alignmentPct,isText:true}
+  ];
+  el.innerHTML=items.map(function(it){
+    var valHtml=it.isText?'':('<div class="adn-val">'+it.val+'</div>');
+    return '<div class="adn-card '+it.cls+'"><div class="adn-ico">'+it.ico+'</div><div class="adn-lbl">'+it.lbl+'</div>'+valHtml+'<div class="adn-name">'+it.name+'</div><div class="adn-desc">'+it.desc+'</div><div class="adn-bar-t"><div class="adn-bar-f" data-w="'+it.bar+'" style="width:0%"></div></div></div>';
+  }).join('');
+}
+
+
+
+/* BILINGUAL TOGGLE */
+var TRANS = {
+  es: {
+  sb_cover: 'Portada',
+  sb_exec: 'Resumen Ejecutivo',
+  sb_adn: 'ADN Cognitivo',
+  sb_dist: 'Distribuci\u00f3n',
+  sb_comp: 'Competencias',
+  sb_ind: 'Indicadores Clave',
+  sb_team: 'Equipos',
+  sb_pat: 'Hallazgos',
+  sb_road: 'Hoja de Ruta',
+  sb_rec: 'Recomendaciones',
+  sb_port: 'Portafolio',
+  hero_ey: 'PYLA Nivel 02 \u00b7 Reporte de Inteligencia Cognitiva Organizacional',
+  hero_h1: 'Inteligencia',
+  hero_h2: 'Cognitiva Organizacional',
+  hero_h3: 'Reporte Ejecutivo',
+  hero_sub: 'Claridad colectiva. Direcci\u00f3n estrat\u00e9gica. Impacto sostenible.',
+  meta_org: 'Organizaci\u00f3n',
+  meta_part: 'Total Participantes',
+  meta_date: 'Fecha de Evaluaci\u00f3n',
+  meta_sec: 'Sector',
+  method: 'Observaci\u00f3n de tendencias, identificaci\u00f3n de inclinaciones y correlaci\u00f3n de datos derivados de PYLA Nivel 0. Fundamentado en psicopedagog\u00eda, metacognici\u00f3n y psicolog\u00eda del color \u2014 validado en GJHSS 2023, estudio doble ciego, 300+ participantes, 86% de precisi\u00f3n.',
+  ko_dom: 'Perfil Cognitivo Dominante',
+  ko_div: 'Diversidad Cognitiva',
+  ko_align: '\u00cdndice de Alineaci\u00f3n',
+  ko_health: 'Salud Organizacional',
+  exec_ey: 'Resumen Ejecutivo',
+  exec_h: 'Tres fortalezas. Tres riesgos. <em>Tres prioridades.</em>',
+  exec_str_title: '\u25ce Fortalezas Principales',
+  exec_str1: 'Alta precisi\u00f3n anal\u00edtica \u2014 38% del personal con perfil de procesamiento sistem\u00e1tico.',
+  exec_str2: 'Fuerte disposici\u00f3n a la colaboraci\u00f3n \u2014 82% autodeclara competencias c\u00edvicas.',
+  exec_str3: 'Alto \u00edndice de alineaci\u00f3n (71%) \u2014 la mayor\u00eda opera donde su perfil es m\u00e1s eficiente.',
+  exec_risk_title: '\u25c6 Riesgos Identificados',
+  exec_risk1: 'Baja adaptabilidad (54%) \u2014 riesgo ante procesos de transformaci\u00f3n organizacional.',
+  exec_risk2: 'Potencial de liderazgo no activado \u2014 34% con orientaci\u00f3n estrat\u00e9gica natural en roles no directivos.',
+  exec_risk3: 'Baja diversidad en perfiles creativos (5%) \u2014 punto ciego en innovaci\u00f3n disruptiva.',
+  exec_pri_title: '\u25b2 Prioridades Estrat\u00e9gicas',
+  exec_pri1: 'Activar pipeline de liderazgo con participantes de orientaci\u00f3n estrat\u00e9gica natural.',
+  exec_pri2: 'Desarrollar adaptabilidad y l\u00f3gica matem\u00e1tica \u2014 brechas de mayor impacto organizacional.',
+  exec_pri3: 'Dise\u00f1ar equipos usando complementariedad cognitiva para aumentar capacidad de innovaci\u00f3n.',
+  adn_ey: 'ADN Cognitivo Organizacional',
+  adn_h: 'La <em>huella cognitiva</em> de esta organizaci\u00f3n.',
+  adn_sub: 'Cuatro indicadores derivados directamente de los datos del instrumento.',
+  dist_ey: 'Distribuci\u00f3n de Perfiles Cognitivos',
+  dist_map: 'Mapa de Perfiles Cognitivos',
+  dist_groups: 'Grupos de Perfiles',
+  dist_sub: 'Distribuci\u00f3n del procesamiento cognitivo natural en la organizaci\u00f3n.',
+  dist_map_sub: 'Distribuci\u00f3n proporcional de procesamiento cognitivo en la organizaci\u00f3n.',
+  lnk_full: 'Ver distribuci\u00f3n completa \u2192',
+  lnk_ind: 'Ver indicadores derivados \u2192',
+  lnk_team: 'Ver distribuci\u00f3n por equipo \u2192',
+  strength_tag: 'Fortaleza',
+  monitor_tag: 'Monitorear',
+  comp_ey: 'Competencias Gen\u00e9ricas',
+  comp_h: 'Las <em>competencias m\u00ednimas</em> requeridas para cualquier cargo.',
+  comp_note: 'Competencias m\u00ednimas para el desempe\u00f1o efectivo en cualquier cargo. Autodeclaradas por los participantes. Indica el autoconcepto colectivo de capacidades clave e identifica d\u00f3nde el desarrollo es m\u00e1s necesario.',
+  comp_lvl: 'Niveles de Competencia',
+  comp_dept: 'Distribuci\u00f3n por Departamento',
+  comp_gaps: 'Brechas Identificadas',
+  comp_gaps_sub: 'Las competencias por debajo del 50% son prioridad de desarrollo inmediato.',
+  gap_priority: 'Prioritario',
+  gap_develop: 'Desarrollar',
+  ind_ey: 'Indicadores Organizacionales Clave',
+  ind_h: 'Observaciones correlacionales <em>desde los datos.</em>',
+  ind_note: 'Observaciones correlacionales \u2014 lectura de tendencias e inclinaciones.',
+  team_ey: 'Comparaci\u00f3n por Equipos',
+  team_h: '<em>Distribuci\u00f3n cognitiva</em> por \u00e1rea.',
+  team_note: 'Esta secci\u00f3n se personaliza con los datos reales de cada organizaci\u00f3n. Los datos mostrados son ilustrativos.',
+  lnk_insights: 'Ver hallazgos estrat\u00e9gicos \u2192',
+  col_dept: 'Departamento',
+  col_dom: 'Perfil Dominante',
+  col_align: 'Alineaci\u00f3n',
+  ins_ey: 'Hallazgos Estrat\u00e9gicos',
+  ins_h: 'Lo que los datos <em>revelan para este sector.</em>',
+  ins_note: 'La distribuci\u00f3n cognitiva tiene implicaciones distintas seg\u00fan el contexto organizacional.',
+  sess_ey: 'Incluida con Este Reporte',
+  sess_h: 'Sesi\u00f3n de Entrega y <em>Socializaci\u00f3n.</em>',
+  sess_note: 'Esta sesi\u00f3n no es un servicio adicional. Es parte del Reporte Nivel 2 \u2014 dise\u00f1ada para asegurar que los hallazgos se traduzcan en acci\u00f3n organizacional real.',
+  sess_tag: 'Incluida con Reporte Nivel 2',
+  sess_title: 'PYLA <em>Entrega y Socializaci\u00f3n</em>',
+  sess_desc: 'Sesi\u00f3n facilitada de 90 minutos con el equipo directivo para interpretar los hallazgos, resolver preguntas y definir prioridades iniciales. El objetivo no es presentar datos \u2014 es convertir la inteligencia cognitiva en decisiones organizacionales.',
+  sess_dur_l: 'Duraci\u00f3n', sess_dur_v: '90 minutos',
+  sess_fmt_l: 'Formato', sess_fmt_v: 'Video o presencial',
+  sess_fac_l: 'Facilitado por', sess_lang_l: 'Idioma',
+  heat_green: 'Fortaleza consolidada', heat_amber: 'Oportunidad de desarrollo', heat_red: '\u00c1rea de atenci\u00f3n prioritaria',
+  road_ey: 'Hoja de Ruta Estrat\u00e9gica',
+  road_h: 'Tres fases. <em>Acciones concretas.</em> Resultados medibles.',
+  road_note: 'Secuencia derivada de la inteligencia cognitiva observada en esta organizaci\u00f3n.',
+  rec_ey: 'Recomendaciones Ejecutivas',
+  rec_h: 'Seis acciones derivadas de <em>los datos de inteligencia cognitiva.</em>',
+  rec_note: 'Derivadas de los perfiles espec\u00edficos de esta organizaci\u00f3n.',
+  port_ey: 'Portafolio de Desarrollo',
+  port_h: 'D\u00f3nde <em>PYLA acompa\u00f1a</em> la pr\u00f3xima fase.',
+  port_note: 'Servicios disponibles para traducir los hallazgos en acci\u00f3n organizacional sostenida.',
+  final_q: '"La claridad cognitiva se convierte en direcci\u00f3n organizacional cuando los patrones individuales se transforman en inteligencia colectiva."',
+  final_cite: '\u2014 PYLA Cognitive Science Framework',
+  footer_conf: 'Reporte Confidencial',
+  footer_rights: 'Todos los derechos reservados.'
+},
+  en: {
+  sb_cover: 'Cover',
+  sb_exec: 'Executive Summary',
+  sb_adn: 'Cognitive DNA',
+  sb_dist: 'Distribution',
+  sb_comp: 'Competencies',
+  sb_ind: 'Key Indicators',
+  sb_team: 'Teams',
+  sb_pat: 'Insights',
+  sb_road: 'Roadmap',
+  sb_rec: 'Recommendations',
+  sb_port: 'Portfolio',
+  hero_ey: 'PYLA Level 02 \u00b7 Organizational Cognitive Intelligence Report',
+  hero_h1: 'Organizational',
+  hero_h2: 'Cognitive Intelligence',
+  hero_h3: 'Executive Report',
+  hero_sub: 'Collective clarity. Strategic direction. Sustainable impact.',
+  meta_org: 'Organization',
+  meta_part: 'Total Participants',
+  meta_date: 'Evaluation Date',
+  meta_sec: 'Sector',
+  method: 'Pattern observation, trend identification and data correlation from PYLA Level 0. Grounded in psychopedagogy, metacognition and color psychology \u2014 validated in GJHSS 2023, double-blind study, 300+ participants, 86% accuracy.',
+  ko_dom: 'Dominant Cognitive Profile',
+  ko_div: 'Cognitive Diversity',
+  ko_align: 'Alignment Index',
+  ko_health: 'Organizational Health',
+  exec_ey: 'Executive Summary',
+  exec_h: 'Three strengths. Three risks. <em>Three priorities.</em>',
+  exec_str_title: '\u25ce Main Strengths',
+  exec_str1: 'High analytical precision \u2014 38% of staff with systematic processing profile.',
+  exec_str2: 'Strong collaboration disposition \u2014 82% self-declare civic competencies.',
+  exec_str3: 'High alignment index (71%) \u2014 most people operate where their profile is most efficient.',
+  exec_risk_title: '\u25c6 Identified Risks',
+  exec_risk1: 'Low adaptability (54%) \u2014 risk in organizational transformation processes.',
+  exec_risk2: 'Unactivated leadership potential \u2014 34% with natural strategic orientation in non-leadership roles.',
+  exec_risk3: 'Low creative profile diversity (5%) \u2014 blind spot in disruptive innovation.',
+  exec_pri_title: '\u25b2 Strategic Priorities',
+  exec_pri1: 'Activate leadership pipeline with participants showing natural strategic orientation.',
+  exec_pri2: 'Develop adaptability and mathematical logic \u2014 highest organizational impact gaps.',
+  exec_pri3: 'Design teams using cognitive complementarity to increase innovation capacity.',
+  adn_ey: 'Organizational Cognitive DNA',
+  adn_h: 'The <em>cognitive signature</em> of this organization.',
+  adn_sub: 'Four indicators derived directly from instrument data.',
+  dist_ey: 'Cognitive Profile Distribution',
+  dist_map: 'Cognitive Profile Map',
+  dist_groups: 'Profile Groups',
+  dist_sub: 'Distribution of natural cognitive processing across the organization.',
+  dist_map_sub: 'Proportional distribution of cognitive processing patterns.',
+  lnk_full: 'View full distribution \u2192',
+  lnk_ind: 'View derived indicators \u2192',
+  lnk_team: 'View team distribution \u2192',
+  strength_tag: 'Strength',
+  monitor_tag: 'Monitor',
+  comp_ey: 'Generic Competencies',
+  comp_h: 'The <em>minimum competencies</em> required for any role.',
+  comp_note: 'Minimum competencies for effective performance in any role. Self-declared by participants. Reveals the collective self-concept of core capabilities and identifies where structured development is most needed.',
+  comp_lvl: 'Competency Levels',
+  comp_dept: 'Distribution by Department',
+  comp_gaps: 'Gap Identification',
+  comp_gaps_sub: 'Competencies below 50% are immediate development priorities.',
+  gap_priority: 'Priority',
+  gap_develop: 'Develop',
+  ind_ey: 'Key Organizational Indicators',
+  ind_h: 'Observable correlational <em>observations from the data.</em>',
+  ind_note: 'Correlational observations \u2014 reading of trends and inclinations.',
+  team_ey: 'Team Comparison',
+  team_h: '<em>Cognitive distribution</em> by area.',
+  team_note: 'This section is customized with each organization real data. Data shown is illustrative.',
+  lnk_insights: 'View strategic insights \u2192',
+  col_dept: 'Department',
+  col_dom: 'Dominant Profile',
+  col_align: 'Alignment',
+  ins_ey: 'Strategic Insights',
+  ins_h: 'What the data <em>reveals for this sector.</em>',
+  ins_note: 'Cognitive distribution has different implications depending on organizational context.',
+  sess_ey: 'Included with This Report',
+  sess_h: 'Delivery &amp; <em>Socialization Session.</em>',
+  sess_note: 'This session is not a service offering. It is part of the Level 2 report \u2014 designed to ensure the findings translate into real organizational action.',
+  sess_tag: 'Included with Level 2 Report',
+  sess_title: 'PYLA <em>Delivery &amp; Socialization</em> Session',
+  sess_desc: 'A facilitated 90-minute session with the leadership team to interpret findings, resolve questions and define initial priorities. The goal is not to present data \u2014 it is to convert cognitive intelligence into organizational decisions.',
+  sess_dur_l: 'Duration', sess_dur_v: '90 minutes',
+  sess_fmt_l: 'Format', sess_fmt_v: 'Video or in-person',
+  sess_fac_l: 'Facilitated by', sess_lang_l: 'Language',
+  heat_green: 'Consolidated strength', heat_amber: 'Development opportunity', heat_red: 'Priority intervention area',
+  road_ey: 'Strategic Roadmap',
+  road_h: 'Three phases. <em>Concrete actions.</em> Measurable outcomes.',
+  road_note: 'Activation sequence derived from the cognitive intelligence observed in this organization.',
+  rec_ey: 'Executive Recommendations',
+  rec_h: 'Six actions grounded in <em>cognitive intelligence data.</em>',
+  rec_note: 'Derived from the specific profiles of this organization.',
+  port_ey: 'Development Portfolio',
+  port_h: 'Where <em>PYLA supports</em> the next phase.',
+  port_note: 'Services available to translate findings into sustained organizational action.',
+  final_q: '"Cognitive clarity becomes organizational direction when individual patterns are transformed into collective intelligence."',
+  final_cite: '\u2014 PYLA Cognitive Science Framework',
+  footer_conf: 'Confidential Report',
+  footer_rights: 'All rights reserved.'
+}
+};
+
+var currentLang = 'en';
+
+function setLang(l) {
+  currentLang = l;
+  document.querySelectorAll('.lang-btn').forEach(function(b){
+    b.classList.toggle('active', b.textContent.trim() === l.toUpperCase());
+  });
+  var T = TRANS[l];
+  if(!T) return;
+  function s(id,v){var e=document.getElementById(id);if(e&&v!==undefined)e.textContent=v;}
+  function sh(id,v){var e=document.getElementById(id);if(e&&v!==undefined)e.innerHTML=v;}
+  function sb(href,v){
+    document.querySelectorAll('.sba').forEach(function(lk){
+      if(lk.getAttribute('href')==='#'+href){
+        var d=lk.querySelector('.sba-d');
+        lk.textContent=v;
+        if(d)lk.insertBefore(d,lk.firstChild);
+      }
+    });
+  }
+  sb('hero',T.sb_cover); sb('s-exec',T.sb_exec); sb('s-adn',T.sb_adn);
+  sb('s-dist',T.sb_dist); sb('s-comp',T.sb_comp); sb('s-ind',T.sb_ind);
+  sb('s-team',T.sb_team); sb('s-pat',T.sb_pat); sb('s-road',T.sb_road);
+  sb('s-rec',T.sb_rec); sb('s-port',T.sb_port);
+  s('h-ey-txt',T.hero_ey);
+  sh('h-h1-txt',T.hero_h1+'<br><em>'+T.hero_h2+'</em><br>'+T.hero_h3);
+  s('h-sub-txt',T.hero_sub);
+  s('h-meta-org',T.meta_org); s('h-meta-part',T.meta_part);
+  s('h-meta-date',T.meta_date); s('h-meta-sec',T.meta_sec);
+  s('h-method',T.method);
+  s('ko-lbl-dom',T.ko_dom); s('ko-lbl-div',T.ko_div);
+  s('ko-lbl-align',T.ko_align); s('ko-lbl-health',T.ko_health);
+  s('exec-ey',T.exec_ey); sh('exec-h',T.exec_h);
+  s('exec-str-title',T.exec_str_title);
+  s('exec-str1',T.exec_str1); s('exec-str2',T.exec_str2); s('exec-str3',T.exec_str3);
+  s('exec-risk-title',T.exec_risk_title);
+  s('exec-risk1',T.exec_risk1); s('exec-risk2',T.exec_risk2); s('exec-risk3',T.exec_risk3);
+  s('exec-pri-title',T.exec_pri_title);
+  s('exec-pri1',T.exec_pri1); s('exec-pri2',T.exec_pri2); s('exec-pri3',T.exec_pri3);
+  s('adn-ey',T.adn_ey); sh('adn-h',T.adn_h); s('adn-sub',T.adn_sub);
+  s('dist-ey',T.dist_ey); s('dist-map-ey',T.dist_map); s('dist-grp-ey',T.dist_groups);
+  s('dist-sub',T.dist_sub); s('dist-map-sub',T.dist_map_sub);
+  s('comp-ey',T.comp_ey); sh('comp-h',T.comp_h); s('comp-note',T.comp_note);
+  s('comp-lvl-ey',T.comp_lvl); s('comp-dept-ey',T.comp_dept);
+  s('comp-gaps-ey',T.comp_gaps); s('comp-gaps-sub',T.comp_gaps_sub);
+  s('ind-ey',T.ind_ey); sh('ind-h',T.ind_h); s('ind-note',T.ind_note);
+  s('team-ey',T.team_ey); sh('team-h',T.team_h); s('team-note',T.team_note);
+  s('ins-ey',T.ins_ey); sh('ins-h',T.ins_h); s('ins-note',T.ins_note);
+  s('sess-ey',T.sess_ey); sh('sess-h',T.sess_h); s('sess-note',T.sess_note);
+  s('sess-tag',T.sess_tag); sh('sess-title',T.sess_title); s('sess-desc',T.sess_desc);
+  s('sess-dur-l',T.sess_dur_l); s('sess-dur-v',T.sess_dur_v);
+  s('sess-fmt-l',T.sess_fmt_l); s('sess-fmt-v',T.sess_fmt_v);
+  s('sess-fac-l',T.sess_fac_l); s('sess-lang-l',T.sess_lang_l);
+  s('heat-leg-green',T.heat_green); s('heat-leg-amber',T.heat_amber); s('heat-leg-red',T.heat_red);
+  s('road-ey',T.road_ey); sh('road-h',T.road_h); s('road-note',T.road_note);
+  s('rec-ey',T.rec_ey); sh('rec-h',T.rec_h); s('rec-note',T.rec_note);
+  s('port-ey',T.port_ey); sh('port-h',T.port_h); s('port-note',T.port_note);
+  s('final-q-txt',T.final_q); s('final-cite-txt',T.final_cite);
+  s('footer-conf',T.footer_conf); s('footer-rights',T.footer_rights);
+  rebuildDynamic(l, T);
+}
+
+function rebuildDynamic(l, T) {
+  buildCompBars(l);
+  buildKPIGrid(l);
+  buildInsights(l);
+  buildRoadmap(l);
+  buildRec(l);
+  buildPortfolio(l);
+  var sc=SECTORS[ORG.sector]||SECTORS.technology;
+  var profEl=document.getElementById('profBars');
+  if(profEl){
+    profEl.innerHTML=ORG.profileDist.map(function(p){
+      var isStr=sc.strength.indexOf(p.id)>-1;
+      var isRsk=sc.risk.indexOf(p.id)>-1;
+      var pnames=l==='en'?{1:'Business',2:'Social',3:'Creative',4:'Health',5:'Engineering',6:'Defense'}:PROFILE_SHORT;
+      var tag=isStr?'<span style="font-size:7px;color:var(--green);margin-left:4px;letter-spacing:.1em;text-transform:uppercase;">'+T.strength_tag+'</span>':isRsk?'<span style="font-size:7px;color:var(--red);margin-left:4px;letter-spacing:.1em;text-transform:uppercase;">'+T.monitor_tag+'</span>':'';
+      var col=PROFILE_COLORS[p.id-1]||'rgba(201,169,154,0.7)';
+      return '<div class="prof-bar-row"><div class="pbr-top"><span class="pbr-name">'+(pnames[p.id]||p.id)+tag+'</span><span class="pbr-pct">'+p.pct+'%</span></div><div class="pbr-track"><div class="pbr-fill" data-w="'+p.pct+'" style="width:'+p.pct+'%;background:'+col+'"></div></div><div class="pbr-sub">'+p.pct+' / '+ORG.total+'</div></div>';
+    }).join('');
+  }
+  var compNames_en={literacy:'Reading & Writing',math:'Mathematics & Logic',civic:'Civic Competencies',adapt:'Adaptability',respect:'Respect & Tolerance'};
+  var hintKey_en={literacy:'Development opp: writing and communication programs.',math:'Development opp: analytical capacity programs.',civic:'Strong asset. Leverage in cross-functional collaboration.',adapt:'Development opp: change management programs.',respect:'Strong asset. Supports cognitive diversity initiatives.'};
+  var gapEl=document.getElementById('compGaps');
+  if(gapEl){
+    gapEl.innerHTML=ORG.competencies.map(function(c){
+      var col=c.pct<50?'var(--red)':c.pct<70?'var(--amber)':'var(--green)';
+      var tag=c.pct<50?T.gap_priority:T.gap_develop;
+      var nm=l==='en'?(compNames_en[c.id]||c.name):c.name;
+      var ht=l==='en'?(hintKey_en[c.id]||''):c.hint;
+      return '<div style="margin-bottom:10px;padding:10px 12px;background:rgba(17,16,16,0.04);border-radius:2px;border:1px solid var(--blt);border-left:2px solid '+col+';"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;"><span style="font-size:11px;color:var(--dk);font-weight:400;">'+nm+'</span><span style="font-size:8px;padding:2px 6px;border-radius:2px;background:rgba(17,16,16,0.06);color:'+col+';">'+tag+'</span></div><div style="font-size:10px;color:rgba(17,16,16,0.45);">'+c.pct+'% \u00b7 '+ht+'</div></div>';
+    }).join('');
+  }
+  var deptNames_en={};
+  ORG.departments.forEach(function(d){deptNames_en[d.n]=d.n;});
+  var colHeaders=l==='en'?[T.col_dept,T.col_dom,T.col_align,'Literacy','Math','Civic','Adaptability','Respect']:[T.col_dept,T.col_dom,T.col_align,'Lectura','Matem.','Civicas','Adaptab.','Respeto'];
+  var profShortEn={1:'Business',2:'Social',3:'Creative',4:'Health',5:'Engineering',6:'Defense'};
+  var tbl=document.getElementById('heatTbl');
+  if(tbl){
+    var th='<tr>'+colHeaders.map(function(c,i){return '<th'+(i===0?' class="rh"':'')+'>'+c+'</th>';}).join('')+'</tr>';
+    var rows=ORG.departments.map(function(d){
+      var cells=d.comp.map(function(v){var cls=v>=75?'hh':v>=58?'hm2':'hl';return '<td class="'+cls+'">'+v+'%</td>';}).join('');
+      var ac=d.align>=80?'hh':d.align>=68?'hm2':'hl';
+      var dn=d.n; var dm=l==='en'?(profShortEn[d.dom]||d.domN):d.domN;
+      return '<tr><td class="dept-cell">'+dn+'</td><td style="background:rgba(201,169,154,.12);color:var(--dk3);border-radius:2px;font-size:10px;text-align:center;">'+dm+'</td><td class="'+ac+'" style="font-weight:400;">'+d.align+'%</td>'+cells+'</tr>';
+    }).join('');
+    tbl.innerHTML=th+rows;
+  }
+}
+
+(function init(){
+  initMeta();buildHeroKI();buildADN();
+  buildProfileBars();drawRadar();drawDonut();
+  buildCompBars();buildCompGaps();
+  buildKPIGrid();buildHeatmap();buildInsights();
+  buildRoadmap();buildRec();buildPortfolio();buildFinalRows();
+  setTimeout(animBars,800);
+  initReveal();initSpy();
+})();
+</script>
+</body>
+</html>
