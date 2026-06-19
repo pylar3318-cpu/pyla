@@ -245,13 +245,7 @@ body::before {
 .field-input::placeholder { color: var(--text-light); }
 .field-input.field-invalid { border-color: #c0392b; background: #fdf2f0; }
 .field-required-mark { color: #c0392b; }
-.field-error-msg {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  color: #c0392b;
-  margin-top: 6px;
-  display: none;
-}
+.field-error-msg { font-family: 'DM Sans', sans-serif; font-size: 12px; color: #c0392b; margin-top: 6px; display: none; }
 .field-error-msg.visible { display: block; }
 
 .btn-start {
@@ -570,22 +564,8 @@ body::before {
 }
 
 .stand-card.selected .stand-check { opacity: 1; }
-
-/* Visual perception grid — homogenized with color-palette */
-.stand-visual-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 48px;
-}
-.stand-visual-card {
-  position: relative;
-  cursor: pointer;
-  border-radius: 6px;
-  overflow: hidden;
-  transition: all 0.4s ease;
-  aspect-ratio: 4/3;
-}
+.stand-visual-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:48px; }
+.stand-visual-card { position:relative; cursor:pointer; border-radius:6px; overflow:hidden; transition:all 0.4s ease; aspect-ratio:4/3; }
 
 /* Generic competencies */
 .generic-grid {
@@ -1390,7 +1370,7 @@ body::before {
     <div class="field-group">
       <label class="field-label" data-en="Current Role / Position" data-es="Rol Actual / Cargo">Current Role / Position</label><span class="field-required-mark"> *</span>
       <input class="field-input" type="text" id="userRole" placeholder="e.g. HR Manager, Team Lead, Grade 11..." data-ph-en="e.g. HR Manager, Team Lead, Grade 11..." data-ph-es="Ej. Gerente de RRHH, Líder de Equipo, Grado 11...">
-      <p class="field-error-msg" id="roleErrorMsg" data-en="Please enter your current role or position to continue." data-es="Por favor ingresa tu cargo o posición actual para continuar.">Please enter your current role or position to continue.</p>
+      <p class="field-error-msg" id="roleErrorMsg">Please enter your current role or position to continue.</p>
     </div>
     <button class="btn-start" onclick="startTest()" data-en="BEGIN" data-es="COMENZAR">BEGIN</button>
     <p class="welcome-note" data-en="No right or wrong answers. Respond instinctively." data-es="No hay respuestas incorrectas. Responde de forma instintiva.">No right or wrong answers. Respond instinctively.</p>
@@ -2372,12 +2352,12 @@ function startTest() {
   if (!email) { document.getElementById('userEmail').focus(); return; }
   if (!role) {
     roleInput.classList.add('field-invalid');
-    roleError.classList.add('visible');
+    if (roleError) roleError.classList.add('visible');
     roleInput.focus();
     return;
   }
   roleInput.classList.remove('field-invalid');
-  roleError.classList.remove('visible');
+  if (roleError) roleError.classList.remove('visible');
   state.name = name;
   state.email = email;
   state.role = role;
@@ -2422,7 +2402,6 @@ function checkFbReady() {
   const cta = document.getElementById('fb-cta-locked');
   if (cta) {
     if (ready) {
-      state.feedbackDone = true;
       cta.style.opacity = '1';
       cta.style.pointerEvents = 'all';
       // Update badge text
@@ -2430,8 +2409,8 @@ function checkFbReady() {
       if (badge) {
         badge.textContent = lang.current === 'en' ? '✓ Feedback complete — choose your next step' : '✓ Feedback completo — elige tu siguiente paso';
       }
-      // Submit feedback silently
-      submitFeedback();
+      // Submit feedback silently — feedbackDone set AFTER to allow the call
+      if (!state.feedbackDone) { submitFeedback(); state.feedbackDone = true; }
     }
   }
   updateFbProgress();
@@ -2541,27 +2520,24 @@ function downloadReport() {
 // ══════════════════════════════════════
 // RESULTS ENGINE
 // ══════════════════════════════════════
-// ══════════════════════════════════════
-// ROLE LEVEL CLASSIFIER
-// ══════════════════════════════════════
+
+// ── ROLE LEVEL CLASSIFIER (simple string matching, no regex) ──
 const roleLevelKeywords = {
-  strategic: ['ceo','chief executive','president','presidente','founder','fundador','fundadora','owner','dueño','dueña','partner','socio','socia','vp','vicepresidente','vice president','executive director','director ejecutivo','directora ejecutiva','chairman','chairwoman'],
-  tactical: ['manager','gerente','director','directora','lead','líder','lider','head of','jefe','jefa','coordinator','coordinador','coordinadora','supervisor','supervisora','team lead'],
-  operational: ['analyst','analista','specialist','especialista','associate','asociado','asociada','assistant','asistente','intern','becario','becaria','consultant','consultor','consultora','technician','técnico','tecnica','representative','representante']
+  strategic: ['ceo','chief executive','president','presidente','founder','fundador','fundadora','owner','dueño','dueña','partner','socio','socia','vp ','vice president','vicepresidente','executive director','director ejecutivo','directora ejecutiva','chairman','chairwoman'],
+  tactical: ['manager','gerente',' director',' directora','team lead','líder','lider','head of','jefe','jefa','coordinator','coordinador','coordinadora','supervisor','supervisora'],
+  operational: ['analyst','analista','specialist','especialista','associate','asociado','asociada','assistant','asistente','intern','becario','becaria','consultant','consultor','consultora','technician','técnico','representative','representante']
 };
 function classifyRoleLevel(roleText) {
   if (!roleText) return null;
-  const normalized = roleText.toLowerCase();
-  for (const level of ['strategic', 'tactical', 'operational']) {
-    for (const kw of roleLevelKeywords[level]) {
-      const bs = String.fromCharCode(92);
-      const pattern = new RegExp(bs+'b' + kw.replace(/[.*+?^${}()|[\]\\]/g, bs+'$&') + bs+'b', 'i');
-      if (pattern.test(normalized)) return level;
+  var normalized = ' ' + roleText.toLowerCase() + ' ';
+  for (var level of ['strategic', 'tactical', 'operational']) {
+    for (var kw of roleLevelKeywords[level]) {
+      if (normalized.indexOf(kw) !== -1) return level;
     }
   }
   return null;
 }
-const levelRank = { operational: 1, tactical: 2, strategic: 3 };
+var levelRank = { operational: 1, tactical: 2, strategic: 3 };
 
 function generateResults() {
   const l = lang.current;
@@ -2573,9 +2549,6 @@ function generateResults() {
   const undGenerics = generics[l].filter(g => !state.generics.includes(g.id));
   const aligned = state.colorApt === state.standInt;
   const hAligned = state.hierarchyApt === state.hierarchyInt;
-  const detectedRoleLevel = classifyRoleLevel(state.role);
-  const roleAboveAspiration = detectedRoleLevel && state.hierarchyInt && levelRank[detectedRoleLevel] > levelRank[state.hierarchyInt];
-  const roleAlignedWithAspiration = detectedRoleLevel && state.hierarchyInt && levelRank[detectedRoleLevel] === levelRank[state.hierarchyInt];
 
   // Profile text
   const profiles = {
@@ -2649,11 +2622,9 @@ function generateResults() {
       hierarchyLabel: "Structural Orientation",
       currentRoleLabel: "Current Role",
       aptHLabel: "Natural Performance Level",
-      intHLabel: "Aspirational Level",
-      hGapMsg: "There is a natural distance between where your strengths currently operate and where your aspirations point. This gap is not a barrier — it is a development path. Your full PYLA report maps the steps between where you are and where you are capable of going.",
-      threeWayGapMsg: (role) => `You are currently in <strong>${role}</strong>. Comparing this against your natural performance level and your aspirational level reveals where you stand today relative to where your strengths and your ambitions point. The Level 1 and Level 2 reports map the concrete steps to close that distance.`,
-      roleAboveAspirationMsg: (role) => `You are currently in <strong>${role}</strong> — a role positioned above the level your aspiration points to. This is not uncommon, and it is not a contradiction: it often signals that what you are seeking is not a higher position, but a closer match between your daily work and what genuinely drives you. The Level 1 and Level 2 reports explore that distinction — purpose versus title — in more depth.`,
-      roleAlignedMsg: (role) => `You are currently in <strong>${role}</strong> — and your aspiration points to the same level. This is not a plateau: it is a signal that your direction is clear. The work is not about climbing to a different level, but about deepening your impact and consolidating your advantage where you already operate. The Level 1 report maps exactly where that depth lives in your specific cognitive profile.`,
+      threeWayGapMsg: function(role) { return 'You are currently in <strong>' + role + '</strong>. Comparing this against your natural performance level and your aspirational level reveals where you stand today — and where your strengths and ambitions point. The Level 1 and Level 2 reports map the concrete steps to close that distance.'; },
+      roleAboveAspirationMsg: function(role) { return 'You are currently in <strong>' + role + '</strong> — a role positioned above the level your aspiration points to. This often signals that what you seek is not a higher position, but a closer match between your daily work and what genuinely drives you. The Level 1 and Level 2 reports explore that distinction — purpose versus title — in depth.'; },
+      roleAlignedMsg: function(role) { return 'You are currently in <strong>' + role + '</strong> — and your aspiration points to the same level. The work is not about climbing to a different level, but about deepening your impact where you already operate. The Level 1 report maps exactly where that depth lives in your cognitive profile.'; },
       intHLabel: "Aspirational Level",
       hStrategic: "Strategic · CEO · President · Executive Director · Founder",
       hTactical: "Tactical · Manager · Team Lead · Department Head · Coordinator",
@@ -2683,11 +2654,9 @@ function generateResults() {
       hierarchyLabel: "Orientación Estructural",
       currentRoleLabel: "Cargo Actual",
       aptHLabel: "Nivel de Desempeño Natural",
-      intHLabel: "Nivel Aspiracional",
-      hGapMsg: "Existe una distancia natural entre donde operan actualmente tus fortalezas y hacia donde apuntan tus aspiraciones. Esta brecha no es una barrera — es un camino de desarrollo. Tu reporte completo PYLA traza los pasos entre donde estás y hasta dónde eres capaz de llegar.",
-      threeWayGapMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong>. Comparar esto con tu nivel de desempeño natural y tu nivel aspiracional revela dónde estás hoy en relación con hacia dónde apuntan tus fortalezas y tus ambiciones. Los reportes Nivel 1 y Nivel 2 trazan los pasos concretos para cerrar esa distancia.`,
-      roleAboveAspirationMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — un cargo posicionado por encima del nivel hacia el que apunta tu aspiración. Esto no es inusual, y no es una contradicción: con frecuencia indica que lo que buscas no es un cargo más alto, sino una mayor cercanía entre tu trabajo diario y lo que genuinamente te impulsa. Los reportes Nivel 1 y Nivel 2 exploran esa distinción — propósito versus título — con mayor profundidad.`,
-      roleAlignedMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — y tu aspiración apunta al mismo nivel. Esto no es un techo: es una señal de que tu dirección ya es clara. El trabajo no es sobre escalar a un nivel distinto, sino sobre profundizar tu impacto y consolidar tu ventaja donde ya operas. El Reporte Nivel 1 mapea exactamente dónde vive esa profundidad en tu perfil cognitivo específico.`,
+      threeWayGapMsg: function(role) { return 'Actualmente te encuentras en <strong>' + role + '</strong>. Comparar esto con tu nivel de desempeño natural y tu nivel aspiracional revela dónde estás hoy — y hacia dónde apuntan tus fortalezas y ambiciones. Los reportes Nivel 1 y Nivel 2 trazan los pasos concretos para cerrar esa distancia.'; },
+      roleAboveAspirationMsg: function(role) { return 'Actualmente te encuentras en <strong>' + role + '</strong> — un cargo posicionado por encima del nivel hacia el que apunta tu aspiración. Con frecuencia esto indica que lo que buscas no es un cargo más alto, sino una mayor cercanía entre tu trabajo diario y lo que genuinamente te impulsa. Los reportes Nivel 1 y Nivel 2 exploran esa distinción — propósito versus título — con mayor profundidad.'; },
+      roleAlignedMsg: function(role) { return 'Actualmente te encuentras en <strong>' + role + '</strong> — y tu aspiración apunta al mismo nivel. El trabajo no es sobre escalar a un nivel distinto, sino sobre profundizar tu impacto donde ya operas. El Reporte Nivel 1 mapea exactamente dónde vive esa profundidad en tu perfil cognitivo específico.'; },
       intHLabel: "Nivel Aspiracional",
       hStrategic: "Estratégico · CEO · Presidente · Director Ejecutivo · Fundador",
       hTactical: "Táctico · Gerente · Líder de Equipo · Jefe de Área · Coordinador",
@@ -2783,15 +2752,22 @@ function generateResults() {
           </div>
         </div>
       </div>
-      ${state.role && roleAboveAspiration ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
-        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.roleAboveAspirationMsg(state.role)}</p>
-      </div>` : state.role && roleAlignedWithAspiration ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
-        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.roleAlignedMsg(state.role)}</p>
-      </div>` : state.role ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
-        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.threeWayGapMsg(state.role)}</p>
-      </div>` : !hAligned ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
-        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.hGapMsg}</p>
-      </div>` : ''}
+      ${(function() {
+        var detected = classifyRoleLevel(state.role);
+        var aspRank = levelRank[state.hierarchyInt] || 0;
+        var rolRank = detected ? (levelRank[detected] || 0) : 0;
+        var msg = '';
+        if (state.role && detected && rolRank > aspRank) {
+          msg = tx.roleAboveAspirationMsg(state.role);
+        } else if (state.role && detected && rolRank === aspRank) {
+          msg = tx.roleAlignedMsg(state.role);
+        } else if (state.role) {
+          msg = tx.threeWayGapMsg(state.role);
+        } else if (!hAligned) {
+          msg = tx.hGapMsg;
+        }
+        return msg ? '<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;"><p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">' + msg + '</p></div>' : '';
+      })()}
     </div>
 
     <div class="direction-block">
@@ -2936,6 +2912,7 @@ function generateResults() {
             ${l === 'en' ? 'Any other comments?' : '¿Algún comentario adicional?'}
           </span>
           <textarea class="fb-textarea" id="fb-q7" rows="3"
+            oninput="state.feedback.q7 = this.value.trim()"
             placeholder="${l === 'en' ? 'Optional — your words help PYLA improve.' : 'Opcional — tus palabras ayudan a mejorar PYLA.'}"></textarea>
         </div>
 
@@ -2998,7 +2975,7 @@ function generateResults() {
         </div>
 
         <!-- Descarga gratuita -->
-        <button class="btn-cta-secondary" id="btn-download" onclick="downloadReport()" style="width:100%;">
+        <button class="btn-cta-secondary" id="btn-download" onclick="if(!state.feedbackDone){submitFeedback();state.feedbackDone=true;} setTimeout(downloadReport,600);" style="width:100%;">
           ${l === 'en' ? 'Download this summary (free)' : 'Descargar este resumen (gratis)'}
         </button>
       </div>
@@ -3116,11 +3093,11 @@ function showTokenExpired() {
 
 window.addEventListener('DOMContentLoaded', checkTokenOnLoad);
 window.addEventListener('DOMContentLoaded', function() {
-  const roleInput = document.getElementById('userRole');
+  var roleInput = document.getElementById('userRole');
   if (roleInput) {
     roleInput.addEventListener('input', function() {
       roleInput.classList.remove('field-invalid');
-      const roleError = document.getElementById('roleErrorMsg');
+      var roleError = document.getElementById('roleErrorMsg');
       if (roleError) roleError.classList.remove('visible');
     });
   }
