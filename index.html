@@ -243,6 +243,16 @@ body::before {
 
 .field-input:focus { border-color: var(--rose-gold); background: var(--warm-white); }
 .field-input::placeholder { color: var(--text-light); }
+.field-input.field-invalid { border-color: #c0392b; background: #fdf2f0; }
+.field-required-mark { color: #c0392b; }
+.field-error-msg {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: #c0392b;
+  margin-top: 6px;
+  display: none;
+}
+.field-error-msg.visible { display: block; }
 
 .btn-start {
   width: 100%;
@@ -434,8 +444,8 @@ body::before {
 }
 
 .color-card {
-  aspect-ratio: 1;
-  border-radius: 4px;
+  aspect-ratio: 4/3;
+  border-radius: 6px;
   cursor: pointer;
   position: relative;
   transition: var(--transition);
@@ -560,6 +570,23 @@ body::before {
 }
 
 .stand-card.selected .stand-check { opacity: 1; }
+
+/* Visual perception grid — homogenized with color-palette: same columns, gap, aspect-ratio */
+.stand-visual-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.stand-visual-card {
+  position: relative;
+  cursor: pointer;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  aspect-ratio: 4/3;
+}
 
 /* Generic competencies */
 .generic-grid {
@@ -1283,11 +1310,13 @@ body::before {
   .module-main { padding: 32px 24px; }
   .color-palette { grid-template-columns: repeat(2, 1fr); }
   .stand-grid { grid-template-columns: 1fr; }
+  .stand-visual-grid { grid-template-columns: repeat(2, 1fr); }
   .hierarchy-options { grid-template-columns: 1fr; }
   .results-layout { padding: 32px 24px; }
   .results-grid { grid-template-columns: 1fr; }
   .profile-banner { padding: 28px 24px; }
   .direction-block { padding: 28px 24px; }
+  .hierarchy-three-col { grid-template-columns: 1fr !important; }
 }
 </style>
 </head>
@@ -1352,16 +1381,17 @@ body::before {
 
   <div class="welcome-form">
     <div class="field-group">
-      <label class="field-label" data-en="Full Name" data-es="Nombre Completo">Full Name</label>
+      <label class="field-label" data-en="Full Name" data-es="Nombre Completo">Full Name</label><span class="field-required-mark"> *</span>
       <input class="field-input" type="text" id="userName" placeholder="Your name" data-ph-en="Your name" data-ph-es="Tu nombre">
     </div>
     <div class="field-group">
-      <label class="field-label" data-en="Email" data-es="Correo electrónico">Email</label>
+      <label class="field-label" data-en="Email" data-es="Correo electrónico">Email</label><span class="field-required-mark"> *</span>
       <input class="field-input" type="email" id="userEmail" placeholder="your@email.com" data-ph-en="your@email.com" data-ph-es="tu@correo.com">
     </div>
     <div class="field-group">
-      <label class="field-label" data-en="Current Role / Position" data-es="Rol Actual / Cargo">Current Role / Position</label>
+      <label class="field-label" data-en="Current Role / Position" data-es="Rol Actual / Cargo">Current Role / Position</label><span class="field-required-mark"> *</span>
       <input class="field-input" type="text" id="userRole" placeholder="e.g. HR Manager, Team Lead, Grade 11..." data-ph-en="e.g. HR Manager, Team Lead, Grade 11..." data-ph-es="Ej. Gerente de RRHH, Líder de Equipo, Grado 11...">
+      <p class="field-error-msg" id="roleErrorMsg" data-en="Please enter your current role or position to continue." data-es="Por favor ingresa tu cargo o posición actual para continuar.">Please enter your current role or position to continue.</p>
     </div>
     <button class="btn-start" onclick="startTest()" data-en="BEGIN" data-es="COMENZAR">BEGIN</button>
     <p class="welcome-note" data-en="No right or wrong answers. Respond instinctively." data-es="No hay respuestas incorrectas. Responde de forma instintiva.">No right or wrong answers. Respond instinctively.</p>
@@ -2074,9 +2104,9 @@ const standSVGs = [
 function buildStandGrid() {
   const grid = document.getElementById('standGrid');
   if (!grid) return;
-  grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;';
+  grid.className = 'stand-visual-grid';
   grid.innerHTML = standSVGs.map((svg, i) => `
-    <div style="position:relative;cursor:pointer;border-radius:6px;overflow:hidden;transition:all 0.4s ease;border:2px solid ${state.standInt === i+1 ? 'var(--charcoal)' : 'transparent'};aspect-ratio:4/3;"
+    <div class="stand-visual-card" style="border:2px solid ${state.standInt === i+1 ? 'var(--charcoal)' : 'transparent'};"
          onclick="selectStand(${i+1})"
          onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(0,0,0,0.14)'"
          onmouseleave="this.style.transform='';this.style.boxShadow=''">
@@ -2336,11 +2366,24 @@ function showScreen(id) {
 function startTest() {
   const name = document.getElementById('userName').value.trim();
   const email = document.getElementById('userEmail').value.trim();
+  const role = document.getElementById('userRole').value.trim();
+  const roleInput = document.getElementById('userRole');
+  const roleError = document.getElementById('roleErrorMsg');
+
   if (!name) { document.getElementById('userName').focus(); return; }
   if (!email) { document.getElementById('userEmail').focus(); return; }
+  if (!role) {
+    roleInput.classList.add('field-invalid');
+    roleError.classList.add('visible');
+    roleInput.focus();
+    return;
+  }
+  roleInput.classList.remove('field-invalid');
+  roleError.classList.remove('visible');
+
   state.name = name;
   state.email = email;
-  state.role = document.getElementById('userRole').value.trim();
+  state.role = role;
   state.currentModule = 1;
   buildColorGrid();
   buildSidebars();
@@ -2381,15 +2424,17 @@ function checkFbReady() {
   const ready = !!(state.feedback.q1 && state.feedback.q2 && state.feedback.q3 && state.feedback.q4);
   const cta = document.getElementById('fb-cta-locked');
   if (cta) {
-    if (ready && !state.feedbackDone) {
+    if (ready) {
       state.feedbackDone = true;
       cta.style.opacity = '1';
       cta.style.pointerEvents = 'all';
+      // Update badge text
       const badge = cta.querySelector('span[style*="rose-gold"]');
       if (badge) {
         badge.textContent = lang.current === 'en' ? '✓ Feedback complete — choose your next step' : '✓ Feedback completo — elige tu siguiente paso';
       }
-      // feedback se envía cuando el usuario descarga o interactúa con CTA
+      // Submit feedback silently
+      submitFeedback();
     }
   }
   updateFbProgress();
@@ -2429,8 +2474,11 @@ function submitFeedback() {
     fb_context:   state.feedback.q6 || '',
     fb_comments:  state.feedback.q7
   };
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
-  fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(() => {});
+  fetch('https://hook.us2.make.com/wha043h9yb0m2tmqdxvcnmih9hmt2j5u', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(() => {});
 }
 
 // ══════════════════════════════════════
@@ -2499,6 +2547,29 @@ function downloadReport() {
 // ══════════════════════════════════════
 // RESULTS ENGINE
 // ══════════════════════════════════════
+// ══════════════════════════════════════
+// ROLE LEVEL CLASSIFIER — best-effort keyword match, never forced
+// ══════════════════════════════════════
+const roleLevelKeywords = {
+  strategic: ['ceo','chief executive','president','presidente','founder','fundador','fundadora','owner','dueño','dueña','partner','socio','socia','vp','vicepresidente','vice president','executive director','director ejecutivo','directora ejecutiva','chairman','chairwoman'],
+  tactical: ['manager','gerente','director','directora','lead','líder','lider','head of','jefe','jefa','coordinator','coordinador','coordinadora','supervisor','supervisora','team lead'],
+  operational: ['analyst','analista','specialist','especialista','associate','asociado','asociada','assistant','asistente','intern','becario','becaria','consultant','consultor','consultora','technician','técnico','tecnica','representative','representante']
+};
+
+function classifyRoleLevel(roleText) {
+  if (!roleText) return null;
+  const normalized = roleText.toLowerCase();
+  for (const level of ['strategic', 'tactical', 'operational']) {
+    for (const kw of roleLevelKeywords[level]) {
+      const pattern = new RegExp('\\b' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+      if (pattern.test(normalized)) return level;
+    }
+  }
+  return null;
+}
+
+const levelRank = { operational: 1, tactical: 2, strategic: 3 };
+
 function generateResults() {
   const l = lang.current;
   const aptArea = areas[l].find(a => a.id === state.colorApt);
@@ -2509,6 +2580,14 @@ function generateResults() {
   const undGenerics = generics[l].filter(g => !state.generics.includes(g.id));
   const aligned = state.colorApt === state.standInt;
   const hAligned = state.hierarchyApt === state.hierarchyInt;
+  const detectedRoleLevel = classifyRoleLevel(state.role);
+  // roleAboveAspiration: true only when we have high confidence the current role
+  // outranks the stated aspiration — never guessed, only shown when detected.
+  const roleAboveAspiration = detectedRoleLevel && state.hierarchyInt &&
+    levelRank[detectedRoleLevel] > levelRank[state.hierarchyInt];
+  // roleAlignedWithAspiration: cargo and aspiration at the same detected level
+  const roleAlignedWithAspiration = detectedRoleLevel && state.hierarchyInt &&
+    levelRank[detectedRoleLevel] === levelRank[state.hierarchyInt];
 
   // Profile text
   const profiles = {
@@ -2580,16 +2659,20 @@ function generateResults() {
       genericDev: "Developed Competencies",
       genericUnd: "Growth Opportunities",
       hierarchyLabel: "Structural Orientation",
+      currentRoleLabel: "Current Role",
       aptHLabel: "Natural Performance Level",
       intHLabel: "Aspirational Level",
       hStrategic: "Strategic · CEO · President · Executive Director · Founder",
       hTactical: "Tactical · Manager · Team Lead · Department Head · Coordinator",
       hOperational: "Operational · Specialist · Analyst · Associate · Individual Contributor",
       hGapMsg: "There is a natural distance between where your strengths currently operate and where your aspirations point. This gap is not a barrier — it is a development path. Your full PYLA report maps the steps between where you are and where you are capable of going.",
+      threeWayGapMsg: (role) => `You are currently in <strong>${role}</strong>. Comparing this against your natural performance level and your aspirational level reveals where you stand today relative to where your strengths and your ambitions point. The Level 1 and Level 2 reports map the concrete steps to close that distance.`,
+      roleAboveAspirationMsg: (role) => `You are currently in <strong>${role}</strong> — a role positioned above the level your aspiration points to. This is not uncommon, and it is not a contradiction: it often signals that what you are seeking is not a higher position, but a closer match between your daily work and what genuinely drives you. The Level 1 and Level 2 reports explore that distinction — purpose versus title — in more depth.`,
+      roleAlignedMsg: (role) => `You are currently in <strong>${role}</strong> — and your aspiration points to the same level. This is not a plateau: it is a signal that your direction is clear. The work is not about climbing to a different level, but about deepening your impact and consolidating your advantage where you already operate. The Level 1 report maps exactly where that depth lives in your specific cognitive profile.`,
       directionLabel: "Cognitive Direction",
       careersLabel: "Aligned Professional Paths",
       ctaTitle: "This is just the starting point.",
-      ctaDesc: "The PYLA Level 1 Report translates your cognitive profile into actionable direction — the environments where you perform best, what may be limiting your performance, and a clear path toward roles and decisions aligned with your maximum professional potential.",
+      ctaDesc: "The PYLA Level 1 Report translates the distance between your current role, your aptitude, and your aspiration into a concrete action: what to do, what risks to avoid, and why.",
       ctaBtn1: "Get My Full Report",
       ctaBtn2: "Download This Summary",
       footerNote: "Projection & Learning Analysis · Pilar R Cognitive Structure · Clarity → Potential → Performance → Direction"
@@ -2608,16 +2691,20 @@ function generateResults() {
       genericDev: "Competencias Desarrolladas",
       genericUnd: "Oportunidades de Crecimiento",
       hierarchyLabel: "Orientación Estructural",
+      currentRoleLabel: "Cargo Actual",
       aptHLabel: "Nivel de Desempeño Natural",
       intHLabel: "Nivel Aspiracional",
       hStrategic: "Estratégico · CEO · Presidente · Director Ejecutivo · Fundador",
       hTactical: "Táctico · Gerente · Líder de Equipo · Jefe de Área · Coordinador",
       hOperational: "Operativo · Especialista · Analista · Asociado · Profesional Individual",
       hGapMsg: "Existe una distancia natural entre donde operan actualmente tus fortalezas y hacia donde apuntan tus aspiraciones. Esta brecha no es una barrera — es un camino de desarrollo. Tu reporte completo PYLA traza los pasos entre donde estás y hasta dónde eres capaz de llegar.",
+      threeWayGapMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong>. Comparar esto con tu nivel de desempeño natural y tu nivel aspiracional revela dónde estás hoy en relación con hacia dónde apuntan tus fortalezas y tus ambiciones. Los reportes Nivel 1 y Nivel 2 trazan los pasos concretos para cerrar esa distancia.`,
+      roleAboveAspirationMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — un cargo posicionado por encima del nivel hacia el que apunta tu aspiración. Esto no es inusual, y no es una contradicción: con frecuencia indica que lo que buscas no es un cargo más alto, sino una mayor cercanía entre tu trabajo diario y lo que genuinamente te impulsa. Los reportes Nivel 1 y Nivel 2 exploran esa distinción — propósito versus título — con mayor profundidad.`,
+      roleAlignedMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — y tu aspiración apunta al mismo nivel. Esto no es un techo: es una señal de que tu dirección ya es clara. El trabajo no es sobre escalar a un nivel distinto, sino sobre profundizar tu impacto y consolidar tu ventaja donde ya operas. El Reporte Nivel 1 mapea exactamente dónde vive esa profundidad en tu perfil cognitivo específico.`,
       directionLabel: "Dirección Cognitiva",
       careersLabel: "Caminos Profesionales Afines",
       ctaTitle: "Esto es solo el punto de partida.",
-      ctaDesc: "El Reporte PYLA Nivel 1 traduce tu perfil cognitivo en dirección accionable — los entornos donde rindes mejor, lo que puede estar limitando tu desempeño, y una ruta clara hacia roles y decisiones alineados con tu máximo potencial profesional.",
+      ctaDesc: "El Reporte PYLA Nivel 1 traduce la distancia entre tu cargo actual, tu aptitud y tu aspiración en una acción concreta: qué hacer, qué riesgos evitar, y por qué.",
       ctaBtn1: "Obtener Mi Reporte Completo",
       ctaBtn2: "Descargar Este Resumen",
       footerNote: "Projection & Learning Analysis · Pilar R Cognitive Structure · Claridad → Potencial → Desempeño → Dirección"
@@ -2680,7 +2767,15 @@ function generateResults() {
 
     <div class="hierarchy-result">
       <p class="rb-label">06 · ${tx.hierarchyLabel}</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+      <div class="hierarchy-three-col" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:12px;">
+        <div>
+          <p style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">${tx.currentRoleLabel}</p>
+          <div style="padding:12px 16px;background:var(--cream);border:1px solid var(--sand-deep);border-radius:2px;">
+            <p style="font-size:12px;color:var(--charcoal);line-height:1.5;">
+              ${state.role || (l === 'en' ? 'Not specified' : 'No especificado')}
+            </p>
+          </div>
+        </div>
         <div>
           <p style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">${tx.aptHLabel}</p>
           <div style="padding:12px 16px;background:var(--charcoal);border-radius:2px;">
@@ -2698,7 +2793,13 @@ function generateResults() {
           </div>
         </div>
       </div>
-      ${!hAligned ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
+      ${state.role && roleAboveAspiration ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.roleAboveAspirationMsg(state.role)}</p>
+      </div>` : state.role && roleAlignedWithAspiration ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.roleAlignedMsg(state.role)}</p>
+      </div>` : state.role ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.threeWayGapMsg(state.role)}</p>
+      </div>` : !hAligned ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
         <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.hGapMsg}</p>
       </div>` : ''}
     </div>
@@ -2845,7 +2946,6 @@ function generateResults() {
             ${l === 'en' ? 'Any other comments?' : '¿Algún comentario adicional?'}
           </span>
           <textarea class="fb-textarea" id="fb-q7" rows="3"
-            oninput="state.feedback.q7 = this.value.trim()"
             placeholder="${l === 'en' ? 'Optional — your words help PYLA improve.' : 'Opcional — tus palabras ayudan a mejorar PYLA.'}"></textarea>
         </div>
 
@@ -2908,7 +3008,7 @@ function generateResults() {
         </div>
 
         <!-- Descarga gratuita -->
-        <button class="btn-cta-secondary" id="btn-download" onclick="submitFeedback();downloadReport();" style="width:100%;">
+        <button class="btn-cta-secondary" id="btn-download" onclick="downloadReport()" style="width:100%;">
           ${l === 'en' ? 'Download this summary (free)' : 'Descargar este resumen (gratis)'}
         </button>
       </div>
@@ -2959,6 +3059,11 @@ function sendTestData() {
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
   fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(() => {});
 
+  fetch('https://hook.us2.make.com/wha043h9yb0m2tmqdxvcnmih9hmt2j5u', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(() => {});
 }
 
 // ── SISTEMA DE TOKENS ─────────────────────────────────────────
@@ -3025,6 +3130,16 @@ function showTokenExpired() {
 }
 
 window.addEventListener('DOMContentLoaded', checkTokenOnLoad);
+window.addEventListener('DOMContentLoaded', function() {
+  const roleInput = document.getElementById('userRole');
+  if (roleInput) {
+    roleInput.addEventListener('input', function() {
+      roleInput.classList.remove('field-invalid');
+      const roleError = document.getElementById('roleErrorMsg');
+      if (roleError) roleError.classList.remove('visible');
+    });
+  }
+});
 </script>
 </body>
 </html>
