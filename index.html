@@ -2975,7 +2975,7 @@ function generateResults() {
         </div>
 
         <!-- Descarga gratuita -->
-        <button class="btn-cta-secondary" id="btn-download" onclick="if(!state.feedbackDone){submitFeedback();state.feedbackDone=true;} setTimeout(downloadReport,600);" style="width:100%;">
+        <button class="btn-cta-secondary" id="btn-download" onclick="state.feedbackDone=false; submitFeedback(); state.feedbackDone=true; setTimeout(downloadReport,600);" style="width:100%;">
           ${l === 'en' ? 'Download this summary (free)' : 'Descargar este resumen (gratis)'}
         </button>
       </div>
