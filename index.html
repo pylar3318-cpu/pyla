@@ -571,13 +571,14 @@ body::before {
 
 .stand-card.selected .stand-check { opacity: 1; }
 
-/* Visual perception grid — homogenized with color-palette */
+/* Visual perception grid — homogenized with color-palette: same columns, gap, aspect-ratio */
 .stand-visual-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 48px;
 }
+
 .stand-visual-card {
   position: relative;
   cursor: pointer;
@@ -1308,14 +1309,14 @@ body::before {
   .module-sidebar { display: none; }
   .module-main { padding: 32px 24px; }
   .color-palette { grid-template-columns: repeat(2, 1fr); }
-  .stand-visual-grid { grid-template-columns: repeat(2, 1fr); }
-  .hierarchy-three-col { grid-template-columns: 1fr !important; }
   .stand-grid { grid-template-columns: 1fr; }
+  .stand-visual-grid { grid-template-columns: repeat(2, 1fr); }
   .hierarchy-options { grid-template-columns: 1fr; }
   .results-layout { padding: 32px 24px; }
   .results-grid { grid-template-columns: 1fr; }
   .profile-banner { padding: 28px 24px; }
   .direction-block { padding: 28px 24px; }
+  .hierarchy-three-col { grid-template-columns: 1fr !important; }
 }
 </style>
 </head>
@@ -2368,6 +2369,7 @@ function startTest() {
   const role = document.getElementById('userRole').value.trim();
   const roleInput = document.getElementById('userRole');
   const roleError = document.getElementById('roleErrorMsg');
+
   if (!name) { document.getElementById('userName').focus(); return; }
   if (!email) { document.getElementById('userEmail').focus(); return; }
   if (!role) {
@@ -2378,6 +2380,7 @@ function startTest() {
   }
   roleInput.classList.remove('field-invalid');
   roleError.classList.remove('visible');
+
   state.name = name;
   state.email = email;
   state.role = role;
@@ -2430,8 +2433,8 @@ function checkFbReady() {
       if (badge) {
         badge.textContent = lang.current === 'en' ? '✓ Feedback complete — choose your next step' : '✓ Feedback completo — elige tu siguiente paso';
       }
-      // Submit feedback silently
-      submitFeedback();
+      // Submit feedback silently — only once
+      if (!state.feedbackDone) submitFeedback();
     }
   }
   updateFbProgress();
@@ -2451,6 +2454,7 @@ function updateFbProgress() {
 }
 
 function submitFeedback() {
+  console.log('submitFeedback called, feedbackDone:', state.feedbackDone, 'feedback:', JSON.stringify(state.feedback));
   state.feedback.q7 = (document.getElementById('fb-q7')?.value || '').trim();
   const payload = {
     type: 'pyla_feedback',
@@ -2472,20 +2476,26 @@ function submitFeedback() {
     fb_comments:  state.feedback.q7
   };
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
-  fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(() => {});
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify(payload)
+  }).catch(() => {});
 }
 
 // ══════════════════════════════════════
 // DOWNLOAD / PRINT REPORT
 // ══════════════════════════════════════
 function downloadReport() {
-  const content = document.getElementById('resultsContainer');
-  if (!content) return;
+  // Send data first — works even if popup is blocked
+  sendTestData();
 
-  // Get current stylesheet href for Google Fonts
+  const content = document.getElementById('resultsContainer');
+  console.log('downloadReport: content found?', !!content);
+  if (!content) { console.log('STOPPED: no content'); return; }
+
   const fontLink = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap';
 
-  // Grab all inline styles from the main document
   const styles = Array.from(document.styleSheets)
     .map(sheet => {
       try {
@@ -2493,7 +2503,15 @@ function downloadReport() {
       } catch (e) { return ''; }
     }).join('\n');
 
+  console.log('downloadReport: opening window...');
   const printWindow = window.open('', '_blank', 'width=900,height=700');
+  console.log('downloadReport: printWindow?', !!printWindow);
+  if (!printWindow) {
+    alert(lang.current === 'es'
+      ? 'Tu navegador bloqueó la ventana de descarga. Por favor permite ventanas emergentes para este sitio e inténtalo de nuevo.'
+      : 'Your browser blocked the download window. Please allow popups for this site and try again.');
+    return;
+  }
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>
@@ -2542,25 +2560,26 @@ function downloadReport() {
 // RESULTS ENGINE
 // ══════════════════════════════════════
 // ══════════════════════════════════════
-// ROLE LEVEL CLASSIFIER
+// ROLE LEVEL CLASSIFIER — best-effort keyword match, never forced
 // ══════════════════════════════════════
 const roleLevelKeywords = {
   strategic: ['ceo','chief executive','president','presidente','founder','fundador','fundadora','owner','dueño','dueña','partner','socio','socia','vp','vicepresidente','vice president','executive director','director ejecutivo','directora ejecutiva','chairman','chairwoman'],
   tactical: ['manager','gerente','director','directora','lead','líder','lider','head of','jefe','jefa','coordinator','coordinador','coordinadora','supervisor','supervisora','team lead'],
   operational: ['analyst','analista','specialist','especialista','associate','asociado','asociada','assistant','asistente','intern','becario','becaria','consultant','consultor','consultora','technician','técnico','tecnica','representative','representante']
 };
+
 function classifyRoleLevel(roleText) {
   if (!roleText) return null;
   const normalized = roleText.toLowerCase();
   for (const level of ['strategic', 'tactical', 'operational']) {
     for (const kw of roleLevelKeywords[level]) {
-      const bs = String.fromCharCode(92);
-      const pattern = new RegExp(bs+'b' + kw.replace(/[.*+?^${}()|[\]\\]/g, bs+'$&') + bs+'b', 'i');
+      const pattern = new RegExp('\\b' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
       if (pattern.test(normalized)) return level;
     }
   }
   return null;
 }
+
 const levelRank = { operational: 1, tactical: 2, strategic: 3 };
 
 function generateResults() {
@@ -2574,8 +2593,13 @@ function generateResults() {
   const aligned = state.colorApt === state.standInt;
   const hAligned = state.hierarchyApt === state.hierarchyInt;
   const detectedRoleLevel = classifyRoleLevel(state.role);
-  const roleAboveAspiration = detectedRoleLevel && state.hierarchyInt && levelRank[detectedRoleLevel] > levelRank[state.hierarchyInt];
-  const roleAlignedWithAspiration = detectedRoleLevel && state.hierarchyInt && levelRank[detectedRoleLevel] === levelRank[state.hierarchyInt];
+  // roleAboveAspiration: true only when we have high confidence the current role
+  // outranks the stated aspiration — never guessed, only shown when detected.
+  const roleAboveAspiration = detectedRoleLevel && state.hierarchyInt &&
+    levelRank[detectedRoleLevel] > levelRank[state.hierarchyInt];
+  // roleAlignedWithAspiration: cargo and aspiration at the same detected level
+  const roleAlignedWithAspiration = detectedRoleLevel && state.hierarchyInt &&
+    levelRank[detectedRoleLevel] === levelRank[state.hierarchyInt];
 
   // Profile text
   const profiles = {
@@ -2650,15 +2674,13 @@ function generateResults() {
       currentRoleLabel: "Current Role",
       aptHLabel: "Natural Performance Level",
       intHLabel: "Aspirational Level",
-      hGapMsg: "There is a natural distance between where your strengths currently operate and where your aspirations point. This gap is not a barrier — it is a development path. Your full PYLA report maps the steps between where you are and where you are capable of going.",
-      threeWayGapMsg: (role) => `You are currently in <strong>${role}</strong>. Comparing this against your natural performance level and your aspirational level reveals where you stand today relative to where your strengths and your ambitions point. The Level 1 and Level 2 reports map the concrete steps to close that distance.`,
-      roleAboveAspirationMsg: (role) => `You are currently in <strong>${role}</strong> — a role positioned above the level your aspiration points to. This is not uncommon, and it is not a contradiction: it often signals that what you are seeking is not a higher position, but a closer match between your daily work and what genuinely drives you. The Level 1 and Level 2 reports explore that distinction — purpose versus title — in more depth.`,
-      roleAlignedMsg: (role) => `You are currently in <strong>${role}</strong> — and your aspiration points to the same level. This is not a plateau: it is a signal that your direction is clear. The work is not about climbing to a different level, but about deepening your impact and consolidating your advantage where you already operate. The Level 1 report maps exactly where that depth lives in your specific cognitive profile.`,
-      intHLabel: "Aspirational Level",
       hStrategic: "Strategic · CEO · President · Executive Director · Founder",
       hTactical: "Tactical · Manager · Team Lead · Department Head · Coordinator",
       hOperational: "Operational · Specialist · Analyst · Associate · Individual Contributor",
       hGapMsg: "There is a natural distance between where your strengths currently operate and where your aspirations point. This gap is not a barrier — it is a development path. Your full PYLA report maps the steps between where you are and where you are capable of going.",
+      threeWayGapMsg: (role) => `You are currently in <strong>${role}</strong>. Comparing this against your natural performance level and your aspirational level reveals where you stand today relative to where your strengths and your ambitions point. The Level 1 and Level 2 reports map the concrete steps to close that distance.`,
+      roleAboveAspirationMsg: (role) => `You are currently in <strong>${role}</strong> — a role positioned above the level your aspiration points to. This is not uncommon, and it is not a contradiction: it often signals that what you are seeking is not a higher position, but a closer match between your daily work and what genuinely drives you. The Level 1 and Level 2 reports explore that distinction — purpose versus title — in more depth.`,
+      roleAlignedMsg: (role) => `You are currently in <strong>${role}</strong> — and your aspiration points to the same level. This is not a plateau: it is a signal that your direction is clear. The work is not about climbing to a different level, but about deepening your impact and consolidating your advantage where you already operate. The Level 1 report maps exactly where that depth lives in your specific cognitive profile.`,
       directionLabel: "Cognitive Direction",
       careersLabel: "Aligned Professional Paths",
       ctaTitle: "This is just the starting point.",
@@ -2684,15 +2706,13 @@ function generateResults() {
       currentRoleLabel: "Cargo Actual",
       aptHLabel: "Nivel de Desempeño Natural",
       intHLabel: "Nivel Aspiracional",
-      hGapMsg: "Existe una distancia natural entre donde operan actualmente tus fortalezas y hacia donde apuntan tus aspiraciones. Esta brecha no es una barrera — es un camino de desarrollo. Tu reporte completo PYLA traza los pasos entre donde estás y hasta dónde eres capaz de llegar.",
-      threeWayGapMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong>. Comparar esto con tu nivel de desempeño natural y tu nivel aspiracional revela dónde estás hoy en relación con hacia dónde apuntan tus fortalezas y tus ambiciones. Los reportes Nivel 1 y Nivel 2 trazan los pasos concretos para cerrar esa distancia.`,
-      roleAboveAspirationMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — un cargo posicionado por encima del nivel hacia el que apunta tu aspiración. Esto no es inusual, y no es una contradicción: con frecuencia indica que lo que buscas no es un cargo más alto, sino una mayor cercanía entre tu trabajo diario y lo que genuinamente te impulsa. Los reportes Nivel 1 y Nivel 2 exploran esa distinción — propósito versus título — con mayor profundidad.`,
-      roleAlignedMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — y tu aspiración apunta al mismo nivel. Esto no es un techo: es una señal de que tu dirección ya es clara. El trabajo no es sobre escalar a un nivel distinto, sino sobre profundizar tu impacto y consolidar tu ventaja donde ya operas. El Reporte Nivel 1 mapea exactamente dónde vive esa profundidad en tu perfil cognitivo específico.`,
-      intHLabel: "Nivel Aspiracional",
       hStrategic: "Estratégico · CEO · Presidente · Director Ejecutivo · Fundador",
       hTactical: "Táctico · Gerente · Líder de Equipo · Jefe de Área · Coordinador",
       hOperational: "Operativo · Especialista · Analista · Asociado · Profesional Individual",
       hGapMsg: "Existe una distancia natural entre donde operan actualmente tus fortalezas y hacia donde apuntan tus aspiraciones. Esta brecha no es una barrera — es un camino de desarrollo. Tu reporte completo PYLA traza los pasos entre donde estás y hasta dónde eres capaz de llegar.",
+      threeWayGapMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong>. Comparar esto con tu nivel de desempeño natural y tu nivel aspiracional revela dónde estás hoy en relación con hacia dónde apuntan tus fortalezas y tus ambiciones. Los reportes Nivel 1 y Nivel 2 trazan los pasos concretos para cerrar esa distancia.`,
+      roleAboveAspirationMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — un cargo posicionado por encima del nivel hacia el que apunta tu aspiración. Esto no es inusual, y no es una contradicción: con frecuencia indica que lo que buscas no es un cargo más alto, sino una mayor cercanía entre tu trabajo diario y lo que genuinamente te impulsa. Los reportes Nivel 1 y Nivel 2 exploran esa distinción — propósito versus título — con mayor profundidad.`,
+      roleAlignedMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — y tu aspiración apunta al mismo nivel. Esto no es un techo: es una señal de que tu dirección ya es clara. El trabajo no es sobre escalar a un nivel distinto, sino sobre profundizar tu impacto y consolidar tu ventaja donde ya operas. El Reporte Nivel 1 mapea exactamente dónde vive esa profundidad en tu perfil cognitivo específico.`,
       directionLabel: "Dirección Cognitiva",
       careersLabel: "Caminos Profesionales Afines",
       ctaTitle: "Esto es solo el punto de partida.",
@@ -2763,7 +2783,9 @@ function generateResults() {
         <div>
           <p style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">${tx.currentRoleLabel}</p>
           <div style="padding:12px 16px;background:var(--cream);border:1px solid var(--sand-deep);border-radius:2px;">
-            <p style="font-size:12px;color:var(--charcoal);line-height:1.5;">${state.role || (l === 'en' ? 'Not specified' : 'No especificado')}</p>
+            <p style="font-size:12px;color:var(--charcoal);line-height:1.5;">
+              ${state.role || (l === 'en' ? 'Not specified' : 'No especificado')}
+            </p>
           </div>
         </div>
         <div>
@@ -2936,6 +2958,7 @@ function generateResults() {
             ${l === 'en' ? 'Any other comments?' : '¿Algún comentario adicional?'}
           </span>
           <textarea class="fb-textarea" id="fb-q7" rows="3"
+            oninput="state.feedback.q7 = this.value.trim()"
             placeholder="${l === 'en' ? 'Optional — your words help PYLA improve.' : 'Opcional — tus palabras ayudan a mejorar PYLA.'}"></textarea>
         </div>
 
@@ -2998,7 +3021,7 @@ function generateResults() {
         </div>
 
         <!-- Descarga gratuita -->
-        <button class="btn-cta-secondary" id="btn-download" onclick="downloadReport()" style="width:100%;">
+        <button class="btn-cta-secondary" id="btn-download" onclick="submitFeedback();downloadReport()" style="width:100%;">
           ${l === 'en' ? 'Download this summary (free)' : 'Descargar este resumen (gratis)'}
         </button>
       </div>
@@ -3016,7 +3039,6 @@ function generateResults() {
 
   state.currentModule = 5;
   buildSidebars();
-  sendTestData();
   showScreen('screen-results');
 }
 
@@ -3048,7 +3070,6 @@ function sendTestData() {
 
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
   fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(() => {});
-
 }
 
 // ── SISTEMA DE TOKENS ─────────────────────────────────────────
@@ -3088,12 +3109,6 @@ function checkTokenOnLoad() {
   if (!result.valid) {
     if (result.expired) showTokenExpired();
     else window.location.href = 'https://pyla.yrelevate.com';
-  } else {
-    // Token válido: si hay landing, redirigir ahí
-    const landing = params.get('landing');
-    if (landing) {
-      window.location.href = landing;
-    }
   }
 }
 
