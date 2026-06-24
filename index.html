@@ -3088,6 +3088,12 @@ function checkTokenOnLoad() {
   if (!result.valid) {
     if (result.expired) showTokenExpired();
     else window.location.href = 'https://pyla.yrelevate.com';
+  } else {
+    // Token válido: si hay landing, redirigir ahí
+    const landing = params.get('landing');
+    if (landing) {
+      window.location.href = landing;
+    }
   }
 }
 
