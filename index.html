@@ -2454,6 +2454,7 @@ function updateFbProgress() {
 }
 
 function submitFeedback() {
+  console.log('submitFeedback called, feedbackDone:', state.feedbackDone, 'feedback:', JSON.stringify(state.feedback));
   state.feedback.q7 = (document.getElementById('fb-q7')?.value || '').trim();
   const payload = {
     type: 'pyla_feedback',
