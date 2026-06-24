@@ -1,0 +1,3136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PYLA — Projection & Learning Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F7F3EE;
+  --warm-white: #FDFAF7;
+  --sand: #E8DDD0;
+  --sand-deep: #D4C4B0;
+  --charcoal: #1C1C1C;
+  --charcoal-soft: #2E2E2E;
+  --text-muted: #7A7068;
+  --text-light: #A89F96;
+  --rose-gold: #C9A99A;
+  --rose-gold-light: #E8D5CE;
+  --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--warm-white);
+  color: var(--charcoal);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 48px;
+  background: rgba(253,250,247,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(201,169,154,0.12);
+}
+
+.brand-mark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: var(--charcoal);
+}
+
+.brand-mark em { color: var(--rose-gold); font-style: italic; }
+
+.lang-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--sand);
+  padding: 3px;
+  border-radius: 2px;
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 1px;
+}
+
+.lang-btn.active {
+  background: var(--charcoal);
+  color: var(--warm-white);
+}
+
+/* ── SCREENS ── */
+.screen {
+  display: none;
+  min-height: 100vh;
+  padding-top: 72px;
+}
+
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── WELCOME SCREEN ── */
+.welcome-screen {
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(150deg, var(--warm-white) 0%, var(--cream) 55%, #EDE4D8 100%);
+  padding: 72px 48px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.orb-1 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(201,169,154,0.14) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  animation: orbFloat 9s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(184,180,176,0.1) 0%, transparent 70%);
+  bottom: -80px; left: -60px;
+  animation: orbFloat 12s ease-in-out infinite reverse;
+}
+
+@keyframes orbFloat {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-20px, 20px) scale(1.05); }
+}
+
+.welcome-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 24px;
+  animation: fadeUp 0.8s ease both;
+}
+
+.welcome-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(44px, 6vw, 72px);
+  font-weight: 300;
+  line-height: 1.08;
+  color: var(--charcoal);
+  margin-bottom: 16px;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+
+.welcome-title em { font-style: italic; color: var(--rose-gold); }
+
+.welcome-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 2vw, 20px);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.divider-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--rose-gold), transparent);
+  margin: 0 auto 32px;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.welcome-info {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 48px;
+  animation: fadeUp 0.8s 0.35s ease both;
+  flex-wrap: wrap;
+}
+
+.info-item {
+  text-align: center;
+}
+
+.info-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--charcoal);
+  display: block;
+}
+
+.info-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-light);
+}
+
+.welcome-form {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+.field-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.field-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--cream);
+  border: 1px solid var(--sand-deep);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--charcoal);
+  outline: none;
+  transition: var(--transition);
+  border-radius: 2px;
+}
+
+.field-input:focus { border-color: var(--rose-gold); background: var(--warm-white); }
+.field-input::placeholder { color: var(--text-light); }
+.field-input.field-invalid { border-color: #c0392b; background: #fdf2f0; }
+.field-required-mark { color: #c0392b; }
+.field-error-msg {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: #c0392b;
+  margin-top: 6px;
+  display: none;
+}
+.field-error-msg.visible { display: block; }
+
+.btn-start {
+  width: 100%;
+  padding: 16px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 8px;
+  border-radius: 2px;
+}
+
+.btn-start:hover { background: var(--rose-gold); }
+
+.welcome-note {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 16px;
+  font-style: italic;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── MODULE SCREEN ── */
+.module-screen {
+  background: var(--warm-white);
+}
+
+.module-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: calc(100vh - 72px);
+}
+
+/* Sidebar */
+.module-sidebar {
+  background: var(--charcoal);
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 72px;
+  height: calc(100vh - 72px);
+}
+
+.sidebar-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 32px;
+}
+
+.sidebar-modules {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-module {
+  padding: 14px 16px;
+  border-left: 2px solid transparent;
+  transition: var(--transition);
+  cursor: default;
+}
+
+.sidebar-module.active {
+  border-left-color: var(--rose-gold);
+  background: rgba(201,169,154,0.08);
+}
+
+.sidebar-module.completed {
+  border-left-color: rgba(201,169,154,0.3);
+}
+
+.sm-number {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+.sidebar-module.active .sm-number { color: var(--rose-gold); }
+
+.sm-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(247,243,238,0.4);
+  transition: var(--transition);
+}
+
+.sidebar-module.active .sm-name,
+.sidebar-module.completed .sm-name { color: var(--cream); }
+
+.sm-check {
+  font-size: 10px;
+  color: var(--rose-gold);
+  margin-top: 2px;
+  display: none;
+}
+
+.sidebar-module.completed .sm-check { display: block; }
+
+.sidebar-progress {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.sp-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.sp-bar {
+  height: 2px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.sp-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--rose-gold), #E8C4B4);
+  border-radius: 1px;
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.sp-percent {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--cream);
+  margin-top: 8px;
+}
+
+/* Main content */
+.module-main {
+  padding: 56px 64px;
+  max-width: 780px;
+}
+
+.module-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 12px;
+}
+
+.module-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 300;
+  color: var(--charcoal);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.module-title em { font-style: italic; color: var(--rose-gold); }
+
+.module-instruction {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 48px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* Color grid */
+.color-palette {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.color-card {
+  aspect-ratio: 4/3;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.color-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  transition: var(--transition);
+}
+
+.color-card:hover { transform: scale(1.04); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+.color-card:hover::after { background: rgba(0,0,0,0.04); }
+
+.color-card.selected {
+  border-color: var(--charcoal);
+  transform: scale(1.06);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+}
+
+.color-card-check {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 24px; height: 24px;
+  background: var(--charcoal);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition);
+  font-size: 11px;
+  color: white;
+}
+
+.color-card.selected .color-card-check { opacity: 1; }
+
+.color-area-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: white;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.color-card:hover .color-area-label,
+.color-card.selected .color-area-label { opacity: 1; }
+
+/* Stand grid */
+.stand-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.stand-card {
+  padding: 32px 28px;
+  background: var(--cream);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  border-radius: 4px;
+}
+
+.stand-card:hover {
+  border-color: var(--sand-deep);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+
+.stand-card.selected {
+  border-color: var(--charcoal);
+  background: var(--warm-white);
+}
+
+.stand-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.stand-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin-bottom: 6px;
+}
+
+.stand-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.stand-check {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 22px; height: 22px;
+  background: var(--charcoal);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition);
+  font-size: 10px;
+  color: white;
+}
+
+.stand-card.selected .stand-check { opacity: 1; }
+
+/* Visual perception grid — homogenized with color-palette */
+.stand-visual-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.stand-visual-card {
+  position: relative;
+  cursor: pointer;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  aspect-ratio: 4/3;
+}
+
+/* Generic competencies */
+.generic-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 12px;
+  margin-bottom: 48px;
+}
+
+.generic-card {
+  padding: 20px 24px;
+  background: var(--cream);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-radius: 4px;
+}
+
+.generic-card:hover { border-color: var(--sand-deep); }
+.generic-card.selected { border-color: var(--charcoal); background: var(--warm-white); }
+
+.generic-checkbox {
+  width: 20px; height: 20px;
+  border: 1.5px solid var(--sand-deep);
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  font-size: 11px;
+}
+
+.generic-card.selected .generic-checkbox {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+  color: white;
+}
+
+.generic-content { flex: 1; }
+
+.generic-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin-bottom: 3px;
+}
+
+.generic-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Hierarchy */
+.hierarchy-section {
+  margin-bottom: 40px;
+}
+
+.hierarchy-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--sand);
+}
+
+.hierarchy-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.hierarchy-card {
+  padding: 24px 20px;
+  background: var(--cream);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  border-radius: 4px;
+}
+
+.hierarchy-card:hover { border-color: var(--sand-deep); transform: translateY(-2px); }
+.hierarchy-card.selected { border-color: var(--charcoal); background: var(--charcoal); }
+.hierarchy-card.selected .hc-title { color: var(--cream); }
+.hierarchy-card.selected .hc-role { color: var(--rose-gold); }
+.hierarchy-card.selected .hc-desc { color: rgba(247,243,238,0.6); }
+
+.hc-level {
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 8px;
+}
+
+.hc-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+  transition: var(--transition);
+}
+
+.hc-role {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+  transition: var(--transition);
+}
+
+.hc-desc {
+  font-size: 11px;
+  color: var(--text-light);
+  line-height: 1.6;
+  transition: var(--transition);
+}
+
+/* Navigation buttons */
+.module-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 32px;
+  border-top: 1px solid var(--sand);
+}
+
+.btn-back {
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid var(--sand-deep);
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 2px;
+}
+
+.btn-back:hover { border-color: var(--rose-gold); color: var(--rose-gold); }
+
+.btn-next {
+  padding: 14px 36px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 2px;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-next.ready { opacity: 1; pointer-events: all; }
+.btn-next.ready:hover { background: var(--rose-gold); }
+
+/* ── RESULTS SCREEN ── */
+.results-screen {
+  background: var(--cream);
+}
+
+.results-layout {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 56px 48px;
+}
+
+.results-header {
+  text-align: center;
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--sand-deep);
+}
+
+.results-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 16px;
+}
+
+.results-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 300;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+}
+
+.results-date {
+  font-size: 12px;
+  color: var(--text-light);
+  letter-spacing: 0.1em;
+}
+
+/* Profile banner */
+.profile-banner {
+  background: var(--charcoal);
+  padding: 40px 48px;
+  margin-bottom: 32px;
+  border-radius: 4px;
+}
+
+.pb-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 16px;
+}
+
+.pb-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 300;
+  color: var(--cream);
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.pb-title strong { font-weight: 500; color: var(--rose-gold); }
+
+.pb-body {
+  font-size: 14px;
+  color: rgba(247,243,238,0.65);
+  line-height: 1.8;
+}
+
+/* Results grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.result-block {
+  background: var(--warm-white);
+  padding: 32px;
+  border-radius: 4px;
+}
+
+.rb-label {
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 16px;
+}
+
+.rb-area {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin-bottom: 6px;
+}
+
+.rb-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* Alignment indicator */
+.alignment-block {
+  background: var(--warm-white);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.alignment-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.alignment-icon.aligned { background: rgba(201,169,154,0.2); }
+.alignment-icon.divergent { background: rgba(28,28,28,0.06); }
+
+.alignment-text { flex: 1; }
+
+.alignment-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+}
+
+.alignment-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Generic results */
+.generics-block {
+  background: var(--warm-white);
+  padding: 32px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.generic-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.generic-tag {
+  padding: 6px 16px;
+  background: var(--cream);
+  border: 1px solid var(--sand-deep);
+  font-size: 12px;
+  color: var(--charcoal);
+  border-radius: 2px;
+}
+
+.generic-tag.developed {
+  background: var(--charcoal);
+  color: var(--cream);
+  border-color: var(--charcoal);
+}
+
+/* Hierarchy result */
+.hierarchy-result {
+  background: var(--warm-white);
+  padding: 32px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.hr-levels {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.hr-level-badge {
+  padding: 8px 20px;
+  border: 1.5px solid var(--sand-deep);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-radius: 2px;
+}
+
+.hr-level-badge.primary-apt {
+  background: var(--charcoal);
+  color: var(--cream);
+  border-color: var(--charcoal);
+}
+
+.hr-level-badge.primary-int {
+  background: var(--rose-gold);
+  color: var(--warm-white);
+  border-color: var(--rose-gold);
+}
+
+/* Direction block */
+.direction-block {
+  background: var(--charcoal);
+  padding: 40px 48px;
+  margin-bottom: 32px;
+  border-radius: 4px;
+}
+
+.db-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 20px;
+}
+
+.db-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(17px, 2.2vw, 22px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.75;
+}
+
+/* Careers */
+.careers-block {
+  background: var(--warm-white);
+  padding: 32px;
+  margin-bottom: 32px;
+  border-radius: 4px;
+}
+
+.career-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.career-pill {
+  padding: 6px 14px;
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  font-size: 12px;
+  color: var(--charcoal);
+  border-radius: 2px;
+}
+
+/* CTA block */
+.cta-block {
+  text-align: center;
+  padding: 48px;
+  background: var(--warm-white);
+  border-radius: 4px;
+  border: 1px solid var(--sand);
+}
+
+.cta-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+}
+
+.cta-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-cta-primary {
+  padding: 14px 32px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 2px;
+}
+
+.btn-cta-primary:hover { background: var(--rose-gold); }
+
+.btn-cta-secondary {
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--charcoal);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid var(--sand-deep);
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 2px;
+}
+
+.btn-cta-secondary:hover { border-color: var(--rose-gold); color: var(--rose-gold); }
+
+/* Footer */
+.results-footer {
+  text-align: center;
+  padding-top: 32px;
+  border-top: 1px solid var(--sand);
+  margin-top: 16px;
+}
+
+.rf-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.rf-brand em { color: var(--rose-gold); font-style: italic; }
+
+.rf-note {
+  font-size: 10px;
+  color: var(--text-light);
+  letter-spacing: 0.08em;
+}
+
+/* ── FEEDBACK SCREEN ── */
+.feedback-screen {
+  background: var(--warm-white);
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 72px 24px 48px;
+}
+
+.feedback-card {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 6px;
+  padding: 48px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.feedback-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--rose-gold);
+  margin-bottom: 12px;
+}
+
+.feedback-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 300;
+  color: var(--charcoal);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.feedback-title em { font-style: italic; color: var(--rose-gold); }
+
+.feedback-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 36px;
+  line-height: 1.6;
+}
+
+.fb-question {
+  margin-bottom: 28px;
+}
+
+.fb-q-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.fb-q-required {
+  color: var(--rose-gold);
+  margin-left: 3px;
+}
+
+.fb-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fb-option {
+  padding: 8px 16px;
+  background: var(--warm-white);
+  border: 1.5px solid var(--sand-deep);
+  border-radius: 2px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.fb-option:hover { border-color: var(--rose-gold); color: var(--charcoal); }
+
+.fb-option.selected {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+  color: var(--warm-white);
+}
+
+.fb-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--warm-white);
+  border: 1.5px solid var(--sand-deep);
+  border-radius: 2px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--charcoal);
+  resize: vertical;
+  min-height: 90px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.fb-textarea:focus { border-color: var(--rose-gold); background: var(--cream); }
+.fb-textarea::placeholder { color: var(--text-light); }
+
+.fb-divider {
+  height: 1px;
+  background: var(--sand);
+  margin: 32px 0;
+}
+
+.fb-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.fb-progress-bar {
+  flex: 1;
+  height: 2px;
+  background: var(--sand);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.fb-progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--rose-gold), #E8C4B4);
+  border-radius: 1px;
+  transition: width 0.5s ease;
+}
+
+.fb-progress-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+.btn-fb-submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--charcoal);
+  color: var(--warm-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 2px;
+  opacity: 0.35;
+  pointer-events: none;
+  margin-top: 8px;
+}
+
+.btn-fb-submit.ready { opacity: 1; pointer-events: all; }
+.btn-fb-submit.ready:hover { background: var(--rose-gold); }
+
+.fb-star-option {
+  width: 100%;
+  text-align: left;
+  font-size: 13px;
+  padding: 10px 18px;
+  letter-spacing: 0.02em;
+}
+
+.fb-multi .fb-option.selected {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+  color: var(--warm-white);
+}
+
+.fb-note {
+  font-size: 11px;
+  color: var(--text-light);
+  text-align: center;
+  margin-top: 12px;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lang-bar { padding: 16px 20px; }
+  .welcome-screen { padding: 88px 24px 48px; }
+  .module-layout { grid-template-columns: 1fr; }
+  .module-sidebar { display: none; }
+  .module-main { padding: 32px 24px; }
+  .color-palette { grid-template-columns: repeat(2, 1fr); }
+  .stand-visual-grid { grid-template-columns: repeat(2, 1fr); }
+  .hierarchy-three-col { grid-template-columns: 1fr !important; }
+  .stand-grid { grid-template-columns: 1fr; }
+  .hierarchy-options { grid-template-columns: 1fr; }
+  .results-layout { padding: 32px 24px; }
+  .results-grid { grid-template-columns: 1fr; }
+  .profile-banner { padding: 28px 24px; }
+  .direction-block { padding: 28px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LANGUAGE BAR -->
+<div class="lang-bar">
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="brand-mark">P<em>Y</em>LA</div>
+    <div style="width:1px;height:16px;background:var(--sand-deep);opacity:0.6;"></div>
+    <div style="font-size:11px;letter-spacing:0.12em;color:var(--text-light);font-family:'DM Sans',sans-serif;">Projection & Learning Analysis</div>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('es')">ES</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: WELCOME
+═══════════════════════════════════════ -->
+<div class="screen welcome-screen active" id="screen-welcome">
+  <div class="welcome-orb orb-1"></div>
+  <div class="welcome-orb orb-2"></div>
+
+  <h1 class="welcome-title">
+    <em><span data-en="Cognitive Observation" data-es="Observación Cognitiva">Cognitive Observation</span></em><br>
+    <span data-en="& Functional Projection Tool" data-es="& Herramienta de Proyección Funcional">& Functional Projection Tool</span>
+  </h1>
+
+  <p class="welcome-sub" data-en="A visual, intuitive experience designed to facilitate clarity, reveal potential, and support individual and organizational direction." data-es="Una experiencia visual e intuitiva diseñada para facilitar claridad, revelar potencial y apoyar la dirección individual y organizacional.">
+    A visual, intuitive experience designed to facilitate clarity, reveal potential, and support individual and organizational direction.
+  </p>
+
+  <div class="divider-line"></div>
+
+  <!-- Tagline arrows -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:40px;">
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--charcoal);" data-en="Clarity" data-es="Claridad">Clarity</span>
+    <span style="color:var(--rose-gold);font-size:14px;">→</span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--charcoal);" data-en="Potential" data-es="Potencial">Potential</span>
+    <span style="color:var(--rose-gold);font-size:14px;">→</span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--charcoal);" data-en="Performance" data-es="Desempeño">Performance</span>
+    <span style="color:var(--rose-gold);font-size:14px;">→</span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--charcoal);" data-en="Direction" data-es="Dirección">Direction</span>
+  </div>
+
+  <div class="welcome-info">
+    <div class="info-item">
+      <span class="info-value">4</span>
+      <span class="info-label" data-en="Phases" data-es="Fases">Phases</span>
+    </div>
+    <div class="info-item">
+      <span class="info-value">10'</span>
+      <span class="info-label" data-en="Duration" data-es="Duración">Duration</span>
+    </div>
+    <div class="info-item">
+      <span class="info-value">100%</span>
+      <span class="info-label" data-en="Visual" data-es="Visual">Visual</span>
+    </div>
+  </div>
+
+  <div class="welcome-form">
+    <div class="field-group">
+      <label class="field-label" data-en="Full Name" data-es="Nombre Completo">Full Name</label><span class="field-required-mark"> *</span>
+      <input class="field-input" type="text" id="userName" placeholder="Your name" data-ph-en="Your name" data-ph-es="Tu nombre">
+    </div>
+    <div class="field-group">
+      <label class="field-label" data-en="Email" data-es="Correo electrónico">Email</label><span class="field-required-mark"> *</span>
+      <input class="field-input" type="email" id="userEmail" placeholder="your@email.com" data-ph-en="your@email.com" data-ph-es="tu@correo.com">
+    </div>
+    <div class="field-group">
+      <label class="field-label" data-en="Current Role / Position" data-es="Rol Actual / Cargo">Current Role / Position</label><span class="field-required-mark"> *</span>
+      <input class="field-input" type="text" id="userRole" placeholder="e.g. HR Manager, Team Lead, Grade 11..." data-ph-en="e.g. HR Manager, Team Lead, Grade 11..." data-ph-es="Ej. Gerente de RRHH, Líder de Equipo, Grado 11...">
+      <p class="field-error-msg" id="roleErrorMsg" data-en="Please enter your current role or position to continue." data-es="Por favor ingresa tu cargo o posición actual para continuar.">Please enter your current role or position to continue.</p>
+    </div>
+    <button class="btn-start" onclick="startTest()" data-en="BEGIN" data-es="COMENZAR">BEGIN</button>
+    <p class="welcome-note" data-en="No right or wrong answers. Respond instinctively." data-es="No hay respuestas incorrectas. Responde de forma instintiva.">No right or wrong answers. Respond instinctively.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: MODULE 1 — COLOR SPECTRUM
+═══════════════════════════════════════ -->
+<div class="screen module-screen" id="screen-m1">
+  <div class="module-layout">
+    <div class="module-sidebar">
+      <p class="sidebar-label" data-en="Your progress" data-es="Tu progreso">Your progress</p>
+      <div class="sidebar-modules" id="sidebar-modules"></div>
+      <div class="sidebar-progress">
+        <p class="sp-label" data-en="Completion" data-es="Completado">Completion</p>
+        <div class="sp-bar"><div class="sp-fill" id="progressFill" style="width:20%"></div></div>
+        <p class="sp-percent" id="progressPercent">20%</p>
+      </div>
+    </div>
+
+    <div class="module-main">
+      <p class="module-eyebrow" data-en="Phase 01 · Color Spectrum" data-es="Fase 01 · Espectro de Color">Phase 01 · Color Spectrum</p>
+      <h2 class="module-title"><em><span data-en="Which of these" data-es="¿Cuál de estos">Which of these</span></em> <span data-en="catches your eye?" data-es="capta tu atención?">catches your eye?</span></h2>
+      <p class="module-instruction" data-en="Of the 6 color spectrums below, which one attracts you most? Don't overthink it." data-es="De los 6 espectros de color a continuación, ¿cuál te llama más la atención? No lo pienses mucho.">
+        Of the 6 color spectrums below, which one attracts you most? Don't overthink it.
+      </p>
+
+      <div class="color-palette" id="colorGrid">
+        <!-- Injected by JS -->
+      </div>
+
+      <div class="module-nav">
+        <div></div>
+        <button class="btn-next" id="btn-m1" onclick="goToModule(2)" data-en="CONTINUE" data-es="CONTINUAR">CONTINUE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: MODULE 2 — VOCATIONAL FIELD
+═══════════════════════════════════════ -->
+<div class="screen module-screen" id="screen-m2">
+  <div class="module-layout">
+    <div class="module-sidebar">
+      <p class="sidebar-label" data-en="Your progress" data-es="Tu progreso">Your progress</p>
+      <div class="sidebar-modules" id="sidebar-modules-2"></div>
+      <div class="sidebar-progress">
+        <p class="sp-label" data-en="Completion" data-es="Completado">Completion</p>
+        <div class="sp-bar"><div class="sp-fill" style="width:40%"></div></div>
+        <p class="sp-percent">40%</p>
+      </div>
+    </div>
+
+    <div class="module-main">
+      <p class="module-eyebrow" data-en="Phase 02 · Visual Perception" data-es="Fase 02 · Percepción Visual">Phase 02 · Visual Perception</p>
+      <h2 class="module-title"><em><span data-en="Which of these images" data-es="¿Cuál de estas imágenes">Which of these images</span></em> <span data-en="do you like the most?" data-es="te gusta más?">do you like the most?</span></h2>
+      <p class="module-instruction" data-en="There are no incorrect answers. Choose the one you feel most drawn to." data-es="No hay respuestas incorrectas. Elige la que más te atraiga.">
+        There are no incorrect answers. Choose the one you feel most drawn to.
+      </p>
+
+      <div class="stand-grid" id="standGrid"></div>
+
+      <div class="module-nav">
+        <button class="btn-back" onclick="goToModule(1)" data-en="BACK" data-es="ATRÁS">BACK</button>
+        <button class="btn-next" id="btn-m2" onclick="goToModule(3)" data-en="CONTINUE" data-es="CONTINUAR">CONTINUE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 4: MODULE 3 — CORE COMPETENCIES
+═══════════════════════════════════════ -->
+<div class="screen module-screen" id="screen-m3">
+  <div class="module-layout">
+    <div class="module-sidebar">
+      <p class="sidebar-label" data-en="Your progress" data-es="Tu progreso">Your progress</p>
+      <div class="sidebar-modules" id="sidebar-modules-3"></div>
+      <div class="sidebar-progress">
+        <p class="sp-label" data-en="Completion" data-es="Completado">Completion</p>
+        <div class="sp-bar"><div class="sp-fill" style="width:60%"></div></div>
+        <p class="sp-percent">60%</p>
+      </div>
+    </div>
+
+    <div class="module-main">
+      <p class="module-eyebrow" data-en="Phase 03 · Visual Selection" data-es="Fase 03 · Selección Visual">Phase 03 · Visual Selection</p>
+      <h2 class="module-title"><em><span data-en="Which images" data-es="¿Qué imágenes">Which images</span></em> <span data-en="attract you most?" data-es="te atraen más?">attract you most?</span></h2>
+      <p class="module-instruction" data-en="Choose the option or options you like most." data-es="Elige la o las opciones que más te gusten.">
+        Choose the option or options you like most.
+      </p>
+
+      <div class="generic-grid" id="genericGrid"></div>
+
+      <div class="module-nav">
+        <button class="btn-back" onclick="goToModule(2)" data-en="BACK" data-es="ATRÁS">BACK</button>
+        <button class="btn-next ready" id="btn-m3" onclick="goToModule(4)" data-en="CONTINUE" data-es="CONTINUAR">CONTINUE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 5: MODULE 4 — LEADERSHIP MODE
+═══════════════════════════════════════ -->
+<div class="screen module-screen" id="screen-m4">
+  <div class="module-layout">
+    <div class="module-sidebar">
+      <p class="sidebar-label" data-en="Your progress" data-es="Tu progreso">Your progress</p>
+      <div class="sidebar-modules" id="sidebar-modules-4"></div>
+      <div class="sidebar-progress">
+        <p class="sp-label" data-en="Completion" data-es="Completado">Completion</p>
+        <div class="sp-bar"><div class="sp-fill" style="width:80%"></div></div>
+        <p class="sp-percent">80%</p>
+      </div>
+    </div>
+
+    <div class="module-main">
+      <p class="module-eyebrow" data-en="Phase 04 · Situational Perception" data-es="Fase 04 · Percepción Situacional">Phase 04 · Situational Perception</p>
+      <h2 class="module-title"><span data-en="Two final" data-es="Dos últimas">Two final</span> <em><span data-en="observations." data-es="observaciones.">observations.</span></em></h2>
+      <p class="module-instruction" data-en="For each group, choose the image that resonates with you most." data-es="Para cada grupo, elige la imagen que más resuene contigo.">
+        For each group, choose the image that resonates with you most.
+      </p>
+
+      <!-- Aptitude -->
+      <div class="hierarchy-section">
+        <p class="hierarchy-label" data-en="GROUP A — Which one inspires you?" data-es="GRUPO A — ¿Cuál te inspira?">GROUP A — Which one inspires you?</p>
+        <div class="hierarchy-options" id="hierarchyAptGrid"></div>
+      </div>
+
+      <!-- Interest -->
+      <div class="hierarchy-section" style="margin-top:32px;">
+        <p class="hierarchy-label" data-en="GROUP B — Which one attracts you most?" data-es="GRUPO B — ¿Cuál te atrae más?">GROUP B — Which one attracts you most?</p>
+        <div class="hierarchy-options" id="hierarchyIntGrid"></div>
+      </div>
+
+      <div class="module-nav">
+        <button class="btn-back" onclick="goToModule(3)" data-en="BACK" data-es="ATRÁS">BACK</button>
+        <button class="btn-next" id="btn-m4" onclick="generateResults()" data-en="VIEW MY PROFILE" data-es="VER MI PERFIL">VIEW MY PROFILE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 6: RESULTS
+═══════════════════════════════════════ -->
+<div class="screen results-screen" id="screen-results">
+  <div class="results-layout" id="resultsContainer"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const lang = { current: 'en' };
+
+const areas = {
+  en: [
+    { id: 1, name: "Exact Sciences & Business", short: "Business", color: "#2C4A3E", desc: "Administration, Finance, Commerce, Marketing", careers: ["Business Administration", "Finance & Banking", "Strategic Marketing", "International Commerce", "Accounting & Auditing", "Human Resources", "E-Commerce", "Financial Management", "Entrepreneurship", "Public Administration", "Hospitality & Tourism Management", "Sales & Business Development", "Supply Chain Management", "Corporate Communications"] },
+    { id: 2, name: "Social Sciences & Humanities", short: "Social Sciences", color: "#4A3A6B", desc: "Psychology, Law, Education, Communication, Social Work", careers: ["Psychology", "Law & Legal Studies", "Journalism & Digital Media", "Education & Teaching", "Social Work", "International Relations & Diplomacy", "Political Science", "Sociology & Anthropology", "Public Relations", "Communication & Advertising", "Educational Administration", "Counseling & Family Therapy", "Cultural Studies", "Theology"] },
+    { id: 3, name: "Arts & Design", short: "Arts", color: "#7A4F2C", desc: "Graphic Design, Architecture, Fine Arts, Communication", careers: ["Graphic Design", "Industrial Design", "Interior Design & Decoration", "Fashion Design", "Fine Arts — Painting, Sculpture", "Photography & Digital Photography", "Audiovisual Production", "Film & Video", "Theater & Performing Arts", "Architecture", "Landscape Design", "Advertising Design", "Radio & TV Production", "Jewelry Design", "Modeling & Styling"] },
+    { id: 4, name: "Health & Agricultural Sciences", short: "Health Sciences", color: "#3D5C3A", desc: "Medicine, Nutrition, Biology, Veterinary, Environmental", careers: ["Medicine", "Nursing", "Nutrition & Dietetics", "Biology & Biochemistry", "Veterinary Medicine", "Environmental Sciences", "Biotechnology", "Pharmacy", "Dentistry", "Physical Therapy & Rehabilitation", "Gastronomy & Culinary Arts", "Sports & Physical Culture", "Agronomy & Horticulture", "Marine Biology", "Optometry", "Public Health"] },
+    { id: 5, name: "Engineering & Technology", short: "Engineering", color: "#1A3A5C", desc: "Systems, Electronics, Architecture, Robotics, Mathematics", careers: ["Systems Engineering", "Electronic Engineering", "Mechatronics & Robotics", "Computer Science & Software Development", "Applied Mathematics & Statistics", "Telecommunications", "Industrial Engineering", "Architecture", "Mechanical Engineering", "Geosciences", "Automotive Engineering", "Data Science & AI", "Cybersecurity", "Aerospace Engineering", "Environmental Biotechnology"] },
+    { id: 6, name: "Defense & Security", short: "Defense", color: "#3D3D3D", desc: "Military, Aviation, Criminology, Public Safety", careers: ["Military Sciences", "Commercial & Transport Aviation", "Helicopter Piloting", "Criminology & Forensic Science", "Public Safety & Law Enforcement", "Air Traffic Control", "Ballistics & Forensic Investigation", "Crime Scene Investigation", "Emergency Management", "Intelligence & National Security", "Border Protection", "Accident Investigation"] }
+  ],
+  es: [
+    { id: 1, name: "Ciencias Exactas y Administrativas", short: "Administrativas", color: "#2C4A3E", desc: "Administración, Finanzas, Comercio, Marketing", careers: ["Administración de Empresas", "Finanzas y Banca", "Marketing Estratégico", "Comercio Exterior", "Contabilidad y Auditoría", "Recursos Humanos", "Comercio Electrónico", "Gestión Financiera", "Emprendimiento", "Gestión Pública", "Administración Hotelera y Turística", "Ventas y Desarrollo de Negocios", "Gestión de Cadena de Suministro", "Comunicaciones Corporativas"] },
+    { id: 2, name: "Ciencias Sociales y Humanas", short: "Ciencias Sociales", color: "#4A3A6B", desc: "Psicología, Derecho, Educación, Comunicación, Trabajo Social", careers: ["Psicología", "Derecho", "Periodismo y Medios Digitales", "Educación y Docencia", "Trabajo Social", "Relaciones Internacionales y Diplomacia", "Ciencias Políticas", "Sociología y Antropología", "Relaciones Públicas", "Comunicación y Publicidad", "Administración Educativa", "Consejería y Terapia Familiar", "Estudios Culturales", "Teología"] },
+    { id: 3, name: "Artes y Diseño", short: "Artes", color: "#7A4F2C", desc: "Diseño Gráfico, Arquitectura, Artes Plásticas, Comunicación", careers: ["Diseño Gráfico", "Diseño Industrial", "Diseño y Decoración de Interiores", "Diseño de Modas", "Artes Plásticas — Pintura, Escultura", "Fotografía y Fotografía Digital", "Producción Audiovisual", "Cine y Video", "Teatro y Artes Escénicas", "Arquitectura", "Diseño de Paisaje", "Diseño Publicitario", "Producción en Radio y TV", "Diseño de Joyas", "Modelaje y Estilismo"] },
+    { id: 4, name: "Ciencias de la Salud y Agrarias", short: "Salud", color: "#3D5C3A", desc: "Medicina, Nutrición, Biología, Veterinaria, Ambiental", careers: ["Medicina", "Enfermería", "Nutrición y Dietética", "Biología y Bioquímica", "Veterinaria", "Ciencias Ambientales", "Biotecnología", "Farmacia", "Odontología", "Fisioterapia y Rehabilitación", "Gastronomía y Artes Culinarias", "Cultura Física y Deportes", "Agronomía y Horticultura", "Biología Marina", "Optometría", "Salud Pública"] },
+    { id: 5, name: "Ingeniería y Computación", short: "Ingeniería", color: "#1A3A5C", desc: "Sistemas, Electrónica, Arquitectura, Robótica, Matemáticas", careers: ["Ing. de Sistemas", "Ing. Electrónica", "Mecatrónica y Robótica", "Ciencias de la Computación y Desarrollo de Software", "Matemáticas y Estadística Aplicada", "Telecomunicaciones", "Ing. Industrial", "Arquitectura", "Ing. Mecánica", "Geociencias", "Ing. Automotriz", "Ciencia de Datos e IA", "Ciberseguridad", "Ing. Aeroespacial", "Biotecnología Ambiental"] },
+    { id: 6, name: "Defensa y Seguridad", short: "Defensa", color: "#3D3D3D", desc: "Militar, Aviación, Criminología, Seguridad Ciudadana", careers: ["Ciencias Militares", "Aviación Comercial y de Transporte", "Pilotaje de Helicópteros", "Criminología y Ciencias Forenses", "Seguridad Ciudadana y Policía", "Control de Tráfico Aéreo", "Balística e Investigación Forense", "Investigación de Escenas del Crimen", "Gestión de Emergencias", "Inteligencia y Seguridad Nacional", "Protección Fronteriza", "Investigación de Accidentes"] }
+  ]
+};
+
+// Personality profiles per area — for Structural Profile block
+const personalities = {
+  en: [
+    { id: 1, traits: ["extroverted", "adventurous", "creative", "energetic", "risk-taking", "open-minded", "efficient", "objective", "perfectionist", "practical", "decisive", "self-assured", "realistic"],
+      narrative: "People with this cognitive profile tend to be extroverted yet measured — they bring energy and openness to every environment while maintaining a practical, results-driven focus. They are decisive and self-assured, comfortable taking calculated risks, and have a natural ability to turn ideas into concrete action. Their efficiency and objectivity make them strong performers in structured yet dynamic contexts." },
+    { id: 2, traits: ["empathetic", "passionate", "analytical", "organized", "assertive", "enthusiastic", "mediating", "emotionally intelligent"],
+      narrative: "This profile reflects someone with a deep capacity for human understanding — empathetic, passionate, and emotionally intelligent. They navigate interpersonal dynamics with ease, bringing both analytical clarity and genuine enthusiasm to the environments they inhabit. Their natural mediation skills and assertiveness make them powerful connectors between people, ideas, and systems." },
+    { id: 3, traits: ["creative", "introspective", "methodical", "critical", "questioning", "intuitive", "risk-taking", "impulsive"],
+      narrative: "Creativity is not just a skill for this profile — it is a natural mode of processing the world. They are introspective thinkers who approach challenges with an intuitive, questioning mind. Their methodical attention to aesthetics and detail, combined with a willingness to take bold risks, positions them as original voices in any environment that values innovation and expression." },
+    { id: 4, traits: ["observant", "analytical", "detail-oriented", "organized", "prudent", "empathetic", "caring", "environmentally aware"],
+      narrative: "This profile is defined by careful observation and analytical precision. They notice what others overlook, approach problems with patience and thoroughness, and bring a deep sense of responsibility to their work. Their combination of empathy and methodical thinking makes them invaluable in contexts that require both human sensitivity and rigorous attention to detail." },
+    { id: 5, traits: ["methodical", "critical", "sequential thinker", "objective", "structured", "disciplined", "focused", "logical"],
+      narrative: "Structure and logic are the natural language of this profile. They think sequentially, operate with precision, and bring discipline and objectivity to every challenge they face. They thrive in environments where complexity is welcomed and where analytical rigor is a competitive advantage. Their focused, systematic approach consistently transforms abstract problems into elegant solutions." },
+    { id: 6, traits: ["disciplined", "tenacious", "conservative", "composed", "linear", "resilient", "structured", "trustworthy"],
+      narrative: "This profile is built on discipline, tenacity, and composure. They operate with a clear sense of structure and responsibility, bringing consistency and reliability to every context. Their linear thinking and resilience under pressure make them exceptional performers in high-stakes environments where precision, order, and trust are non-negotiable." }
+  ],
+  es: [
+    { id: 1, traits: ["extrovertida", "aventurera", "creativa", "enérgica", "arriesgada", "mente abierta", "eficiente", "objetiva", "perfeccionista", "práctica", "decidida", "segura de sí", "realista"],
+      narrative: "Las personas con este perfil cognitivo tienden a ser extrovertidas pero prudentes — llevan energía y apertura a cada entorno mientras mantienen un enfoque práctico orientado a resultados. Son decididas y seguras de sí mismas, cómodas tomando riesgos calculados, con una habilidad natural para convertir ideas en acción concreta. Su eficiencia y objetividad las hacen sólidas en contextos dinámicos y estructurados." },
+    { id: 2, traits: ["empática", "apasionada", "analítica", "organizada", "asertiva", "entusiasta", "mediadora", "inteligencia emocional"],
+      narrative: "Este perfil refleja una profunda capacidad de comprensión humana — empático, apasionado e inteligente emocionalmente. Navega dinámicas interpersonales con facilidad, aportando claridad analítica y entusiasmo genuino. Sus habilidades naturales de mediación y asertividad lo convierten en un conector poderoso entre personas, ideas y sistemas." },
+    { id: 3, traits: ["creativa", "introspectiva", "metódica", "crítica", "cuestionadora", "intuitiva", "arriesgada", "impulsiva"],
+      narrative: "La creatividad no es solo una habilidad en este perfil — es un modo natural de procesar el mundo. Son pensadores introspectivos que abordan los desafíos con una mente intuitiva y cuestionadora. Su atención metódica al detalle estético, combinada con la disposición a tomar riesgos audaces, los posiciona como voces originales en cualquier entorno que valore la innovación y la expresión." },
+    { id: 4, traits: ["observador", "analítico", "detallista", "organizado", "prudente", "empático", "cuidadoso", "consciente del entorno"],
+      narrative: "Este perfil se define por la observación cuidadosa y la precisión analítica. Notan lo que otros pasan por alto, abordan los problemas con paciencia y rigor, y aportan un profundo sentido de responsabilidad a su trabajo. Su combinación de empatía y pensamiento metódico los hace invaluables en contextos que requieren sensibilidad humana y atención rigurosa al detalle." },
+    { id: 5, traits: ["metódico", "crítico", "pensador secuencial", "objetivo", "estructurado", "disciplinado", "enfocado", "lógico"],
+      narrative: "La estructura y la lógica son el lenguaje natural de este perfil. Piensan de forma secuencial, operan con precisión y aportan disciplina y objetividad a cada desafío. Prosperan en entornos donde la complejidad es bienvenida y el rigor analítico es una ventaja competitiva. Su enfoque sistemático transforma consistentemente problemas abstractos en soluciones elegantes." },
+    { id: 6, traits: ["disciplinado", "tenaz", "conservador", "tranquilo", "lineal", "resiliente", "estructurado", "confiable"],
+      narrative: "Este perfil se construye sobre disciplina, tenacidad y compostura. Opera con un claro sentido de estructura y responsabilidad, aportando consistencia y confiabilidad a cada contexto. Su pensamiento lineal y resiliencia bajo presión los convierte en ejecutores excepcionales en entornos de alto riesgo donde la precisión, el orden y la confianza son innegociables." }
+  ]
+};
+
+const generics = {
+  en: [
+    { id: "reading", name: "Reading & Writing", desc: "Strong communication, writing clarity, and language comprehension" },
+    { id: "math", name: "Mathematics & Logic", desc: "Quantitative reasoning, analytical thinking, and problem-solving" },
+    { id: "civic", name: "Civic Competencies", desc: "Social awareness, collaboration, and ethical judgment" },
+    { id: "adapt", name: "Adaptability", desc: "Flexibility, resilience, and comfort with change and uncertainty" },
+    { id: "respect", name: "Respect & Tolerance", desc: "Empathy, diversity appreciation, and interpersonal harmony" }
+  ],
+  es: [
+    { id: "reading", name: "Lectoescritura", desc: "Comunicación fuerte, claridad de escritura y comprensión lingüística" },
+    { id: "math", name: "Matemáticas y Lógica", desc: "Razonamiento cuantitativo, pensamiento analítico y resolución de problemas" },
+    { id: "civic", name: "Competencias Cívicas", desc: "Conciencia social, colaboración y juicio ético" },
+    { id: "adapt", name: "Adaptabilidad", desc: "Flexibilidad, resiliencia y comodidad con el cambio y la incertidumbre" },
+    { id: "respect", name: "Respeto y Tolerancia", desc: "Empatía, apreciación de la diversidad y armonía interpersonal" }
+  ]
+};
+
+const hierarchy = {
+  en: [
+    { id: "strategic", level: "Level 01", name: "Strategic", role: "President · Director · CEO", desc: "Vision setting, direction, long-term thinking and organizational leadership" },
+    { id: "tactical", level: "Level 02", name: "Tactical", role: "Coordinator · Manager · Administrator", desc: "Translating vision into action, team coordination and operational planning" },
+    { id: "operational", level: "Level 03", name: "Operational", role: "Specialist · Analyst · Executor", desc: "Precise execution, technical expertise and hands-on delivery" }
+  ],
+  es: [
+    { id: "strategic", level: "Nivel 01", name: "Estratégico", role: "Presidente · Director · CEO", desc: "Visión, dirección, pensamiento a largo plazo y liderazgo organizacional" },
+    { id: "tactical", level: "Nivel 02", name: "Táctico", role: "Coordinador · Gerente · Administrador", desc: "Traducir la visión en acción, coordinación de equipos y planeación operativa" },
+    { id: "operational", level: "Nivel 03", name: "Operativo", role: "Especialista · Analista · Ejecutor", desc: "Ejecución precisa, expertise técnico y entrega práctica" }
+  ]
+};
+
+const modules_data = {
+  en: ["Color Spectrum", "Visual Perception", "Self Perception", "Situational Perception"],
+  es: ["Espectro de Color", "Percepción Visual", "Autopercepción", "Percepción Situacional"]
+};
+
+// Hierarchy SVGs — evocative premium images, no text descriptions
+// Group A (Aptitude): EA=strategic blocks, TA=coordination dashboard, OA=precision boots
+// Group B (Interest): EI=leader figure, TI=idea lightbulb, OI=observing eye
+const hierarchySVGs = {
+  apt: [
+    // EA — Strategic: wooden blocks being arranged from above (authority/structure)
+    `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs><linearGradient id="hA1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1C2A3A"/><stop offset="100%" style="stop-color:#2C3E50"/></linearGradient></defs>
+      <rect width="280" height="200" fill="url(#hA1)"/>
+      <!-- Hand from above placing block -->
+      <rect x="118" y="10" width="44" height="14" rx="3" fill="#C9A99A" opacity="0.7"/>
+      <rect x="124" y="24" width="32" height="28" rx="2" fill="#C9A99A" opacity="0.6"/>
+      <!-- Top block being placed -->
+      <rect x="100" y="62" width="80" height="28" rx="3" fill="#D4A843" opacity="0.95"/>
+      <rect x="104" y="66" width="72" height="20" rx="2" fill="#D4A843" opacity="0.5"/>
+      <!-- Second level blocks -->
+      <rect x="60" y="98" width="70" height="26" rx="3" fill="#4A7FA5" opacity="0.9"/>
+      <rect x="150" y="98" width="70" height="26" rx="3" fill="#4A7FA5" opacity="0.9"/>
+      <!-- Third level blocks -->
+      <rect x="30" y="132" width="55" height="24" rx="3" fill="#7A8A9A" opacity="0.7"/>
+      <rect x="93" y="132" width="55" height="24" rx="3" fill="#7A8A9A" opacity="0.7"/>
+      <rect x="156" y="132" width="55" height="24" rx="3" fill="#7A8A9A" opacity="0.7"/>
+      <!-- Lines connecting -->
+      <line x1="140" y1="90" x2="95" y2="98" stroke="#D4A843" stroke-width="1" opacity="0.4"/>
+      <line x1="140" y1="90" x2="185" y2="98" stroke="#D4A843" stroke-width="1" opacity="0.4"/>
+      <!-- Glow -->
+      <circle cx="140" cy="76" r="50" fill="#D4A843" opacity="0.04"/>
+    </svg>`,
+    // TA — Tactical: coordination dashboard/screens
+    `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs><linearGradient id="hA2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0A1828"/><stop offset="100%" style="stop-color:#1A2A3A"/></linearGradient></defs>
+      <rect width="280" height="200" fill="url(#hA2)"/>
+      <!-- Main dashboard screen -->
+      <rect x="30" y="30" width="220" height="120" rx="4" fill="#0A1020" stroke="#2A4A6A" stroke-width="1.5" opacity="0.95"/>
+      <!-- Grid layout inside -->
+      <rect x="38" y="38" width="95" height="50" rx="2" fill="#0F1E30" stroke="#1A3A5A" stroke-width="1" opacity="0.8"/>
+      <rect x="141" y="38" width="101" height="50" rx="2" fill="#0F1E30" stroke="#1A3A5A" stroke-width="1" opacity="0.8"/>
+      <rect x="38" y="95" width="204" height="47" rx="2" fill="#0F1E30" stroke="#1A3A5A" stroke-width="1" opacity="0.8"/>
+      <!-- Chart bars top left -->
+      <rect x="46" y="68" width="8" height="14" rx="1" fill="#4A9ACA" opacity="0.9"/>
+      <rect x="58" y="58" width="8" height="24" rx="1" fill="#4A9ACA" opacity="0.9"/>
+      <rect x="70" y="63" width="8" height="19" rx="1" fill="#D4A843" opacity="0.9"/>
+      <rect x="82" y="54" width="8" height="28" rx="1" fill="#4A9ACA" opacity="0.7"/>
+      <rect x="94" y="60" width="8" height="22" rx="1" fill="#C9A99A" opacity="0.8"/>
+      <!-- Metrics top right -->
+      <rect x="149" y="46" width="40" height="6" rx="1" fill="#4ACA8A" opacity="0.6"/>
+      <rect x="149" y="57" width="60" height="4" rx="1" fill="#4A9ACA" opacity="0.4"/>
+      <rect x="149" y="66" width="50" height="4" rx="1" fill="#4A9ACA" opacity="0.3"/>
+      <rect x="149" y="75" width="35" height="4" rx="1" fill="#D4A843" opacity="0.5"/>
+      <!-- Timeline bottom -->
+      <line x1="46" y1="118" x2="234" y2="118" stroke="#2A4A6A" stroke-width="1" opacity="0.5"/>
+      <circle cx="80" cy="118" r="3" fill="#4A9ACA" opacity="0.8"/>
+      <circle cx="120" cy="118" r="3" fill="#D4A843" opacity="0.8"/>
+      <circle cx="160" cy="118" r="3" fill="#4ACA8A" opacity="0.8"/>
+      <circle cx="200" cy="118" r="3" fill="#4A9ACA" opacity="0.6"/>
+      <line x1="80" y1="115" x2="120" y2="115" stroke="#4A9ACA" stroke-width="1" opacity="0.4"/>
+      <line x1="120" y1="115" x2="160" y2="115" stroke="#D4A843" stroke-width="1" opacity="0.4"/>
+      <line x1="160" y1="115" x2="200" y2="115" stroke="#4ACA8A" stroke-width="1" opacity="0.4"/>
+      <!-- Status dots below screen -->
+      <circle cx="100" cy="162" r="4" fill="#4ACA8A" opacity="0.7"/>
+      <circle cx="116" cy="162" r="4" fill="#D4A843" opacity="0.5"/>
+      <circle cx="132" cy="162" r="4" fill="#4A9ACA" opacity="0.4"/>
+      <circle cx="148" cy="162" r="4" fill="#CA4A2A" opacity="0.4"/>
+      <circle cx="164" cy="162" r="4" fill="#4ACA8A" opacity="0.6"/>
+    </svg>`,
+    // OA — Operational: precision work boots on ground
+    `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs><linearGradient id="hA3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1A0E08"/><stop offset="100%" style="stop-color:#2A1A10"/></linearGradient></defs>
+      <rect width="280" height="200" fill="url(#hA3)"/>
+      <!-- Ground line -->
+      <line x1="0" y1="165" x2="280" y2="165" stroke="#6A4A2A" stroke-width="1.5" opacity="0.5"/>
+      <!-- Left boot -->
+      <path d="M55 80 L55 155 Q55 165 75 165 L125 165 Q140 165 140 155 L140 130 Q145 115 155 110 L155 80 Z" fill="#C4724A" opacity="0.95"/>
+      <path d="M60 80 L60 152 Q60 162 78 162 L125 162 Q136 162 137 153 L137 130 Q142 116 152 111 L152 83 Z" fill="#A85A3A" opacity="0.6"/>
+      <!-- Boot laces -->
+      <line x1="75" y1="95" x2="138" y2="95" stroke="#F0EDE8" stroke-width="2" opacity="0.7"/>
+      <line x1="75" y1="108" x2="138" y2="108" stroke="#F0EDE8" stroke-width="2" opacity="0.6"/>
+      <line x1="75" y1="121" x2="138" y2="121" stroke="#F0EDE8" stroke-width="2" opacity="0.5"/>
+      <!-- Right boot (partially behind) -->
+      <path d="M145 88 L145 155 Q145 165 165 165 L210 165 Q225 165 225 155 L225 130 Q230 115 240 110 L240 88 Z" fill="#C4724A" opacity="0.8"/>
+      <path d="M150 88 L150 152 Q150 162 168 162 L208 162 Q220 162 221 153 L221 130 Q226 116 236 111 L236 91 Z" fill="#A85A3A" opacity="0.5"/>
+      <line x1="162" y1="103" x2="222" y2="103" stroke="#F0EDE8" stroke-width="1.5" opacity="0.5"/>
+      <line x1="162" y1="116" x2="222" y2="116" stroke="#F0EDE8" stroke-width="1.5" opacity="0.4"/>
+      <!-- Ground shadow -->
+      <ellipse cx="100" cy="168" rx="55" ry="6" fill="#000" opacity="0.3"/>
+      <ellipse cx="190" cy="168" rx="45" ry="5" fill="#000" opacity="0.2"/>
+      <!-- Subtle spotlight -->
+      <circle cx="140" cy="120" r="80" fill="#C4724A" opacity="0.04"/>
+    </svg>`
+  ],
+  int: [
+    // EI — Strategic interest: leader figure standing on elevated platform
+    `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs><linearGradient id="hB1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0A0F1A"/><stop offset="100%" style="stop-color:#1A2030"/></linearGradient></defs>
+      <rect width="280" height="200" fill="url(#hB1)"/>
+      <!-- Elevated platform -->
+      <rect x="80" y="145" width="120" height="20" rx="3" fill="#D4A843" opacity="0.8"/>
+      <rect x="90" y="165" width="100" height="12" rx="2" fill="#C49030" opacity="0.6"/>
+      <rect x="100" y="177" width="80" height="10" rx="2" fill="#B47820" opacity="0.4"/>
+      <!-- Main figure standing tall -->
+      <circle cx="140" cy="68" r="20" fill="#C9A99A" opacity="0.9"/>
+      <!-- Body -->
+      <rect x="122" y="88" width="36" height="55" rx="8" fill="#C9A99A" opacity="0.85"/>
+      <!-- Arms extended (confident pose) -->
+      <rect x="90" y="92" width="34" height="10" rx="5" fill="#C9A99A" opacity="0.7" transform="rotate(-15 107 97)"/>
+      <rect x="156" y="92" width="34" height="10" rx="5" fill="#C9A99A" opacity="0.7" transform="rotate(15 173 97)"/>
+      <!-- Legs -->
+      <rect x="126" y="140" width="14" height="8" rx="3" fill="#C9A99A" opacity="0.8"/>
+      <rect x="140" y="140" width="14" height="8" rx="3" fill="#C9A99A" opacity="0.8"/>
+      <!-- Spotlight from above -->
+      <polygon points="140,0 80,145 200,145" fill="#D4A843" opacity="0.04"/>
+      <polygon points="140,0 100,145 180,145" fill="#D4A843" opacity="0.05"/>
+      <!-- Small figures below looking up -->
+      <circle cx="50" cy="178" r="8" fill="#4A5A6A" opacity="0.5"/>
+      <rect x="44" y="186" width="12" height="14" rx="4" fill="#4A5A6A" opacity="0.4"/>
+      <circle cx="230" cy="178" r="8" fill="#4A5A6A" opacity="0.5"/>
+      <rect x="224" y="186" width="12" height="14" rx="4" fill="#4A5A6A" opacity="0.4"/>
+      <!-- Radiating lines from figure -->
+      <line x1="140" y1="68" x2="40" y2="30" stroke="#D4A843" stroke-width="0.8" opacity="0.2"/>
+      <line x1="140" y1="68" x2="240" y2="30" stroke="#D4A843" stroke-width="0.8" opacity="0.2"/>
+      <line x1="140" y1="68" x2="140" y2="10" stroke="#D4A843" stroke-width="0.8" opacity="0.25"/>
+    </svg>`,
+    // TI — Tactical interest: lightbulb idea/planning
+    `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs><linearGradient id="hB2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0A100A"/><stop offset="100%" style="stop-color:#1A2018"/></linearGradient></defs>
+      <rect width="280" height="200" fill="url(#hB2)"/>
+      <!-- Outer glow -->
+      <circle cx="140" cy="90" r="75" fill="#D4A843" opacity="0.05"/>
+      <circle cx="140" cy="90" r="50" fill="#D4A843" opacity="0.06"/>
+      <circle cx="140" cy="90" r="28" fill="#D4A843" opacity="0.08"/>
+      <!-- Lightbulb shape -->
+      <circle cx="140" cy="75" r="38" fill="#1A1A08" stroke="#D4A843" stroke-width="2" opacity="0.95"/>
+      <circle cx="140" cy="75" r="32" fill="#2A2808" opacity="0.8"/>
+      <!-- Inner light filament -->
+      <path d="M130 65 Q140 80 150 65" stroke="#F0D060" stroke-width="2.5" fill="none" opacity="0.9"/>
+      <path d="M125 72 Q140 90 155 72" stroke="#F0D060" stroke-width="2" fill="none" opacity="0.7"/>
+      <circle cx="140" cy="75" r="8" fill="#F0D060" opacity="0.4"/>
+      <!-- Bulb base -->
+      <rect x="128" y="110" width="24" height="8" rx="2" fill="#D4A843" opacity="0.8"/>
+      <rect x="130" y="118" width="20" height="6" rx="2" fill="#C49030" opacity="0.7"/>
+      <rect x="132" y="124" width="16" height="5" rx="2" fill="#B47820" opacity="0.6"/>
+      <!-- Connection lines radiating — ideas -->
+      <line x1="140" y1="37" x2="140" y2="20" stroke="#D4A843" stroke-width="1.5" opacity="0.5"/>
+      <line x1="178" y1="50" x2="195" y2="38" stroke="#D4A843" stroke-width="1.5" opacity="0.4"/>
+      <line x1="178" y1="100" x2="198" y2="112" stroke="#D4A843" stroke-width="1.5" opacity="0.3"/>
+      <line x1="102" y1="50" x2="85" y2="38" stroke="#D4A843" stroke-width="1.5" opacity="0.4"/>
+      <line x1="102" y1="100" x2="82" y2="112" stroke="#D4A843" stroke-width="1.5" opacity="0.3"/>
+      <!-- Small planning nodes -->
+      <circle cx="140" cy="16" r="5" fill="#D4A843" opacity="0.6"/>
+      <circle cx="200" cy="33" r="4" fill="#D4A843" opacity="0.5"/>
+      <circle cx="200" cy="116" r="4" fill="#D4A843" opacity="0.4"/>
+      <circle cx="80" cy="33" r="4" fill="#D4A843" opacity="0.5"/>
+      <circle cx="78" cy="116" r="4" fill="#D4A843" opacity="0.4"/>
+      <!-- Frame/border subtle -->
+      <rect x="20" y="148" width="240" height="2" rx="1" fill="#D4A843" opacity="0.08"/>
+    </svg>`,
+    // OI — Operational interest: close-up observing eye (precision/detail)
+    `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs>
+        <linearGradient id="hB3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#08080A"/><stop offset="100%" style="stop-color:#12100A"/></linearGradient>
+        <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#8B4A00"/><stop offset="40%" style="stop-color:#C47A20"/><stop offset="70%" style="stop-color:#A06010"/><stop offset="100%" style="stop-color:#6A3A00"/></radialGradient>
+      </defs>
+      <rect width="280" height="200" fill="url(#hB3)"/>
+      <!-- Eye outline / whites -->
+      <ellipse cx="140" cy="100" rx="100" ry="55" fill="#F0EDE8" opacity="0.06"/>
+      <path d="M40 100 Q140 20 240 100 Q140 180 40 100 Z" fill="#1A1208" opacity="0.9"/>
+      <path d="M50 100 Q140 30 230 100 Q140 170 50 100 Z" fill="#100E06" opacity="0.8"/>
+      <!-- Iris -->
+      <circle cx="140" cy="100" r="42" fill="url(#irisGrad)" opacity="0.95"/>
+      <!-- Iris detail lines -->
+      <line x1="140" y1="58" x2="140" y2="142" stroke="#8B4A00" stroke-width="0.8" opacity="0.3"/>
+      <line x1="98" y1="100" x2="182" y2="100" stroke="#8B4A00" stroke-width="0.8" opacity="0.3"/>
+      <line x1="110" y1="70" x2="170" y2="130" stroke="#8B4A00" stroke-width="0.8" opacity="0.2"/>
+      <line x1="170" y1="70" x2="110" y2="130" stroke="#8B4A00" stroke-width="0.8" opacity="0.2"/>
+      <circle cx="140" cy="100" r="42" fill="none" stroke="#C47A20" stroke-width="1" opacity="0.4"/>
+      <circle cx="140" cy="100" r="35" fill="none" stroke="#A06010" stroke-width="0.5" opacity="0.3"/>
+      <!-- Pupil -->
+      <circle cx="140" cy="100" r="18" fill="#050403" opacity="0.98"/>
+      <!-- Pupil highlight -->
+      <circle cx="148" cy="92" r="5" fill="#FDFAF7" opacity="0.18"/>
+      <circle cx="150" cy="90" r="2" fill="#FDFAF7" opacity="0.4"/>
+      <!-- Eyelid detail top -->
+      <path d="M40 100 Q140 25 240 100" fill="none" stroke="#6A5A4A" stroke-width="2" opacity="0.4"/>
+      <!-- Eyelashes subtle -->
+      <line x1="65" y1="78" x2="60" y2="68" stroke="#4A3A2A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="90" y1="62" x2="88" y2="50" stroke="#4A3A2A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="140" y1="55" x2="140" y2="43" stroke="#4A3A2A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="190" y1="62" x2="192" y2="50" stroke="#4A3A2A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="215" y1="78" x2="220" y2="68" stroke="#4A3A2A" stroke-width="1.5" opacity="0.4"/>
+    </svg>`
+  ]
+};
+
+function buildHierarchyGrids() {
+  const aptGrid = document.getElementById('hierarchyAptGrid');
+  const intGrid = document.getElementById('hierarchyIntGrid');
+  if (!aptGrid || !intGrid) return;
+
+  const ids = ['strategic','tactical','operational'];
+
+  aptGrid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:12px;';
+  aptGrid.innerHTML = ids.map((id, i) => `
+    <div style="position:relative;cursor:pointer;border-radius:6px;overflow:hidden;
+         border:2px solid ${state.hierarchyApt === id ? 'var(--charcoal)' : 'transparent'};
+         aspect-ratio:1.4/1;transition:all 0.4s ease;"
+         onclick="selectHierarchyApt('${id}')"
+         onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.18)'"
+         onmouseleave="this.style.transform='';this.style.boxShadow=''">
+      ${hierarchySVGs.apt[i]}
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(28,28,28,0.3) 0%,transparent 60%);pointer-events:none;"></div>
+      <div style="position:absolute;top:8px;right:8px;width:20px;height:20px;background:var(--charcoal);border-radius:50%;
+           display:flex;align-items:center;justify-content:center;font-size:9px;color:white;
+           opacity:${state.hierarchyApt === id ? '1' : '0'};transition:all 0.4s ease;">✓</div>
+    </div>
+  `).join('');
+
+  intGrid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:12px;';
+  intGrid.innerHTML = ids.map((id, i) => `
+    <div style="position:relative;cursor:pointer;border-radius:6px;overflow:hidden;
+         border:2px solid ${state.hierarchyInt === id ? 'var(--charcoal)' : 'transparent'};
+         aspect-ratio:1.4/1;transition:all 0.4s ease;"
+         onclick="selectHierarchyInt('${id}')"
+         onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.18)'"
+         onmouseleave="this.style.transform='';this.style.boxShadow=''">
+      ${hierarchySVGs.int[i]}
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(28,28,28,0.3) 0%,transparent 60%);pointer-events:none;"></div>
+      <div style="position:absolute;top:8px;right:8px;width:20px;height:20px;background:var(--charcoal);border-radius:50%;
+           display:flex;align-items:center;justify-content:center;font-size:9px;color:white;
+           opacity:${state.hierarchyInt === id ? '1' : '0'};transition:all 0.4s ease;">✓</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const state = {
+  name: '',
+  email: '',
+  role: '',
+  colorApt: null,
+  standInt: null,
+  generics: [],
+  hierarchyApt: null,
+  hierarchyInt: null,
+  currentModule: 0,
+  feedbackDone: false,
+  feedback: {
+    q1: null, q2: null, q3: null, q4: null,
+    q5: [], q6: null, q7: ''
+  }
+};
+
+// ══════════════════════════════════════
+// LANGUAGE
+// ══════════════════════════════════════
+function setLang(l) {
+  lang.current = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + l);
+  });
+  document.querySelectorAll('[data-ph-en]').forEach(el => {
+    el.placeholder = el.getAttribute('data-ph-' + l);
+  });
+  // Rebuild dynamic content
+  if (state.currentModule >= 1) buildColorGrid();
+  if (state.currentModule >= 2) buildStandGrid();
+  if (state.currentModule >= 3) buildGenericGrid();
+  if (state.currentModule >= 4) buildHierarchyGrids();
+  // Regenerate results if already on results screen
+  if (state.currentModule >= 5) generateResults();
+  buildSidebars();
+}
+
+// ══════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════
+function buildSidebars() {
+  ['', '-2', '-3', '-4'].forEach((suffix, idx) => {
+    const el = document.getElementById('sidebar-modules' + suffix);
+    if (!el) return;
+    el.innerHTML = modules_data[lang.current].map((name, i) => {
+      const done = i < state.currentModule - 1;
+      const active = i === state.currentModule - 1;
+      return `<div class="sidebar-module ${active ? 'active' : ''} ${done ? 'completed' : ''}">
+        <p class="sm-number">${String(i+1).padStart(2,'0')}</p>
+        <p class="sm-name">${name}</p>
+        <p class="sm-check">✓</p>
+      </div>`;
+    }).join('');
+  });
+}
+
+// ══════════════════════════════════════
+// GRIDS
+// ══════════════════════════════════════
+function buildColorGrid() {
+  const grid = document.getElementById('colorGrid');
+  if (!grid) return;
+  // Color palettes — premium tones, no labels
+  const palettes = [
+    ['#D4A843','#4A7FA5','#C4724A','#A83C3C'],   // 1: warm energy
+    ['#C4724A','#D4A090','#7A5A8A','#A83C3C'],   // 2: warm expressive
+    ['#6A4A7A','#C47A40','#8A8A8A','#A83C3C'],   // 3: contrast creative
+    ['#2C4A2E','#F0EDE8','#4A7FA5','#6B4A2A'],   // 4: nature grounded
+    ['#7A7A7A','#3A6A9A','#1C1C1C','#C4A832'],   // 5: technical precise
+    ['#1C1C1C','#3A5A3A','#2A4A6A','#6A6A6A'],   // 6: sober disciplined
+  ];
+  grid.innerHTML = palettes.map((stripes, i) => `
+    <div class="color-card ${state.colorApt === i+1 ? 'selected' : ''}"
+         onclick="selectColor(${i+1})">
+      <div style="display:flex;width:100%;height:100%;border-radius:4px;overflow:hidden;">
+        ${stripes.map(c => `<div style="flex:1;background:${c};"></div>`).join('')}
+      </div>
+      <div class="color-card-check">✓</div>
+    </div>
+  `).join('');
+}
+
+function selectColor(id) {
+  state.colorApt = id;
+  buildColorGrid();
+  document.getElementById('btn-m1').classList.add('ready');
+}
+
+const standSVGs = [
+  // Stand 1: Administrativo — espacio corporativo
+  `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+    <defs><linearGradient id="s1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a2638"/><stop offset="100%" style="stop-color:#2C4A6E"/></linearGradient></defs>
+    <rect width="400" height="300" fill="url(#s1g)"/>
+    <rect x="60" y="180" width="280" height="12" rx="2" fill="#D4A843" opacity="0.9"/>
+    <rect x="70" y="192" width="8" height="80" fill="#C49030" opacity="0.7"/>
+    <rect x="322" y="192" width="8" height="80" fill="#C49030" opacity="0.7"/>
+    <rect x="140" y="100" width="120" height="78" rx="4" fill="#0A0F1A" opacity="0.95"/>
+    <rect x="144" y="104" width="112" height="66" rx="2" fill="#1A3A6A"/>
+    <line x1="150" y1="118" x2="248" y2="118" stroke="#4A9ACA" stroke-width="1.5" opacity="0.8"/>
+    <line x1="150" y1="128" x2="220" y2="128" stroke="#4A9ACA" stroke-width="1" opacity="0.5"/>
+    <line x1="150" y1="136" x2="235" y2="136" stroke="#4A9ACA" stroke-width="1" opacity="0.5"/>
+    <line x1="150" y1="144" x2="200" y2="144" stroke="#D4A843" stroke-width="1.5" opacity="0.7"/>
+    <rect x="190" y="178" width="20" height="4" rx="1" fill="#888" opacity="0.6"/>
+    <rect x="30" y="30" width="90" height="120" rx="3" fill="#FDFAF7" opacity="0.05"/>
+    <rect x="35" y="100" width="10" height="40" rx="1" fill="#D4A843" opacity="0.8"/>
+    <rect x="50" y="85" width="10" height="55" rx="1" fill="#4A9ACA" opacity="0.8"/>
+    <rect x="65" y="110" width="10" height="30" rx="1" fill="#C9A99A" opacity="0.8"/>
+    <rect x="80" y="90" width="10" height="50" rx="1" fill="#D4A843" opacity="0.6"/>
+    <rect x="270" y="20" width="110" height="140" rx="3" fill="#FDFAF7" opacity="0.03"/>
+    <circle cx="50" cy="250" r="3" fill="#D4A843" opacity="0.4"/>
+    <circle cx="340" cy="255" r="3" fill="#C9A99A" opacity="0.4"/>
+  </svg>`,
+  // Stand 2: Ciencias Sociales — biblioteca/conexión
+  `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+    <defs><linearGradient id="s2g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2A1A3A"/><stop offset="100%" style="stop-color:#5A3A6A"/></linearGradient></defs>
+    <rect width="400" height="300" fill="url(#s2g)"/>
+    <rect x="20" y="40" width="18" height="220" rx="2" fill="#6A4A2A" opacity="0.7"/>
+    <rect x="362" y="40" width="18" height="220" rx="2" fill="#6A4A2A" opacity="0.7"/>
+    <rect x="20" y="38" width="360" height="6" rx="1" fill="#8A6A4A" opacity="0.5"/>
+    <rect x="38" y="50" width="14" height="60" rx="1" fill="#C4724A" opacity="0.85"/>
+    <rect x="54" y="55" width="10" height="55" rx="1" fill="#7A5A8A" opacity="0.85"/>
+    <rect x="66" y="52" width="16" height="58" rx="1" fill="#4A7FA5" opacity="0.85"/>
+    <rect x="84" y="56" width="11" height="54" rx="1" fill="#D4A843" opacity="0.85"/>
+    <rect x="97" y="50" width="13" height="60" rx="1" fill="#A83C3C" opacity="0.7"/>
+    <rect x="112" y="54" width="12" height="56" rx="1" fill="#2C4A2E" opacity="0.85"/>
+    <rect x="38" y="116" width="360" height="5" rx="1" fill="#8A6A4A" opacity="0.4"/>
+    <rect x="40" y="123" width="12" height="52" rx="1" fill="#4A7FA5" opacity="0.8"/>
+    <rect x="54" y="126" width="15" height="49" rx="1" fill="#C4724A" opacity="0.8"/>
+    <circle cx="200" cy="140" r="90" fill="#C4724A" opacity="0.06"/>
+    <line x1="200" y1="0" x2="200" y2="80" stroke="#8A8A7A" stroke-width="2" opacity="0.5"/>
+    <circle cx="200" cy="82" r="6" fill="#F0D060" opacity="0.9"/>
+    <ellipse cx="155" cy="188" rx="18" ry="18" fill="#2A1A3A" opacity="0.8"/>
+    <rect x="137" y="204" width="36" height="55" rx="10" fill="#2A1A3A" opacity="0.7"/>
+    <ellipse cx="245" cy="188" rx="18" ry="18" fill="#2A1A3A" opacity="0.8"/>
+    <rect x="227" y="204" width="36" height="55" rx="10" fill="#2A1A3A" opacity="0.7"/>
+    <circle cx="195" cy="194" r="1.5" fill="#C9A99A" opacity="0.5"/>
+    <circle cx="205" cy="194" r="1.5" fill="#C9A99A" opacity="0.5"/>
+  </svg>`,
+  // Stand 3: Artes — estudio de arte
+  `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+    <defs><linearGradient id="s3g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2A1A0A"/><stop offset="100%" style="stop-color:#4A2A1A"/></linearGradient></defs>
+    <rect width="400" height="300" fill="url(#s3g)"/>
+    <line x1="180" y1="50" x2="150" y2="240" stroke="#8A6A4A" stroke-width="3" opacity="0.7"/>
+    <line x1="220" y1="50" x2="250" y2="240" stroke="#8A6A4A" stroke-width="3" opacity="0.7"/>
+    <line x1="165" y1="145" x2="235" y2="145" stroke="#8A6A4A" stroke-width="2" opacity="0.5"/>
+    <rect x="155" y="55" width="90" height="120" rx="3" fill="#F7F3EE" opacity="0.92"/>
+    <circle cx="185" cy="95" r="22" fill="#C4724A" opacity="0.7"/>
+    <circle cx="215" cy="105" r="18" fill="#7A5A8A" opacity="0.6"/>
+    <circle cx="200" cy="130" r="15" fill="#4A7FA5" opacity="0.5"/>
+    <rect x="162" y="78" width="30" height="4" rx="2" fill="#D4A843" opacity="0.6" transform="rotate(-15 162 78)"/>
+    <ellipse cx="320" cy="180" rx="45" ry="35" fill="#6A4A2A" opacity="0.8"/>
+    <circle cx="295" cy="168" r="8" fill="#C4724A" opacity="0.9"/>
+    <circle cx="315" cy="162" r="7" fill="#D4A843" opacity="0.9"/>
+    <circle cx="335" cy="165" r="8" fill="#7A5A8A" opacity="0.9"/>
+    <circle cx="350" cy="178" r="7" fill="#4A7FA5" opacity="0.9"/>
+    <line x1="285" y1="140" x2="295" y2="168" stroke="#8A6A4A" stroke-width="3" opacity="0.7"/>
+    <circle cx="60" cy="80" r="4" fill="#C4724A" opacity="0.5"/>
+    <circle cx="80" cy="100" r="5" fill="#7A5A8A" opacity="0.4"/>
+    <polygon points="160,0 240,0 260,55 140,55" fill="#F0D060" opacity="0.04"/>
+  </svg>`,
+  // Stand 4: Salud/Agrarias — laboratorio/naturaleza
+  `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+    <defs><linearGradient id="s4g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0A1A0E"/><stop offset="100%" style="stop-color:#1A3A22"/></linearGradient></defs>
+    <rect width="400" height="300" fill="url(#s4g)"/>
+    <rect x="20" y="200" width="360" height="14" rx="2" fill="#C0D4B8" opacity="0.3"/>
+    <path d="M170 100 L155 195 Q155 205 165 205 L235 205 Q245 205 245 195 L230 100 Z" fill="#1A3A22" stroke="#4A9A5A" stroke-width="1.5" opacity="0.9"/>
+    <path d="M175 100 L162 190 Q162 198 170 198 L230 198 Q238 198 238 190 L225 100 Z" fill="#0A4A1A" opacity="0.5"/>
+    <ellipse cx="200" cy="185" rx="35" ry="12" fill="#2A9A4A" opacity="0.7"/>
+    <rect x="165" y="173" width="70" height="14" fill="#2A9A4A" opacity="0.5"/>
+    <circle cx="185" cy="165" r="3" fill="#4ACA6A" opacity="0.6"/>
+    <circle cx="200" cy="155" r="2" fill="#4ACA6A" opacity="0.5"/>
+    <rect x="188" y="75" width="24" height="28" rx="4" fill="#1A3A22" stroke="#4A9A5A" stroke-width="1.5" opacity="0.9"/>
+    <ellipse cx="60" cy="160" rx="35" ry="50" fill="#1A4A1A" opacity="0.8" transform="rotate(-20 60 160)"/>
+    <ellipse cx="80" cy="145" rx="28" ry="42" fill="#2A6A2A" opacity="0.7" transform="rotate(10 80 145)"/>
+    <line x1="70" y1="200" x2="75" y2="260" stroke="#2A4A1A" stroke-width="3" opacity="0.8"/>
+    <path d="M320 60 Q340 80 320 100 Q300 120 320 140 Q340 160 320 180" stroke="#4ACA8A" stroke-width="2" fill="none" opacity="0.7"/>
+    <path d="M360 60 Q340 80 360 100 Q380 120 360 140 Q340 160 360 180" stroke="#4ACA8A" stroke-width="2" fill="none" opacity="0.7"/>
+    <line x1="320" y1="90" x2="360" y2="90" stroke="#2A9A5A" stroke-width="1.5" opacity="0.5"/>
+    <line x1="320" y1="130" x2="360" y2="130" stroke="#2A9A5A" stroke-width="1.5" opacity="0.5"/>
+  </svg>`,
+  // Stand 5: Ingeniería/Tecnología
+  `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+    <defs><linearGradient id="s5g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#050A14"/><stop offset="100%" style="stop-color:#0A1A2E"/></linearGradient></defs>
+    <rect width="400" height="300" fill="url(#s5g)"/>
+    <rect x="20" y="30" width="60" height="240" rx="3" fill="#0A1828" stroke="#1A3A5A" stroke-width="1" opacity="0.9"/>
+    <rect x="25" y="40" width="50" height="6" rx="1" fill="#1A4A7A" opacity="0.8"/>
+    <rect x="25" y="52" width="50" height="6" rx="1" fill="#1A4A7A" opacity="0.7"/>
+    <circle cx="68" cy="43" r="3" fill="#2ACA4A" opacity="0.9"/>
+    <circle cx="68" cy="55" r="3" fill="#2ACA4A" opacity="0.8"/>
+    <circle cx="68" cy="67" r="3" fill="#CA4A2A" opacity="0.7"/>
+    <rect x="110" y="50" width="200" height="140" rx="4" fill="#080E1A" stroke="#1A4A7A" stroke-width="1.5" opacity="0.95"/>
+    <text x="120" y="75" font-family="monospace" font-size="9" fill="#4ACA8A" opacity="0.9">const system = new PYLA();</text>
+    <text x="120" y="90" font-family="monospace" font-size="9" fill="#4A9ACA" opacity="0.8">  .analyze(perception)</text>
+    <text x="120" y="105" font-family="monospace" font-size="9" fill="#CA9A4A" opacity="0.8">  .process(cognition)</text>
+    <text x="120" y="120" font-family="monospace" font-size="9" fill="#4ACA8A" opacity="0.9">  .output(direction);</text>
+    <text x="120" y="160" font-family="monospace" font-size="9" fill="#CA4A6A" opacity="0.7">▶ 86% accuracy</text>
+    <line x1="320" y1="50" x2="380" y2="50" stroke="#1A4A7A" stroke-width="1" opacity="0.5"/>
+    <line x1="380" y1="50" x2="380" y2="100" stroke="#1A4A7A" stroke-width="1" opacity="0.5"/>
+    <circle cx="320" cy="50" r="3" fill="#4ACA8A" opacity="0.7"/>
+    <circle cx="380" cy="100" r="3" fill="#4A9ACA" opacity="0.7"/>
+    <line x1="0" y1="220" x2="400" y2="220" stroke="#1A4A7A" stroke-width="0.5" opacity="0.2"/>
+    <line x1="0" y1="240" x2="400" y2="240" stroke="#1A4A7A" stroke-width="0.5" opacity="0.15"/>
+  </svg>`,
+  // Stand 6: Defensa/Seguridad
+  `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+    <defs><linearGradient id="s6g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#050808"/><stop offset="100%" style="stop-color:#0A1A10"/></linearGradient></defs>
+    <rect width="400" height="300" fill="url(#s6g)"/>
+    <path d="M200 30 L270 60 L270 140 Q270 190 200 220 Q130 190 130 140 L130 60 Z" fill="#0A1A0E" stroke="#3A6A3A" stroke-width="2" opacity="0.9"/>
+    <path d="M200 45 L255 70 L255 138 Q255 178 200 204 Q145 178 145 138 L145 70 Z" fill="#0A2A10" opacity="0.7"/>
+    <line x1="200" y1="60" x2="200" y2="200" stroke="#3A6A3A" stroke-width="1" opacity="0.4"/>
+    <line x1="148" y1="100" x2="252" y2="100" stroke="#3A6A3A" stroke-width="1" opacity="0.4"/>
+    <circle cx="200" cy="130" r="20" fill="none" stroke="#4A8A4A" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="200" cy="130" r="5" fill="#4A8A4A" opacity="0.8"/>
+    <circle cx="200" cy="78" r="4" fill="#D4A843" opacity="0.8"/>
+    <circle cx="320" cy="100" r="60" fill="none" stroke="#2A6A2A" stroke-width="1" opacity="0.3"/>
+    <circle cx="320" cy="100" r="40" fill="none" stroke="#2A6A2A" stroke-width="1" opacity="0.2"/>
+    <line x1="320" y1="100" x2="360" y2="55" stroke="#4ACA4A" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="360" cy="55" r="3" fill="#4ACA4A" opacity="0.9"/>
+    <line x1="0" y1="230" x2="400" y2="230" stroke="#2A4A2A" stroke-width="1" opacity="0.3"/>
+    <rect x="50" y="200" width="8" height="30" rx="3" fill="#1A3A1A" opacity="0.7"/>
+    <circle cx="54" cy="194" r="7" fill="#1A3A1A" opacity="0.7"/>
+    <rect x="75" y="205" width="8" height="25" rx="3" fill="#1A3A1A" opacity="0.6"/>
+    <circle cx="79" cy="199" r="7" fill="#1A3A1A" opacity="0.6"/>
+  </svg>`
+];
+
+function buildStandGrid() {
+  const grid = document.getElementById('standGrid');
+  if (!grid) return;
+  grid.className = 'stand-visual-grid';
+  grid.innerHTML = standSVGs.map((svg, i) => `
+    <div class="stand-visual-card" style="border:2px solid ${state.standInt === i+1 ? 'var(--charcoal)' : 'transparent'};"
+         onclick="selectStand(${i+1})"
+         onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(0,0,0,0.14)'"
+         onmouseleave="this.style.transform='';this.style.boxShadow=''">
+      ${svg}
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(28,28,28,0.4) 0%,transparent 60%);pointer-events:none;"></div>
+      <div style="position:absolute;top:12px;right:12px;width:24px;height:24px;background:var(--charcoal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;opacity:${state.standInt === i+1 ? '1' : '0'};transition:all 0.4s ease;">✓</div>
+    </div>
+  `).join('');
+}
+
+function selectStand(id) {
+  state.standInt = id;
+  buildStandGrid();
+  document.getElementById('btn-m2').classList.add('ready');
+}
+
+const genericSVGs = {
+  en: [
+    // Reading & Writing — open book with warm light, recognizable and premium
+    { id: "reading", svg: `<svg viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs>
+        <linearGradient id="g1bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1A1408"/><stop offset="100%" style="stop-color:#2E2010"/></linearGradient>
+        <radialGradient id="g1glow" cx="50%" cy="60%" r="50%"><stop offset="0%" style="stop-color:#D4A843;stop-opacity:0.15"/><stop offset="100%" style="stop-color:#D4A843;stop-opacity:0"/></radialGradient>
+      </defs>
+      <rect width="260" height="180" fill="url(#g1bg)"/>
+      <rect width="260" height="180" fill="url(#g1glow)"/>
+      <!-- Open book pages -->
+      <path d="M30 55 Q130 45 130 130 Q130 45 230 55 L230 145 Q130 135 130 145 Q130 135 30 145 Z" fill="#F7F3EE" opacity="0.92"/>
+      <!-- Book spine -->
+      <line x1="130" y1="48" x2="130" y2="145" stroke="#C9A99A" stroke-width="1.5" opacity="0.6"/>
+      <!-- Page curl bottom -->
+      <path d="M30 145 Q80 150 130 145" fill="none" stroke="#D4C4B0" stroke-width="1" opacity="0.5"/>
+      <path d="M130 145 Q180 150 230 145" fill="none" stroke="#D4C4B0" stroke-width="1" opacity="0.5"/>
+      <!-- Text lines left page -->
+      <line x1="48" y1="72" x2="118" y2="70" stroke="#8A7A6A" stroke-width="1.5" opacity="0.5"/>
+      <line x1="48" y1="82" x2="115" y2="80" stroke="#8A7A6A" stroke-width="1" opacity="0.4"/>
+      <line x1="48" y1="92" x2="118" y2="90" stroke="#8A7A6A" stroke-width="1" opacity="0.4"/>
+      <line x1="48" y1="102" x2="108" y2="100" stroke="#8A7A6A" stroke-width="1" opacity="0.35"/>
+      <line x1="48" y1="112" x2="116" y2="110" stroke="#8A7A6A" stroke-width="1" opacity="0.35"/>
+      <line x1="48" y1="122" x2="110" y2="120" stroke="#D4A843" stroke-width="1.5" opacity="0.5"/>
+      <!-- Text lines right page -->
+      <line x1="142" y1="72" x2="212" y2="70" stroke="#8A7A6A" stroke-width="1.5" opacity="0.5"/>
+      <line x1="142" y1="82" x2="208" y2="80" stroke="#8A7A6A" stroke-width="1" opacity="0.4"/>
+      <line x1="142" y1="92" x2="212" y2="90" stroke="#8A7A6A" stroke-width="1" opacity="0.4"/>
+      <line x1="142" y1="102" x2="205" y2="100" stroke="#8A7A6A" stroke-width="1" opacity="0.35"/>
+      <line x1="142" y1="112" x2="210" y2="110" stroke="#8A7A6A" stroke-width="1" opacity="0.35"/>
+      <!-- Pen/quill resting on book -->
+      <line x1="155" y1="125" x2="215" y2="128" stroke="#C9A99A" stroke-width="2" opacity="0.7"/>
+      <polygon points="215,128 224,124 218,132" fill="#C9A99A" opacity="0.6"/>
+      <!-- Warm glow under book -->
+      <ellipse cx="130" cy="148" rx="80" ry="8" fill="#D4A843" opacity="0.08"/>
+    </svg>` },
+
+    // Mathematics — clean blackboard with elegant formula, chalk aesthetic
+    { id: "math", svg: `<svg viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs>
+        <linearGradient id="g2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0A1210"/><stop offset="100%" style="stop-color:#142018"/></linearGradient>
+      </defs>
+      <rect width="260" height="180" fill="url(#g2bg)"/>
+      <!-- Blackboard frame -->
+      <rect x="20" y="20" width="220" height="140" rx="4" fill="#0E1A14" stroke="#2A4A30" stroke-width="2" opacity="0.9"/>
+      <!-- Chalk dust subtle -->
+      <rect x="20" y="150" width="220" height="10" rx="2" fill="#2A4A30" opacity="0.4"/>
+      <!-- Main equation - elegant and readable -->
+      <text x="50" y="72" font-family="Georgia, serif" font-size="18" fill="#F7F3EE" opacity="0.85" font-style="italic">f(x) = ax² + bx + c</text>
+      <!-- Dividing line -->
+      <line x1="40" y1="88" x2="220" y2="88" stroke="#4A7A5A" stroke-width="0.8" opacity="0.4"/>
+      <!-- Second formula -->
+      <text x="65" y="112" font-family="Georgia, serif" font-size="14" fill="#D4A843" opacity="0.8" font-style="italic">∑ = √(a² + b²)</text>
+      <!-- Small geometric diagram bottom right -->
+      <polygon points="185,125 210,125 197,108" fill="none" stroke="#4ACA8A" stroke-width="1.2" opacity="0.6"/>
+      <line x1="197" y1="108" x2="197" y2="125" stroke="#4ACA8A" stroke-width="0.8" opacity="0.4"/>
+      <!-- Small square symbol -->
+      <rect x="197" y="122" width="4" height="4" fill="none" stroke="#4ACA8A" stroke-width="0.8" opacity="0.5"/>
+      <!-- Chalk piece at bottom -->
+      <rect x="35" y="155" width="18" height="7" rx="2" fill="#F7F3EE" opacity="0.4"/>
+    </svg>` },
+
+    // Civic competencies — people gathered around a table, top-down view
+    { id: "civic", svg: `<svg viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs>
+        <linearGradient id="g3bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0A0E1A"/><stop offset="100%" style="stop-color:#141828"/></linearGradient>
+        <radialGradient id="g3glow" cx="50%" cy="50%" r="40%"><stop offset="0%" style="stop-color:#4A9ACA;stop-opacity:0.1"/><stop offset="100%" style="stop-color:#4A9ACA;stop-opacity:0"/></radialGradient>
+      </defs>
+      <rect width="260" height="180" fill="url(#g3bg)"/>
+      <rect width="260" height="180" fill="url(#g3glow)"/>
+      <!-- Round table -->
+      <ellipse cx="130" cy="95" rx="58" ry="45" fill="#1A2A3A" stroke="#2A4A6A" stroke-width="1.5" opacity="0.9"/>
+      <ellipse cx="130" cy="95" rx="48" ry="36" fill="#142030" stroke="#1A3A5A" stroke-width="1" opacity="0.7"/>
+      <!-- 6 people around table -->
+      <!-- Top -->
+      <circle cx="130" cy="42" r="11" fill="#2A3A4A" stroke="#4A9ACA" stroke-width="1.5" opacity="0.9"/>
+      <rect x="119" y="53" width="22" height="16" rx="8" fill="#2A3A4A" opacity="0.8"/>
+      <!-- Top right -->
+      <circle cx="184" cy="58" r="10" fill="#2A3A4A" stroke="#C9A99A" stroke-width="1.5" opacity="0.9"/>
+      <rect x="174" y="68" width="20" height="14" rx="7" fill="#2A3A4A" opacity="0.8"/>
+      <!-- Bottom right -->
+      <circle cx="184" cy="132" r="10" fill="#2A3A4A" stroke="#C9A99A" stroke-width="1.5" opacity="0.9"/>
+      <rect x="174" y="118" width="20" height="14" rx="7" fill="#2A3A4A" opacity="0.8"/>
+      <!-- Bottom -->
+      <circle cx="130" cy="148" r="11" fill="#2A3A4A" stroke="#4A9ACA" stroke-width="1.5" opacity="0.9"/>
+      <rect x="119" y="131" width="22" height="16" rx="8" fill="#2A3A4A" opacity="0.8"/>
+      <!-- Bottom left -->
+      <circle cx="76" cy="132" r="10" fill="#2A3A4A" stroke="#C9A99A" stroke-width="1.5" opacity="0.9"/>
+      <rect x="66" y="118" width="20" height="14" rx="7" fill="#2A3A4A" opacity="0.8"/>
+      <!-- Top left -->
+      <circle cx="76" cy="58" r="10" fill="#2A3A4A" stroke="#C9A99A" stroke-width="1.5" opacity="0.9"/>
+      <rect x="66" y="68" width="20" height="14" rx="7" fill="#2A3A4A" opacity="0.8"/>
+      <!-- Connection lines on table -->
+      <line x1="130" y1="95" x2="130" y2="95" stroke="#4A9ACA" stroke-width="0" opacity="0"/>
+      <circle cx="130" cy="95" r="4" fill="#4A9ACA" opacity="0.6"/>
+      <line x1="130" y1="91" x2="130" y2="63" stroke="#4A9ACA" stroke-width="0.8" opacity="0.3"/>
+      <line x1="130" y1="99" x2="130" y2="127" stroke="#4A9ACA" stroke-width="0.8" opacity="0.3"/>
+      <line x1="126" y1="95" x2="102" y2="80" stroke="#C9A99A" stroke-width="0.8" opacity="0.3"/>
+      <line x1="134" y1="95" x2="158" y2="80" stroke="#C9A99A" stroke-width="0.8" opacity="0.3"/>
+    </svg>` },
+
+    // Adaptability — person standing at crossroads/fork, silhouette
+    { id: "adapt", svg: `<svg viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs>
+        <linearGradient id="g4bg" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#080E14"/><stop offset="100%" style="stop-color:#1A2A3A"/></linearGradient>
+        <linearGradient id="g4horizon" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#0A1828;stop-opacity:0"/><stop offset="50%" style="stop-color:#4A9ACA;stop-opacity:0.15"/><stop offset="100%" style="stop-color:#0A1828;stop-opacity:0"/></linearGradient>
+      </defs>
+      <rect width="260" height="180" fill="url(#g4bg)"/>
+      <!-- Horizon glow -->
+      <rect x="0" y="105" width="260" height="20" fill="url(#g4horizon)"/>
+      <!-- Road going straight -->
+      <path d="M130 180 L118 115 L142 115 Z" fill="#1A2A3A" opacity="0.8"/>
+      <!-- Road fork left -->
+      <path d="M118 115 L40 85 L50 75 L122 108 Z" fill="#1A2A3A" opacity="0.7"/>
+      <!-- Road fork right -->
+      <path d="M142 115 L220 85 L210 75 L138 108 Z" fill="#1A2A3A" opacity="0.7"/>
+      <!-- Road markings center -->
+      <line x1="130" y1="140" x2="130" y2="120" stroke="#D4A843" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+      <!-- Horizon line -->
+      <line x1="0" y1="112" x2="260" y2="112" stroke="#4A9ACA" stroke-width="0.5" opacity="0.3"/>
+      <!-- Standing figure at fork -->
+      <circle cx="130" cy="98" r="9" fill="#C9A99A" opacity="0.9"/>
+      <rect x="124" y="107" width="12" height="20" rx="5" fill="#C9A99A" opacity="0.85"/>
+      <!-- Arrows pointing both ways -->
+      <path d="M95 88 L78 82 L88 76" fill="none" stroke="#4A9ACA" stroke-width="1.5" opacity="0.6"/>
+      <path d="M165 88 L182 82 L172 76" fill="none" stroke="#4A9ACA" stroke-width="1.5" opacity="0.6"/>
+      <!-- Stars/sky subtle -->
+      <circle cx="40" cy="30" r="1.5" fill="#F7F3EE" opacity="0.3"/>
+      <circle cx="80" cy="20" r="1" fill="#F7F3EE" opacity="0.2"/>
+      <circle cx="180" cy="25" r="1.5" fill="#F7F3EE" opacity="0.3"/>
+      <circle cx="220" cy="35" r="1" fill="#F7F3EE" opacity="0.2"/>
+      <circle cx="155" cy="15" r="1" fill="#F7F3EE" opacity="0.25"/>
+    </svg>` },
+
+    // Empathy/teamwork — two figures in conversation with dialogue bubbles
+    { id: "respect", svg: `<svg viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <defs>
+        <linearGradient id="g5bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0E0A14"/><stop offset="100%" style="stop-color:#1A1420"/></linearGradient>
+        <radialGradient id="g5gl" cx="50%" cy="45%" r="40%"><stop offset="0%" style="stop-color:#C9A99A;stop-opacity:0.1"/><stop offset="100%" style="stop-color:#C9A99A;stop-opacity:0"/></radialGradient>
+      </defs>
+      <rect width="260" height="180" fill="url(#g5bg)"/>
+      <rect width="260" height="180" fill="url(#g5gl)"/>
+
+      <!-- Figure LEFT — leaning slightly right -->
+      <circle cx="72" cy="52" r="14" fill="#2A1A3A" stroke="#C9A99A" stroke-width="1.5" opacity="0.9"/>
+      <path d="M58 76 Q60 66 72 66 Q84 66 86 76 L90 130 Q84 134 72 134 Q60 134 54 130 Z" fill="#2A1A3A" stroke="#C9A99A" stroke-width="1" opacity="0.8"/>
+      <!-- Left arm reaching slightly toward center -->
+      <path d="M86 85 Q105 90 108 98" stroke="#C9A99A" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+      <!-- Left legs -->
+      <line x1="66" y1="134" x2="62" y2="160" stroke="#C9A99A" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+      <line x1="78" y1="134" x2="82" y2="160" stroke="#C9A99A" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+
+      <!-- Figure RIGHT — leaning slightly left -->
+      <circle cx="188" cy="52" r="14" fill="#2A1A3A" stroke="#C9A99A" stroke-width="1.5" opacity="0.85"/>
+      <path d="M174 76 Q176 66 188 66 Q200 66 202 76 L206 130 Q200 134 188 134 Q176 134 170 130 Z" fill="#2A1A3A" stroke="#C9A99A" stroke-width="1" opacity="0.75"/>
+      <!-- Right arm reaching slightly toward center -->
+      <path d="M174 85 Q155 90 152 98" stroke="#C9A99A" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.65"/>
+      <!-- Right legs -->
+      <line x1="182" y1="134" x2="178" y2="160" stroke="#C9A99A" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+      <line x1="194" y1="134" x2="198" y2="160" stroke="#C9A99A" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+
+      <!-- Dialogue bubble LEFT — coming from left figure -->
+      <rect x="90" y="28" width="34" height="22" rx="8" fill="#C9A99A" opacity="0.18" stroke="#C9A99A" stroke-width="1" opacity="0.5"/>
+      <path d="M96 50 L90 58 L102 50" fill="#C9A99A" opacity="0.18"/>
+      <!-- Lines inside left bubble -->
+      <line x1="97" y1="35" x2="116" y2="35" stroke="#C9A99A" stroke-width="1.5" opacity="0.6"/>
+      <line x1="97" y1="42" x2="112" y2="42" stroke="#C9A99A" stroke-width="1.5" opacity="0.4"/>
+
+      <!-- Dialogue bubble RIGHT — coming from right figure -->
+      <rect x="136" y="28" width="34" height="22" rx="8" fill="#D4A843" opacity="0.14" stroke="#D4A843" stroke-width="1" opacity="0.45"/>
+      <path d="M164 50 L170 58 L158 50" fill="#D4A843" opacity="0.14"/>
+      <!-- Lines inside right bubble — similar pattern -->
+      <line x1="143" y1="35" x2="162" y2="35" stroke="#D4A843" stroke-width="1.5" opacity="0.55"/>
+      <line x1="143" y1="42" x2="157" y2="42" stroke="#D4A843" stroke-width="1.5" opacity="0.4"/>
+
+      <!-- Connection between bubbles — shared understanding -->
+      <line x1="124" y1="39" x2="136" y2="39" stroke="#F7F3EE" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.35"/>
+      <circle cx="130" cy="39" r="2" fill="#F7F3EE" opacity="0.4"/>
+    </svg>` }
+  ]
+};
+genericSVGs.es = genericSVGs.en;
+
+function buildGenericGrid() {
+  const grid = document.getElementById('genericGrid');
+  if (!grid) return;
+  const items = genericSVGs[lang.current];
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:48px;';
+  grid.innerHTML = items.map((g, i) => `
+    <div style="position:relative;cursor:pointer;border-radius:6px;overflow:hidden;
+         border:2px solid ${state.generics.includes(g.id) ? 'var(--charcoal)' : 'transparent'};
+         aspect-ratio:1.4/1;transition:all 0.4s ease;"
+         onclick="toggleGeneric('${g.id}')"
+         onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.14)'"
+         onmouseleave="this.style.transform='';this.style.boxShadow=''">
+      ${g.svg}
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(28,28,28,0.35) 0%,transparent 60%);pointer-events:none;"></div>
+      <div style="position:absolute;top:8px;right:8px;width:20px;height:20px;background:var(--charcoal);border-radius:50%;
+           display:flex;align-items:center;justify-content:center;font-size:9px;color:white;
+           opacity:${state.generics.includes(g.id) ? '1' : '0'};transition:all 0.4s ease;">✓</div>
+    </div>
+  `).join('');
+}
+
+function toggleGeneric(id) {
+  if (state.generics.includes(id)) {
+    state.generics = state.generics.filter(g => g !== id);
+  } else {
+    state.generics.push(id);
+  }
+  buildGenericGrid();
+}
+
+function selectHierarchyApt(id) {
+  state.hierarchyApt = id;
+  buildHierarchyGrids();
+  checkM4Ready();
+}
+
+function selectHierarchyInt(id) {
+  state.hierarchyInt = id;
+  buildHierarchyGrids();
+  checkM4Ready();
+}
+
+function checkM4Ready() {
+  if (state.hierarchyApt && state.hierarchyInt) {
+    document.getElementById('btn-m4').classList.add('ready');
+  }
+}
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startTest() {
+  const name = document.getElementById('userName').value.trim();
+  const email = document.getElementById('userEmail').value.trim();
+  const role = document.getElementById('userRole').value.trim();
+  const roleInput = document.getElementById('userRole');
+  const roleError = document.getElementById('roleErrorMsg');
+  if (!name) { document.getElementById('userName').focus(); return; }
+  if (!email) { document.getElementById('userEmail').focus(); return; }
+  if (!role) {
+    roleInput.classList.add('field-invalid');
+    roleError.classList.add('visible');
+    roleInput.focus();
+    return;
+  }
+  roleInput.classList.remove('field-invalid');
+  roleError.classList.remove('visible');
+  state.name = name;
+  state.email = email;
+  state.role = role;
+  state.currentModule = 1;
+  buildColorGrid();
+  buildSidebars();
+  showScreen('screen-m1');
+}
+
+function goToModule(n) {
+  state.currentModule = n;
+  if (n === 2) buildStandGrid();
+  if (n === 3) buildGenericGrid();
+  if (n === 4) buildHierarchyGrids();
+  buildSidebars();
+  showScreen('screen-m' + n);
+}
+
+// ══════════════════════════════════════
+// FEEDBACK
+// ══════════════════════════════════════
+function selectFbOption(question, value, el) {
+  el.parentElement.querySelectorAll('.fb-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  state.feedback[question] = value;
+  checkFbReady();
+}
+
+function toggleFbMulti(question, value, el) {
+  if (!Array.isArray(state.feedback[question])) state.feedback[question] = [];
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+    state.feedback[question] = state.feedback[question].filter(v => v !== value);
+  } else {
+    el.classList.add('selected');
+    state.feedback[question].push(value);
+  }
+}
+
+function checkFbReady() {
+  const ready = !!(state.feedback.q1 && state.feedback.q2 && state.feedback.q3 && state.feedback.q4);
+  const cta = document.getElementById('fb-cta-locked');
+  if (cta) {
+    if (ready) {
+      state.feedbackDone = true;
+      cta.style.opacity = '1';
+      cta.style.pointerEvents = 'all';
+      // Update badge text
+      const badge = cta.querySelector('span[style*="rose-gold"]');
+      if (badge) {
+        badge.textContent = lang.current === 'en' ? '✓ Feedback complete — choose your next step' : '✓ Feedback completo — elige tu siguiente paso';
+      }
+      // Submit feedback silently
+      submitFeedback();
+    }
+  }
+  updateFbProgress();
+}
+
+function updateFbProgress() {
+  let done = 0;
+  if (state.feedback.q1) done++;
+  if (state.feedback.q2) done++;
+  if (state.feedback.q3) done++;
+  if (state.feedback.q4) done++;
+  const pct = Math.round((done / 4) * 100);
+  const fill = document.getElementById('fb-prog-fill');
+  const label = document.getElementById('fb-prog-label');
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = done + ' / 4';
+}
+
+function submitFeedback() {
+  state.feedback.q7 = (document.getElementById('fb-q7')?.value || '').trim();
+  const payload = {
+    type: 'pyla_feedback',
+    timestamp: new Date().toISOString(),
+    lang: lang.current,
+    name: state.name,
+    email: state.email,
+    role: state.role,
+    colorApt: state.colorApt,
+    standInt: state.standInt,
+    hierarchyApt: state.hierarchyApt,
+    hierarchyInt: state.hierarchyInt,
+    fb_accuracy:  state.feedback.q1,
+    fb_word:      state.feedback.q2,
+    fb_recommend: state.feedback.q3,
+    fb_rating:    state.feedback.q4,
+    fb_helped:    (state.feedback.q5 || []).join(', '),
+    fb_context:   state.feedback.q6 || '',
+    fb_comments:  state.feedback.q7
+  };
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
+  fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(() => {});
+}
+
+// ══════════════════════════════════════
+// DOWNLOAD / PRINT REPORT
+// ══════════════════════════════════════
+function downloadReport() {
+  const content = document.getElementById('resultsContainer');
+  if (!content) return;
+
+  // Get current stylesheet href for Google Fonts
+  const fontLink = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap';
+
+  // Grab all inline styles from the main document
+  const styles = Array.from(document.styleSheets)
+    .map(sheet => {
+      try {
+        return Array.from(sheet.cssRules).map(r => r.cssText).join('\n');
+      } catch (e) { return ''; }
+    }).join('\n');
+
+  const printWindow = window.open('', '_blank', 'width=900,height=700');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>PYLA Report — ${state.name}</title>
+      <link href="${fontLink}" rel="stylesheet">
+      <style>
+        ${styles}
+        body {
+          background: #F7F3EE !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        .results-layout {
+          max-width: 860px;
+          margin: 0 auto;
+          padding: 40px 32px;
+        }
+        /* Hide feedback form and CTA locked state in print */
+        #fb-inline-form { display: none !important; }
+        #fb-cta-locked { display: none !important; }
+        .cta-block { display: none !important; }
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          @page { margin: 1cm; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="results-layout">
+        ${content.innerHTML}
+      </div>
+      <script>
+        window.onload = function() {
+          setTimeout(function() { window.print(); }, 600);
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
+// ══════════════════════════════════════
+// RESULTS ENGINE
+// ══════════════════════════════════════
+// ══════════════════════════════════════
+// ROLE LEVEL CLASSIFIER
+// ══════════════════════════════════════
+const roleLevelKeywords = {
+  strategic: ['ceo','chief executive','president','presidente','founder','fundador','fundadora','owner','dueño','dueña','partner','socio','socia','vp','vicepresidente','vice president','executive director','director ejecutivo','directora ejecutiva','chairman','chairwoman'],
+  tactical: ['manager','gerente','director','directora','lead','líder','lider','head of','jefe','jefa','coordinator','coordinador','coordinadora','supervisor','supervisora','team lead'],
+  operational: ['analyst','analista','specialist','especialista','associate','asociado','asociada','assistant','asistente','intern','becario','becaria','consultant','consultor','consultora','technician','técnico','tecnica','representative','representante']
+};
+function classifyRoleLevel(roleText) {
+  if (!roleText) return null;
+  const normalized = roleText.toLowerCase();
+  for (const level of ['strategic', 'tactical', 'operational']) {
+    for (const kw of roleLevelKeywords[level]) {
+      const bs = String.fromCharCode(92);
+      const pattern = new RegExp(bs+'b' + kw.replace(/[.*+?^${}()|[\]\\]/g, bs+'$&') + bs+'b', 'i');
+      if (pattern.test(normalized)) return level;
+    }
+  }
+  return null;
+}
+const levelRank = { operational: 1, tactical: 2, strategic: 3 };
+
+function generateResults() {
+  const l = lang.current;
+  const aptArea = areas[l].find(a => a.id === state.colorApt);
+  const intArea = areas[l].find(a => a.id === state.standInt);
+  const aptH = hierarchy[l].find(h => h.id === state.hierarchyApt);
+  const intH = hierarchy[l].find(h => h.id === state.hierarchyInt);
+  const devGenerics = generics[l].filter(g => state.generics.includes(g.id));
+  const undGenerics = generics[l].filter(g => !state.generics.includes(g.id));
+  const aligned = state.colorApt === state.standInt;
+  const hAligned = state.hierarchyApt === state.hierarchyInt;
+  const detectedRoleLevel = classifyRoleLevel(state.role);
+  const roleAboveAspiration = detectedRoleLevel && state.hierarchyInt && levelRank[detectedRoleLevel] > levelRank[state.hierarchyInt];
+  const roleAlignedWithAspiration = detectedRoleLevel && state.hierarchyInt && levelRank[detectedRoleLevel] === levelRank[state.hierarchyInt];
+
+  // Profile text
+  const profiles = {
+    en: {
+      1: "Your natural intelligence is expressed through systems of organization, analysis and value creation. You think in terms of efficiency, results and impact.",
+      2: "Your natural intelligence is expressed through human understanding, communication and the construction of meaning. You read people and contexts with exceptional sensitivity.",
+      3: "Your natural intelligence is expressed through visual perception, creative synthesis and aesthetic communication. You think in images, forms and possibilities.",
+      4: "Your natural intelligence is expressed through observation, care and understanding of living systems. You notice what others overlook and approach problems with precision.",
+      5: "Your natural intelligence is expressed through logical structure, systematic thinking and technical problem-solving. You see patterns where others see chaos.",
+      6: "Your natural intelligence is expressed through order, discipline and structured thinking. You operate with precision, responsibility and strategic awareness."
+    },
+    es: {
+      1: "Tu inteligencia natural se expresa a través de sistemas de organización, análisis y creación de valor. Piensas en términos de eficiencia, resultados e impacto.",
+      2: "Tu inteligencia natural se expresa a través de la comprensión humana, la comunicación y la construcción de significado. Lees personas y contextos con sensibilidad excepcional.",
+      3: "Tu inteligencia natural se expresa a través de la percepción visual, la síntesis creativa y la comunicación estética. Piensas en imágenes, formas y posibilidades.",
+      4: "Tu inteligencia natural se expresa a través de la observación, el cuidado y la comprensión de los sistemas vivos. Notas lo que otros pasan por alto y abordas los problemas con precisión.",
+      5: "Tu inteligencia natural se expresa a través de la estructura lógica, el pensamiento sistemático y la resolución técnica de problemas. Ves patrones donde otros ven caos.",
+      6: "Tu inteligencia natural se expresa a través del orden, la disciplina y el pensamiento estructurado. Operas con precisión, responsabilidad y conciencia estratégica."
+    }
+  };
+
+  // Structural profile narrative — aligned uses single area, divergent merges common traits
+  const aptPersonality = personalities[l].find(p => p.id === state.colorApt);
+  const intPersonality = personalities[l].find(p => p.id === state.standInt);
+
+  let structuralNarrative = '';
+  if (aligned) {
+    structuralNarrative = aptPersonality?.narrative || '';
+  } else {
+    const aptNarr = aptPersonality?.narrative || '';
+    const intNarr = intPersonality?.narrative || '';
+    const aptSentences = aptNarr.split('. ').filter(s => s.length > 20);
+    const intSentences = intNarr.split('. ').filter(s => s.length > 20);
+    if (l === 'en') {
+      structuralNarrative = `${aptSentences[0]}. At the same time, ${intSentences[0].charAt(0).toLowerCase() + intSentences[0].slice(1)}. ${aptSentences[1] || ''} ${intSentences[1] || ''}`.trim().replace(/\.\s*\./g, '.').replace(/\s+/g, ' ');
+    } else {
+      structuralNarrative = `${aptSentences[0]}. Al mismo tiempo, ${intSentences[0].charAt(0).toLowerCase() + intSentences[0].slice(1)}. ${aptSentences[1] || ''} ${intSentences[1] || ''}`.trim().replace(/\.\s*\./g, '.').replace(/\s+/g, ' ');
+    }
+  }
+
+  const directions = {
+    en: {
+      aligned: `Your cognitive aptitude and functional interest converge on the same domain: <strong>${aptArea?.name}</strong>. This alignment is a high-value signal — it indicates that your natural processing strengths and your motivational drive are pointed in the same direction. Roles and environments within this domain are where you are most likely to achieve sustained high performance.`,
+      divergent: `Your cognitive aptitude points toward <strong>${aptArea?.name}</strong> while your functional interest leans toward <strong>${intArea?.name}</strong>. This divergence is not a limitation — it is strategic data. It suggests your highest-impact positioning may be at the intersection of these two domains, or that you are in a natural transition between where your strengths currently operate and where your potential is pulling you.`
+    },
+    es: {
+      aligned: `Tu aptitud cognitiva y tu interés funcional convergen en el mismo dominio: <strong>${aptArea?.name}</strong>. Esta alineación es una señal de alto valor — indica que tus fortalezas naturales de procesamiento y tu motivación apuntan en la misma dirección. Los roles y entornos dentro de este dominio son donde es más probable que alcances un alto desempeño sostenido.`,
+      divergent: `Tu aptitud cognitiva apunta hacia <strong>${aptArea?.name}</strong> mientras que tu interés funcional se inclina hacia <strong>${intArea?.name}</strong>. Esta divergencia no es una limitación — es información estratégica. Sugiere que tu posicionamiento de mayor impacto puede estar en la intersección de estos dos dominios, o que estás en una transición natural entre donde operan actualmente tus fortalezas y hacia donde te jala tu potencial.`
+    }
+  };
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString(l === 'en' ? 'en-US' : 'es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const careerList = [...new Set([...(aptArea?.careers || []), ...(intArea?.careers || [])])].slice(0, 16);
+
+  const t = {
+    en: {
+      title: "PYLA · Cognitive Direction Report",
+      aptLabel: "Cognitive Aptitude",
+      intLabel: "Functional Interest",
+      aptNote: "Where your natural processing strengths are highest",
+      intNote: "Where your motivation and engagement are strongest",
+      alignLabel: aligned ? "High Alignment" : "Strategic Divergence",
+      alignDesc: aligned
+        ? "Your cognitive aptitude and functional interest point to the same domain — a clear performance signal."
+        : "Your aptitude and interest point to different domains — a strategic opportunity for unique positioning.",
+      structuralProfileLabel: "Structural Profile",
+      genericDev: "Developed Competencies",
+      genericUnd: "Growth Opportunities",
+      hierarchyLabel: "Structural Orientation",
+      currentRoleLabel: "Current Role",
+      aptHLabel: "Natural Performance Level",
+      intHLabel: "Aspirational Level",
+      hGapMsg: "There is a natural distance between where your strengths currently operate and where your aspirations point. This gap is not a barrier — it is a development path. Your full PYLA report maps the steps between where you are and where you are capable of going.",
+      threeWayGapMsg: (role) => `You are currently in <strong>${role}</strong>. Comparing this against your natural performance level and your aspirational level reveals where you stand today relative to where your strengths and your ambitions point. The Level 1 and Level 2 reports map the concrete steps to close that distance.`,
+      roleAboveAspirationMsg: (role) => `You are currently in <strong>${role}</strong> — a role positioned above the level your aspiration points to. This is not uncommon, and it is not a contradiction: it often signals that what you are seeking is not a higher position, but a closer match between your daily work and what genuinely drives you. The Level 1 and Level 2 reports explore that distinction — purpose versus title — in more depth.`,
+      roleAlignedMsg: (role) => `You are currently in <strong>${role}</strong> — and your aspiration points to the same level. This is not a plateau: it is a signal that your direction is clear. The work is not about climbing to a different level, but about deepening your impact and consolidating your advantage where you already operate. The Level 1 report maps exactly where that depth lives in your specific cognitive profile.`,
+      intHLabel: "Aspirational Level",
+      hStrategic: "Strategic · CEO · President · Executive Director · Founder",
+      hTactical: "Tactical · Manager · Team Lead · Department Head · Coordinator",
+      hOperational: "Operational · Specialist · Analyst · Associate · Individual Contributor",
+      hGapMsg: "There is a natural distance between where your strengths currently operate and where your aspirations point. This gap is not a barrier — it is a development path. Your full PYLA report maps the steps between where you are and where you are capable of going.",
+      directionLabel: "Cognitive Direction",
+      careersLabel: "Aligned Professional Paths",
+      ctaTitle: "This is just the starting point.",
+      ctaDesc: "The PYLA Level 1 Report translates the distance between your current role, your aptitude, and your aspiration into a concrete action: what to do, what risks to avoid, and why.",
+      ctaBtn1: "Get My Full Report",
+      ctaBtn2: "Download This Summary",
+      footerNote: "Projection & Learning Analysis · Pilar R Cognitive Structure · Clarity → Potential → Performance → Direction"
+    },
+    es: {
+      title: "PYLA · Reporte de Dirección Cognitiva",
+      aptLabel: "Aptitud Cognitiva",
+      intLabel: "Interés Funcional",
+      aptNote: "Donde son más altas tus fortalezas naturales de procesamiento",
+      intNote: "Donde son más fuertes tu motivación y compromiso",
+      alignLabel: aligned ? "Alta Alineación" : "Divergencia Estratégica",
+      alignDesc: aligned
+        ? "Tu aptitud cognitiva e interés funcional apuntan al mismo dominio — una señal clara de desempeño."
+        : "Tu aptitud e interés apuntan a dominios diferentes — una oportunidad estratégica de posicionamiento único.",
+      structuralProfileLabel: "Perfil Estructural",
+      genericDev: "Competencias Desarrolladas",
+      genericUnd: "Oportunidades de Crecimiento",
+      hierarchyLabel: "Orientación Estructural",
+      currentRoleLabel: "Cargo Actual",
+      aptHLabel: "Nivel de Desempeño Natural",
+      intHLabel: "Nivel Aspiracional",
+      hGapMsg: "Existe una distancia natural entre donde operan actualmente tus fortalezas y hacia donde apuntan tus aspiraciones. Esta brecha no es una barrera — es un camino de desarrollo. Tu reporte completo PYLA traza los pasos entre donde estás y hasta dónde eres capaz de llegar.",
+      threeWayGapMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong>. Comparar esto con tu nivel de desempeño natural y tu nivel aspiracional revela dónde estás hoy en relación con hacia dónde apuntan tus fortalezas y tus ambiciones. Los reportes Nivel 1 y Nivel 2 trazan los pasos concretos para cerrar esa distancia.`,
+      roleAboveAspirationMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — un cargo posicionado por encima del nivel hacia el que apunta tu aspiración. Esto no es inusual, y no es una contradicción: con frecuencia indica que lo que buscas no es un cargo más alto, sino una mayor cercanía entre tu trabajo diario y lo que genuinamente te impulsa. Los reportes Nivel 1 y Nivel 2 exploran esa distinción — propósito versus título — con mayor profundidad.`,
+      roleAlignedMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — y tu aspiración apunta al mismo nivel. Esto no es un techo: es una señal de que tu dirección ya es clara. El trabajo no es sobre escalar a un nivel distinto, sino sobre profundizar tu impacto y consolidar tu ventaja donde ya operas. El Reporte Nivel 1 mapea exactamente dónde vive esa profundidad en tu perfil cognitivo específico.`,
+      intHLabel: "Nivel Aspiracional",
+      hStrategic: "Estratégico · CEO · Presidente · Director Ejecutivo · Fundador",
+      hTactical: "Táctico · Gerente · Líder de Equipo · Jefe de Área · Coordinador",
+      hOperational: "Operativo · Especialista · Analista · Asociado · Profesional Individual",
+      hGapMsg: "Existe una distancia natural entre donde operan actualmente tus fortalezas y hacia donde apuntan tus aspiraciones. Esta brecha no es una barrera — es un camino de desarrollo. Tu reporte completo PYLA traza los pasos entre donde estás y hasta dónde eres capaz de llegar.",
+      directionLabel: "Dirección Cognitiva",
+      careersLabel: "Caminos Profesionales Afines",
+      ctaTitle: "Esto es solo el punto de partida.",
+      ctaDesc: "El Reporte PYLA Nivel 1 traduce la distancia entre tu cargo actual, tu aptitud y tu aspiración en una acción concreta: qué hacer, qué riesgos evitar, y por qué.",
+      ctaBtn1: "Obtener Mi Reporte Completo",
+      ctaBtn2: "Descargar Este Resumen",
+      footerNote: "Projection & Learning Analysis · Pilar R Cognitive Structure · Claridad → Potencial → Desempeño → Dirección"
+    }
+  };
+
+  const tx = t[l];
+
+  document.getElementById('resultsContainer').innerHTML = `
+    <div class="results-header">
+      <p class="results-eyebrow">${tx.title}</p>
+      <h1 class="results-name">${state.name}</h1>
+      <p class="results-date">${state.role ? state.role + ' · ' : ''}${dateStr}</p>
+    </div>
+
+    <div class="profile-banner">
+      <p class="pb-label">01 · ${l === 'en' ? 'Cognitive Profile' : 'Perfil Cognitivo'}</p>
+      <h2 class="pb-title">${profiles[l][state.colorApt] || profiles[l][1]}</h2>
+    </div>
+
+    <div class="results-grid">
+      <div class="result-block">
+        <p class="rb-label">02 · ${tx.aptLabel}</p>
+        <p class="rb-area">${aptArea?.name}</p>
+        <p class="rb-desc">${tx.aptNote}<br>${aptArea?.desc}</p>
+      </div>
+      <div class="result-block">
+        <p class="rb-label">03 · ${tx.intLabel}</p>
+        <p class="rb-area">${intArea?.name}</p>
+        <p class="rb-desc">${tx.intNote}<br>${intArea?.desc}</p>
+      </div>
+    </div>
+
+    <div class="alignment-block">
+      <div class="alignment-icon ${aligned ? 'aligned' : 'divergent'}">${aligned ? '◎' : '◈'}</div>
+      <div class="alignment-text">
+        <p class="alignment-title">${tx.alignLabel}</p>
+        <p class="alignment-desc">${tx.alignDesc}</p>
+      </div>
+    </div>
+
+    <div class="generics-block">
+      <p class="rb-label">04 · ${tx.genericDev}</p>
+      <div class="generic-tags">
+        ${devGenerics.length > 0
+          ? devGenerics.map(g => `<span class="generic-tag developed">${g.name}</span>`).join('')
+          : `<span class="generic-tag" style="color:var(--text-light)">${l === 'en' ? 'None selected' : 'Ninguna seleccionada'}</span>`}
+      </div>
+      ${undGenerics.length > 0 ? `
+        <p class="rb-label" style="margin-top:20px;">${tx.genericUnd}</p>
+        <div class="generic-tags">
+          ${undGenerics.map(g => `<span class="generic-tag">${g.name}</span>`).join('')}
+        </div>` : ''}
+    </div>
+
+    <div class="result-block" style="margin-bottom:20px;padding:32px;">
+      <p class="rb-label">05 · ${tx.structuralProfileLabel}</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;color:var(--charcoal);line-height:1.75;margin-top:8px;">${structuralNarrative}</p>
+    </div>
+
+    <div class="hierarchy-result">
+      <p class="rb-label">06 · ${tx.hierarchyLabel}</p>
+      <div class="hierarchy-three-col" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:12px;">
+        <div>
+          <p style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">${tx.currentRoleLabel}</p>
+          <div style="padding:12px 16px;background:var(--cream);border:1px solid var(--sand-deep);border-radius:2px;">
+            <p style="font-size:12px;color:var(--charcoal);line-height:1.5;">${state.role || (l === 'en' ? 'Not specified' : 'No especificado')}</p>
+          </div>
+        </div>
+        <div>
+          <p style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">${tx.aptHLabel}</p>
+          <div style="padding:12px 16px;background:var(--charcoal);border-radius:2px;">
+            <p style="font-size:12px;color:var(--cream);line-height:1.5;">
+              ${state.hierarchyApt === 'strategic' ? tx.hStrategic : state.hierarchyApt === 'tactical' ? tx.hTactical : tx.hOperational}
+            </p>
+          </div>
+        </div>
+        <div>
+          <p style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">${tx.intHLabel}</p>
+          <div style="padding:12px 16px;background:var(--rose-gold-light);border:1.5px solid var(--rose-gold);border-radius:2px;">
+            <p style="font-size:12px;color:var(--charcoal);line-height:1.5;">
+              ${state.hierarchyInt === 'strategic' ? tx.hStrategic : state.hierarchyInt === 'tactical' ? tx.hTactical : tx.hOperational}
+            </p>
+          </div>
+        </div>
+      </div>
+      ${state.role && roleAboveAspiration ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.roleAboveAspirationMsg(state.role)}</p>
+      </div>` : state.role && roleAlignedWithAspiration ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.roleAlignedMsg(state.role)}</p>
+      </div>` : state.role ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.threeWayGapMsg(state.role)}</p>
+      </div>` : !hAligned ? `<div style="margin-top:16px;padding:16px 20px;background:var(--cream);border-left:2px solid var(--rose-gold);border-radius:2px;">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic;">${tx.hGapMsg}</p>
+      </div>` : ''}
+    </div>
+
+    <div class="direction-block">
+      <p class="db-label">07 · ${tx.directionLabel}</p>
+      <p class="db-text">${directions[l][aligned ? 'aligned' : 'divergent']}</p>
+    </div>
+
+    <div class="careers-block">
+      <p class="rb-label">08 · ${tx.careersLabel}</p>
+      <div class="career-list">
+        ${careerList.map(c => `<span class="career-pill">${c}</span>`).join('')}
+      </div>
+    </div>
+
+    <div class="cta-block" id="pyla-cta-block">
+
+      <!-- FEEDBACK SECTION — obligatorio antes de desbloquear botones -->
+      <div id="fb-inline-form" style="text-align:left;margin-bottom:36px;">
+        <p style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--rose-gold);margin-bottom:10px;">
+          ${l === 'en' ? 'Before you go · Required' : 'Antes de continuar · Requerido'}
+        </p>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--charcoal);margin-bottom:6px;">
+          ${l === 'en' ? 'Tell us about your experience.' : 'Cuéntanos tu experiencia.'}
+        </h3>
+        <p style="font-size:12px;color:var(--text-muted);font-style:italic;margin-bottom:24px;line-height:1.6;">
+          ${l === 'en'
+            ? 'Complete the 4 required questions to unlock your download and Level 1 report.'
+            : 'Completa las 4 preguntas requeridas para desbloquear tu descarga y el reporte Nivel 1.'}
+        </p>
+
+        <!-- Barra de progreso -->
+        <div class="fb-progress" style="margin-bottom:24px;">
+          <div class="fb-progress-bar"><div class="fb-progress-fill" id="fb-prog-fill" style="width:0%"></div></div>
+          <span class="fb-progress-label" id="fb-prog-label">0 / 4</span>
+        </div>
+
+        <!-- P1: Precisión -->
+        <div class="fb-question">
+          <span class="fb-q-label">
+            ${l === 'en' ? 'How accurately did your PYLA profile represent you?' : '¿Qué tan preciso fue tu perfil PYLA?'}
+            <span class="fb-q-required">*</span>
+          </span>
+          <div class="fb-options" id="fb-q1">
+            <div class="fb-option" data-value="very"     onclick="selectFbOption('q1','very',this)"     >${l === 'en' ? 'Very accurately' : 'Muy preciso'}</div>
+            <div class="fb-option" data-value="quite"    onclick="selectFbOption('q1','quite',this)"    >${l === 'en' ? 'Quite accurately' : 'Bastante preciso'}</div>
+            <div class="fb-option" data-value="somewhat" onclick="selectFbOption('q1','somewhat',this)" >${l === 'en' ? 'Somewhat' : 'Algo preciso'}</div>
+            <div class="fb-option" data-value="not"      onclick="selectFbOption('q1','not',this)"      >${l === 'en' ? "Didn't represent me" : 'No me representó'}</div>
+          </div>
+        </div>
+
+        <!-- P2: Una palabra -->
+        <div class="fb-question">
+          <span class="fb-q-label">
+            ${l === 'en' ? 'How would you describe PYLA in one word?' : '¿Cómo describirías PYLA en una palabra?'}
+            <span class="fb-q-required">*</span>
+          </span>
+          <div class="fb-options" id="fb-q2" style="flex-wrap:wrap;">
+            <div class="fb-option" data-value="efficient"   onclick="selectFbOption('q2','efficient',this)"   >${l === 'en' ? 'Efficient' : 'Eficiente'}</div>
+            <div class="fb-option" data-value="revealing"   onclick="selectFbOption('q2','revealing',this)"   >${l === 'en' ? 'Revealing' : 'Reveladora'}</div>
+            <div class="fb-option" data-value="enriching"   onclick="selectFbOption('q2','enriching',this)"   >${l === 'en' ? 'Enriching' : 'Enriquecedora'}</div>
+            <div class="fb-option" data-value="surprising"  onclick="selectFbOption('q2','surprising',this)"  >${l === 'en' ? 'Surprising' : 'Sorprendente'}</div>
+            <div class="fb-option" data-value="precise"     onclick="selectFbOption('q2','precise',this)"     >${l === 'en' ? 'Precise' : 'Precisa'}</div>
+            <div class="fb-option" data-value="confusing"   onclick="selectFbOption('q2','confusing',this)"   >${l === 'en' ? 'Confusing' : 'Confusa'}</div>
+            <div class="fb-option" data-value="incomplete"  onclick="selectFbOption('q2','incomplete',this)"  >${l === 'en' ? 'Incomplete' : 'Incompleta'}</div>
+            <div class="fb-option" data-value="unnecessary" onclick="selectFbOption('q2','unnecessary',this)" >${l === 'en' ? 'Unnecessary' : 'Innecesaria'}</div>
+          </div>
+        </div>
+
+        <!-- P3: Recomendación -->
+        <div class="fb-question">
+          <span class="fb-q-label">
+            ${l === 'en' ? 'Would you recommend PYLA to someone?' : '¿Recomendarías PYLA a alguien?'}
+            <span class="fb-q-required">*</span>
+          </span>
+          <div class="fb-options" id="fb-q3">
+            <div class="fb-option" data-value="definitely" onclick="selectFbOption('q3','definitely',this)">${l === 'en' ? 'Definitely yes' : 'Definitivamente sí'}</div>
+            <div class="fb-option" data-value="probably"   onclick="selectFbOption('q3','probably',this)"  >${l === 'en' ? 'Probably yes' : 'Probablemente sí'}</div>
+            <div class="fb-option" data-value="unsure"     onclick="selectFbOption('q3','unsure',this)"    >${l === 'en' ? 'Not sure' : 'No estoy seguro/a'}</div>
+            <div class="fb-option" data-value="no"         onclick="selectFbOption('q3','no',this)"        >${l === 'en' ? 'No' : 'No'}</div>
+          </div>
+        </div>
+
+        <!-- P4: Experiencia global con estrellas -->
+        <div class="fb-question">
+          <span class="fb-q-label">
+            ${l === 'en' ? 'How would you rate your overall PYLA experience?' : '¿Cómo calificas tu experiencia general con PYLA?'}
+            <span class="fb-q-required">*</span>
+          </span>
+          <p style="font-size:11px;color:var(--text-light);font-style:italic;margin-bottom:10px;">
+            ${l === 'en'
+              ? 'Consider: time to complete, visual interface, question clarity, and report quality.'
+              : 'Considera: tiempo de desarrollo, interfaz visual, claridad de las preguntas y calidad del reporte.'}
+          </p>
+          <div class="fb-options" id="fb-q4" style="flex-direction:column;gap:6px;">
+            <div class="fb-option fb-star-option" data-value="5" onclick="selectFbOption('q4','5',this)">⭐⭐⭐⭐⭐ &nbsp;${l === 'en' ? 'Exceptional' : 'Excepcional'}</div>
+            <div class="fb-option fb-star-option" data-value="4" onclick="selectFbOption('q4','4',this)">⭐⭐⭐⭐ &nbsp;&nbsp;&nbsp;${l === 'en' ? 'Very good' : 'Muy buena'}</div>
+            <div class="fb-option fb-star-option" data-value="3" onclick="selectFbOption('q4','3',this)">⭐⭐⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${l === 'en' ? 'Good' : 'Buena'}</div>
+            <div class="fb-option fb-star-option" data-value="2" onclick="selectFbOption('q4','2',this)">⭐⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${l === 'en' ? 'Fair' : 'Regular'}</div>
+            <div class="fb-option fb-star-option" data-value="1" onclick="selectFbOption('q4','1',this)">⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${l === 'en' ? 'Needs improvement' : 'Mejorable'}</div>
+          </div>
+        </div>
+
+        <div class="fb-divider"></div>
+        <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-light);margin-bottom:20px;">
+          ${l === 'en' ? 'Optional — 30 more seconds' : 'Opcional — 30 segundos más'}
+        </p>
+
+        <!-- P5: Aporte — multi-select -->
+        <div class="fb-question">
+          <span class="fb-q-label">
+            ${l === 'en' ? 'PYLA helped me to: (choose all that apply)' : 'PYLA me ayudó a: (elige todas las que apliquen)'}
+          </span>
+          <div class="fb-options fb-multi" id="fb-q5" style="flex-wrap:wrap;">
+            <div class="fb-option" data-value="aptitudes"  onclick="toggleFbMulti('q5','aptitudes',this)" >${l === 'en' ? 'Recognize my aptitudes' : 'Reconocer mis aptitudes'}</div>
+            <div class="fb-option" data-value="interests"  onclick="toggleFbMulti('q5','interests',this)" >${l === 'en' ? 'Clarify my vocational interests' : 'Clarificar mis intereses vocacionales'}</div>
+            <div class="fb-option" data-value="direction"  onclick="toggleFbMulti('q5','direction',this)" >${l === 'en' ? 'Gain vision on my professional path' : 'Ganar visión sobre mi dirección profesional'}</div>
+            <div class="fb-option" data-value="leadership" onclick="toggleFbMulti('q5','leadership',this)">${l === 'en' ? 'Understand my leadership style' : 'Entender mi estilo de liderazgo'}</div>
+            <div class="fb-option" data-value="confirmed"  onclick="toggleFbMulti('q5','confirmed',this)" >${l === 'en' ? 'Confirm what I already knew' : 'Confirmar lo que ya sabía de mí'}</div>
+            <div class="fb-option" data-value="nothing"    onclick="toggleFbMulti('q5','nothing',this)"   >${l === 'en' ? "It didn't add anything new" : 'No me aportó nada nuevo'}</div>
+          </div>
+        </div>
+
+        <!-- P6: Contexto -->
+        <div class="fb-question">
+          <span class="fb-q-label">
+            ${l === 'en' ? 'What brought you to PYLA today?' : '¿En qué contexto hiciste PYLA hoy?'}
+          </span>
+          <div class="fb-options" id="fb-q6" style="flex-wrap:wrap;">
+            <div class="fb-option" data-value="career"       onclick="selectFbOption('q6','career',this)"      >${l === 'en' ? 'Career decision' : 'Decisión de carrera'}</div>
+            <div class="fb-option" data-value="professional" onclick="selectFbOption('q6','professional',this)">${l === 'en' ? 'Professional growth' : 'Desarrollo profesional'}</div>
+            <div class="fb-option" data-value="curiosity"    onclick="selectFbOption('q6','curiosity',this)"   >${l === 'en' ? 'Curiosity' : 'Curiosidad personal'}</div>
+            <div class="fb-option" data-value="recommended"  onclick="selectFbOption('q6','recommended',this)" >${l === 'en' ? 'Recommended to me' : 'Me lo recomendaron'}</div>
+            <div class="fb-option" data-value="education"    onclick="selectFbOption('q6','education',this)"   >${l === 'en' ? 'Educational context' : 'Contexto educativo'}</div>
+            <div class="fb-option" data-value="corporate"    onclick="selectFbOption('q6','corporate',this)"   >${l === 'en' ? 'Corporate / HR process' : 'Proceso empresarial / RRHH'}</div>
+            <div class="fb-option" data-value="other"        onclick="selectFbOption('q6','other',this)"       >${l === 'en' ? 'Other' : 'Otro'}</div>
+          </div>
+        </div>
+
+        <!-- P7: Comentario libre -->
+        <div class="fb-question">
+          <span class="fb-q-label">
+            ${l === 'en' ? 'Any other comments?' : '¿Algún comentario adicional?'}
+          </span>
+          <textarea class="fb-textarea" id="fb-q7" rows="3"
+            placeholder="${l === 'en' ? 'Optional — your words help PYLA improve.' : 'Opcional — tus palabras ayudan a mejorar PYLA.'}"></textarea>
+        </div>
+
+        <p class="fb-note" style="text-align:left;margin-bottom:0;">
+          ${l === 'en' ? 'Your responses are anonymous and used only to improve PYLA.' : 'Tus respuestas son anónimas y se usan solo para mejorar PYLA.'}
+        </p>
+      </div>
+
+      <!-- CTA — bloqueado hasta completar feedback -->
+      <div id="fb-cta-locked" style="opacity:0.35;pointer-events:none;transition:all 0.5s ease;">
+        <div style="display:inline-block;padding:6px 16px;background:var(--rose-gold-light);border:1px solid var(--rose-gold);border-radius:2px;margin-bottom:20px;">
+          <span style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rose-gold);">
+            ${l === 'en' ? 'Unlocks after feedback' : 'Se desbloquea al completar'}
+          </span>
+        </div>
+        <h3 class="cta-title">${tx.ctaTitle}</h3>
+        <p class="cta-desc">${tx.ctaDesc}</p>
+
+        <!-- Nivel 1 -->
+        <div style="background:var(--cream);border:1px solid var(--sand);border-radius:4px;padding:24px 28px;margin:20px 0 12px;text-align:left;">
+          <p style="font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--rose-gold);margin-bottom:6px;">
+            ${l === 'en' ? 'Level 1 Report · Instant delivery' : 'Reporte Nivel 1 · Entrega inmediata'}
+          </p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--charcoal);margin-bottom:4px;">
+            ${l === 'en' ? 'Deeper cognitive analysis + development recommendations' : 'Análisis cognitivo más profundo + recomendaciones de desarrollo'}
+          </p>
+          <p style="font-size:11px;color:var(--text-muted);margin-bottom:16px;">
+            ${l === 'en' ? 'Environments where you perform best · cognitive blind spots · clear direction — delivered instantly' : 'Entornos donde rindes mejor · puntos ciegos cognitivos · dirección clara — entregado al instante'}
+          </p>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--charcoal);">$97</span>
+              <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">${l === 'en' ? 'launch price' : 'precio de lanzamiento'}</span>
+            </div>
+            <button class="btn-cta-primary" id="btn-level1" style="margin:0;">
+              ${l === 'en' ? 'Interested? Reply to the email you will receive.' : '¿Interesado/a? Responde al correo que recibirás.'}
+            </button>
+          </div>
+        </div>
+
+        <!-- Nivel 2 -->
+        <div style="background:var(--charcoal);border-radius:4px;padding:24px 28px;margin-bottom:20px;text-align:left;">
+          <p style="font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--rose-gold);margin-bottom:6px;">
+            ${l === 'en' ? 'Level 2 Report · Most complete' : 'Reporte Nivel 2 · El más completo'}
+          </p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--cream);margin-bottom:4px;">
+            ${l === 'en' ? 'Full analysis + 30/60/90 day structured action plan' : 'Análisis completo + plan de acción estructurado 30/60/90 días'}
+          </p>
+          <p style="font-size:11px;color:rgba(247,243,238,0.55);margin-bottom:16px;">
+            ${l === 'en' ? 'Everything in Level 1 + implementation roadmap with measurable results' : 'Todo lo del Nivel 1 + hoja de ruta de implementación con resultados medibles'}
+          </p>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--cream);">${l === 'en' ? 'Custom' : 'A medida'}</span>
+            </div>
+            <button class="btn-cta-primary" id="btn-level2" onclick="window.location.href='mailto:contact@yrelevate.com?subject=Level 2 Report'" style="margin:0;background:var(--rose-gold);">
+              ${l === 'en' ? 'Request Information →' : 'Solicitar Información →'}
+            </button>
+          </div>
+        </div>
+
+        <!-- Descarga gratuita -->
+        <button class="btn-cta-secondary" id="btn-download" onclick="downloadReport()" style="width:100%;">
+          ${l === 'en' ? 'Download this summary (free)' : 'Descargar este resumen (gratis)'}
+        </button>
+      </div>
+
+    </div>
+
+    <div class="results-footer">
+      <p class="rf-brand">P<em>Y</em>LA · Pilar R Cognitive Structure</p>
+      <p class="rf-note">${tx.footerNote}</p>
+      <p style="font-size:10px;color:var(--text-light);margin-top:8px;letter-spacing:0.06em;">
+        © ${new Date().getFullYear()} PYLA · pyla.yrelevate.com · ${l === 'en' ? 'All rights reserved' : 'Todos los derechos reservados'}
+      </p>
+    </div>
+  `;
+
+  state.currentModule = 5;
+  buildSidebars();
+  sendTestData();
+  showScreen('screen-results');
+}
+
+// ── ENVÍO TEST → Apps Script ──────────────────────────────────
+function sendTestData() {
+  const l = lang.current;
+  const aptArea = areas[l].find(a => a.id === state.colorApt);
+  const intArea = areas[l].find(a => a.id === state.standInt);
+  const aligned = state.colorApt === state.standInt;
+
+  const payload = {
+    type:         'test',
+    name:         state.name         || '',
+    email:        state.email        || '',
+    role:         state.role         || '',
+    lang:         l,
+    language:     l,
+    phase1:       state.colorApt     || '',
+    phase2:       state.standInt     || '',
+    phase3:       (state.generics    || []).join(', '),
+    phase4apt:    state.hierarchyApt || '',
+    phase4int:    state.hierarchyInt || '',
+    aptitudeArea: aptArea?.name      || '',
+    interestArea: intArea?.name      || '',
+    alignment:    aligned ? 'Aligned' : 'Divergent',
+    hierarchyApt: state.hierarchyApt || '',
+    hierarchyInt: state.hierarchyInt || ''
+  };
+
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
+  fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(() => {});
+
+}
+
+// ── SISTEMA DE TOKENS ─────────────────────────────────────────
+const TOKEN_SECRET = 'PYLA2026CR';
+
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+function validateToken(token) {
+  try {
+    const padded = token.replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(padded);
+    const parts = raw.split('|');
+    if (parts.length !== 4) return { valid: false };
+    const [type, expiry, uses, hash] = parts;
+    const expected = simpleHash(`${type}|${expiry}|${uses}|${TOKEN_SECRET}`);
+    if (hash !== expected) return { valid: false };
+    if (Date.now() > parseInt(expiry)) return { valid: false, expired: true };
+    return { valid: true, type, uses: parseInt(uses) };
+  } catch(e) {
+    return { valid: false };
+  }
+}
+
+function checkTokenOnLoad() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  if (!token) return;
+  const result = validateToken(token);
+  if (!result.valid) {
+    if (result.expired) showTokenExpired();
+    else window.location.href = 'https://pyla.yrelevate.com';
+  } else {
+    // Token válido: si hay landing, redirigir ahí
+    const landing = params.get('landing');
+    if (landing) {
+      window.location.href = landing;
+    }
+  }
+}
+
+function showTokenExpired() {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;
+         background:linear-gradient(150deg,#FDFAF7 0%,#F7F3EE 55%,#EDE4D8 100%);
+         font-family:'DM Sans',sans-serif;text-align:center;padding:48px 24px;">
+      <div style="max-width:420px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.14em;
+             color:#1C1C1C;margin-bottom:32px;">P<em style="color:#C9A99A;font-style:italic;">Y</em>LA</div>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;
+             color:#1C1C1C;margin-bottom:16px;">This link has expired</h1>
+        <p style="font-size:13px;color:#7A7068;line-height:1.7;margin-bottom:32px;">
+          Access to this PYLA assessment is no longer available.<br>
+          Please request a new link to complete your evaluation.
+        </p>
+        <a href="https://pyla.yrelevate.com" style="display:inline-block;padding:14px 32px;
+             background:#1C1C1C;color:#FDFAF7;font-size:11px;letter-spacing:0.18em;
+             text-transform:uppercase;text-decoration:none;border-radius:2px;">
+          Learn about PYLA
+        </a>
+      </div>
+    </div>`;
+}
+
+window.addEventListener('DOMContentLoaded', checkTokenOnLoad);
+window.addEventListener('DOMContentLoaded', function() {
+  const roleInput = document.getElementById('userRole');
+  if (roleInput) {
+    roleInput.addEventListener('input', function() {
+      roleInput.classList.remove('field-invalid');
+      const roleError = document.getElementById('roleErrorMsg');
+      if (roleError) roleError.classList.remove('visible');
+    });
+  }
+});
+</script>
+</body>
+</html>
