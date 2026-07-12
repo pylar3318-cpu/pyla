@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PYLA Nivel 02 — Reporte de Inteligencia Cognitiva Organizacional</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --dk:#111010;--dk2:#181614;--dk3:#231F1C;--dk4:#2C2724;
+  --lt:#F0EBE3;--lt2:#E8E1D8;--lt3:#DDD5CC;--lt4:#FAF7F4;
+  --rg:#C9A99A;--rg2:#E8D5CE;--rg3:#D4B8AC;
+  --gold:#C4924A;--cream:#FAF7F4;--sand:#8A8178;
+  --bdk:rgba(201,169,154,0.13);--blt:rgba(17,16,16,0.1);
+  --green:#6AAF7A;--red:#A85A5A;--amber:#C4924A;
+  --ez:cubic-bezier(0.22,1,0.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;font-weight:300;font-size:14px;line-height:1.5;background:var(--dk);}
+
+/* SIDEBAR */
+.sb{position:fixed;top:0;left:0;bottom:0;width:166px;z-index:200;background:var(--dk2);border-right:1px solid var(--bdk);display:flex;flex-direction:column;padding:24px 18px;}
+.sb-brand{font-family:'Cormorant Garamond',serif;font-size:21px;letter-spacing:0.16em;color:var(--lt);}
+.sb-brand em{color:var(--rg);font-style:italic;}
+.sb-lvl{font-size:7px;letter-spacing:0.26em;text-transform:uppercase;color:var(--sand);margin-bottom:26px;}
+.sb-nav{display:flex;flex-direction:column;gap:1px;flex:1;overflow-y:auto;}
+.sb-nav::-webkit-scrollbar{display:none;}
+.sba{display:flex;align-items:center;gap:7px;padding:6px 7px;border-radius:2px;text-decoration:none;color:var(--sand);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;transition:all 0.2s;}
+.sba:hover{color:var(--lt);background:rgba(201,169,154,0.05);}
+.sba.on{color:var(--rg);}
+.sba-d{width:5px;height:5px;border-radius:50%;border:1px solid currentColor;flex-shrink:0;}
+.sba.on .sba-d{background:var(--rg);border-color:var(--rg);}
+.sb-sep{width:1px;height:9px;background:var(--bdk);margin-left:9px;}
+.sb-foot{font-size:7px;letter-spacing:0.06em;text-transform:uppercase;color:var(--sand);line-height:1.8;}
+
+/* MAIN */
+.main{margin-left:166px;}
+
+/* SECTIONS */
+.sec{opacity:0;transform:translateY(14px);transition:opacity 0.6s var(--ez),transform 0.6s var(--ez);}
+.sec.vis{opacity:1;transform:none;}
+.dk{background:var(--dk2);color:var(--lt);border-bottom:1px solid var(--bdk);}
+.lt{background:var(--lt2);color:var(--dk);border-bottom:1px solid var(--blt);}
+.p44{padding:44px 48px;}
+.p32{padding:32px 48px;}
+
+/* EYEBROWS & TITLES */
+.ey-dk{font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--rg);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.ey-dk::after{content:'';flex:0 0 16px;height:1px;background:var(--rg);opacity:0.35;}
+.ey-lt{font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--dk3);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.ey-lt::after{content:'';flex:0 0 16px;height:1px;background:var(--dk3);opacity:0.22;}
+.sh-dk{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2vw,26px);font-weight:300;color:var(--lt);line-height:1.15;margin-bottom:4px;}
+.sh-dk em{font-style:italic;color:var(--rg);}
+.sh-lt{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2vw,26px);font-weight:300;color:var(--dk);line-height:1.15;margin-bottom:4px;}
+.sh-lt em{font-style:italic;}
+.note-dk{font-size:9px;color:var(--sand);font-style:italic;margin-bottom:20px;line-height:1.5;padding:6px 10px;background:rgba(255,255,255,0.02);border-left:1px solid rgba(201,169,154,0.2);border-radius:1px;}
+.note-lt{font-size:9px;color:var(--sand);font-style:italic;margin-bottom:20px;line-height:1.5;padding:6px 10px;background:rgba(17,16,16,0.04);border-left:1px solid rgba(17,16,16,0.14);border-radius:1px;}
+
+/* HERO */
+.hero{background:linear-gradient(145deg,var(--dk2) 0%,var(--dk3) 60%,#1E1A16 100%);border-bottom:1px solid var(--bdk);display:grid;grid-template-columns:1fr 280px;}
+.hero-l{padding:44px 48px;}
+.h-ey{font-size:8px;letter-spacing:0.32em;text-transform:uppercase;color:var(--rg);margin-bottom:14px;}
+.h-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,52px);font-weight:300;line-height:1.04;color:var(--cream);margin-bottom:8px;}
+.h-title em{font-style:italic;color:var(--rg);}
+.h-sub{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:var(--sand);margin-bottom:30px;line-height:1.5;}
+.h-meta{display:flex;gap:36px;flex-wrap:wrap;margin-bottom:36px;}
+.hm{display:flex;flex-direction:column;gap:2px;}
+.hm-l{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sand);}
+.hm-v{font-family:'Cormorant Garamond',serif;font-size:clamp(13px,1.6vw,18px);color:var(--cream);}
+
+/* methodology note */
+.method-note{padding:14px 18px;background:rgba(201,169,154,0.06);border:1px solid var(--bdk);border-left:2px solid var(--rg);border-radius:2px;font-size:10px;color:rgba(240,235,227,0.55);line-height:1.65;font-style:italic;}
+
+/* hero right — 4 key indicators */
+.hero-r{border-left:1px solid var(--bdk);background:rgba(201,169,154,0.02);padding:24px 20px;display:flex;flex-direction:column;gap:10px;}
+.ki{background:rgba(255,255,255,0.025);border:1px solid var(--bdk);border-radius:3px;padding:14px 16px;transition:all 0.3s;cursor:default;}
+.ki:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);}
+.ki-lbl{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rg);margin-bottom:4px;}
+.ki-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--cream);line-height:1;}
+.ki-val em{font-size:18px;font-style:italic;}
+.ki-desc{font-size:10px;color:var(--sand);margin-top:3px;line-height:1.4;}
+.ki-bar-t{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin-top:7px;}
+.ki-bar-f{height:100%;border-radius:1px;background:linear-gradient(to right,var(--rg),var(--rg2));transition:width 1.2s var(--ez);}
+.ki.green-ki{background:rgba(106,175,122,0.07);border-color:rgba(106,175,122,0.18);}
+.ki.green-ki .ki-lbl{color:var(--green);}
+.ki.green-ki .ki-val{color:var(--green);}
+
+/* SECTION 1: PROFILE DISTRIBUTION + MAP + COMPETENCIES */
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.cb{padding:30px 26px;border-right:1px solid var(--bdk);}
+.cb:last-child{border-right:none;}
+.cb-lt{padding:30px 26px;border-right:1px solid var(--blt);}
+.cb-lt:last-child{border-right:none;}
+.ct{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rg);margin-bottom:12px;display:flex;align-items:center;gap:5px;}
+.ct::after{content:'';flex:0 0 10px;height:1px;background:var(--rg);opacity:0.3;}
+.ct-lt{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dk3);margin-bottom:12px;display:flex;align-items:center;gap:5px;}
+.ct-lt::after{content:'';flex:0 0 10px;height:1px;background:var(--dk3);opacity:0.2;}
+
+/* profile distribution bars */
+.prof-bar-row{margin-bottom:10px;}
+.pbr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.pbr-name{font-size:11px;color:var(--lt);}
+.pbr-pct{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--rg);}
+.pbr-track{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.pbr-fill{height:100%;border-radius:2px;transition:width 1.1s var(--ez);}
+.pbr-sub{font-size:9px;color:var(--sand);margin-top:3px;font-style:italic;}
+
+/* donut */
+.donut-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.donut-legend{width:100%;display:flex;flex-direction:column;gap:5px;}
+.dl{display:flex;align-items:center;gap:7px;}
+.dl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dl-n{font-size:10px;color:var(--lt);flex:1;}
+.dl-p{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--rg);}
+
+/* competency bars */
+.comp-row{margin-bottom:12px;cursor:default;padding:8px 10px;border-radius:2px;border:1px solid transparent;transition:all 0.25s;}
+.comp-row:hover{background:rgba(17,16,16,0.05);border-color:var(--blt);}
+.comp-row.sel{background:rgba(17,16,16,0.07);border-color:rgba(17,16,16,0.18);}
+.cr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.cr-name{font-size:11px;color:var(--dk);font-weight:400;}
+.cr-pct{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dk3);}
+.cr-track{height:3px;background:rgba(17,16,16,0.1);border-radius:2px;overflow:hidden;}
+.cr-fill{height:100%;border-radius:2px;background:var(--dk3);transition:width 1.1s var(--ez);}
+.cr-def{font-size:9px;color:rgba(17,16,16,0.5);line-height:1.55;margin-top:5px;display:none;font-style:italic;}
+.comp-row.sel .cr-def{display:block;}
+.cr-hint{font-size:8px;color:rgba(17,16,16,0.35);margin-top:3px;font-style:italic;display:none;}
+.comp-row.sel .cr-hint{display:block;}
+
+/* SECTION 2: KEY INDICATORS — pattern observation */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;}
+.kpi-card{padding:20px 20px;border-radius:3px;border:1px solid var(--bdk);background:rgba(255,255,255,0.025);transition:all 0.3s;cursor:default;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--rg);opacity:0;transition:opacity 0.3s;}
+.kpi-card:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);}
+.kpi-card:hover::before{opacity:1;}
+.kc-ey{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:var(--rg);margin-bottom:5px;}
+.kc-val{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--cream);line-height:1;margin-bottom:4px;}
+.kc-val em{font-size:22px;font-style:italic;}
+.kc-label{font-size:11px;color:var(--lt);margin-bottom:4px;font-weight:400;}
+.kc-note{font-size:10px;color:rgba(240,235,227,0.42);line-height:1.55;font-style:italic;}
+.kc-source{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(201,169,154,0.4);margin-top:8px;}
+.kc-bar-t{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin:8px 0 6px;}
+.kc-bar-f{height:100%;border-radius:1px;transition:width 1.1s var(--ez);}
+.kc-bar-f.rg{background:linear-gradient(to right,var(--rg),var(--rg2));}
+.kc-bar-f.gr{background:var(--green);}
+.kc-bar-f.am{background:var(--amber);}
+
+/* SECTION 3: HEATMAP */
+.heat-wrap{overflow-x:auto;margin-top:8px;}
+table.ht{width:100%;border-collapse:separate;border-spacing:3px;}
+table.ht th{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(17,16,16,0.45);padding:5px 8px;font-weight:300;text-align:center;}
+table.ht th.rh{text-align:left;}
+table.ht td{padding:10px 8px;text-align:center;border-radius:2px;font-size:11px;font-weight:400;transition:all 0.25s;cursor:default;}
+table.ht td:hover{filter:brightness(1.1);}
+table.ht td.dept-cell{font-size:10px;color:var(--dk);text-align:left;background:rgba(17,16,16,0.04);border-radius:2px;padding-left:10px;border:1px solid var(--blt);}
+.hh{background:rgba(106,175,122,0.28);color:#2A5A35;}
+.hm2{background:rgba(196,146,74,0.22);color:#6B3D00;}
+.hl{background:rgba(168,90,90,0.2);color:#5A1A1A;}
+.align-b{display:inline-block;padding:2px 7px;border-radius:2px;font-size:9px;background:rgba(17,16,16,0.06);color:var(--dk3);border:1px solid var(--blt);}
+.dept-mini-wrap{overflow-x:auto;}
+table.ht.dept-mini{border-spacing:2px;}
+table.ht.dept-mini th{font-size:6.5px;padding:3px 2px;letter-spacing:0.02em;}
+table.ht.dept-mini td{font-size:9px;padding:6px 3px;}
+table.ht.dept-mini td.dept-cell{font-size:9px;padding-left:6px;white-space:nowrap;}
+
+/* SECTION 4: PATTERN INSIGHTS — what it means per sector */
+.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ins-card{padding:18px 20px;border-radius:3px;border:1px solid var(--bdk);background:rgba(255,255,255,0.025);transition:all 0.3s;cursor:default;}
+.ins-card:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);}
+.ins-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ins-ico{font-size:18px;}
+.ins-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--lt);}
+.ins-body{font-size:10px;color:rgba(240,235,227,0.48);line-height:1.65;margin-bottom:8px;}
+.ins-action{font-size:10px;color:var(--rg);font-style:italic;padding-top:8px;border-top:1px solid var(--bdk);}
+
+/* SECTION 5: ROADMAP */
+.rm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.rm-ph{background:rgba(255,255,255,0.02);border:1px solid var(--bdk);border-radius:3px;overflow:hidden;transition:all 0.35s var(--ez);cursor:default;}
+.rm-ph:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.3);}
+.rm-head{padding:18px 18px 14px;border-bottom:1px solid var(--bdk);position:relative;overflow:hidden;}
+.rm-bg{position:absolute;right:-4px;top:-10px;font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;color:rgba(255,255,255,0.02);line-height:1;pointer-events:none;}
+.rm-d{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:var(--rg);margin-bottom:3px;display:block;}
+.rm-o{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);line-height:1.2;}
+.rm-body{padding:14px 18px;}
+.rm-item{display:flex;gap:7px;margin-bottom:8px;align-items:flex-start;font-size:10px;color:rgba(240,235,227,0.75);line-height:1.5;}
+.rm-ck{color:var(--rg);font-size:9px;flex-shrink:0;margin-top:2px;}
+.rm-kpi{margin-top:10px;padding:8px 10px;background:rgba(201,169,154,0.07);border-radius:2px;border-left:2px solid var(--rg);}
+.road-caveat{margin-top:16px;padding:14px 18px;background:rgba(201,169,154,0.05);border-radius:2px;border-left:2px solid var(--rg);font-size:11.5px;line-height:1.65;color:var(--sand);}
+.rec-note-box{margin-top:16px;padding:14px 18px;background:rgba(17,16,16,0.04);border-radius:2px;border-left:2px solid var(--rg);font-size:11.5px;line-height:1.65;color:var(--sand);}
+.rm-kl{font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:var(--rg);margin-bottom:2px;}
+.rm-kt{font-size:9px;color:rgba(240,235,227,0.65);line-height:1.5;font-style:italic;}
+
+/* SECTION 6: RECOMMENDATIONS */
+.rec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.rec{padding:16px 18px;background:white;border:1px solid var(--blt);border-radius:3px;transition:all 0.3s;cursor:default;border-left:3px solid var(--dk3);}
+.rec:hover{background:var(--lt4);border-left-color:var(--rg3);}
+.rec-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.rec-ico{font-size:16px;}
+.rec-n{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dk);}
+.rec-b{font-size:10px;color:rgba(17,16,16,0.5);line-height:1.55;}
+
+/* COMPETENCIES PORTFOLIO SECTION */
+.comp-portfolio{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.cp-card{padding:16px 18px;border-radius:3px;border:1px solid var(--bdk);background:rgba(255,255,255,0.025);transition:all 0.3s var(--ez);cursor:default;position:relative;}
+.cp-card:hover{background:rgba(201,169,154,0.05);border-color:rgba(201,169,154,0.2);}
+.cp-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.cp-ico{font-size:14px;}
+.cp-name{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--lt);}
+.cp-def{font-size:10px;color:rgba(240,235,227,0.45);line-height:1.55;margin-bottom:8px;}
+.cp-opp{font-size:9px;color:var(--rg);font-style:italic;padding-top:7px;border-top:1px solid var(--bdk);}
+
+/* FINAL */
+.final{background:linear-gradient(140deg,var(--dk2) 0%,var(--dk3) 100%);padding:52px 48px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center;}
+.fi-q{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,22px);font-style:italic;font-weight:300;color:var(--cream);line-height:1.75;padding-left:20px;border-left:2px solid var(--rg);}
+.fi-q cite{display:block;font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sand);margin-top:8px;font-style:normal;}
+.fi-right{display:flex;flex-direction:column;gap:10px;}
+.fi-row{padding:14px 16px;background:rgba(255,255,255,0.025);border:1px solid var(--bdk);border-radius:3px;transition:all 0.3s;}
+.fi-row:hover{background:rgba(201,169,154,0.05);border-color:var(--bdk);}
+.fi-rl{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rg);margin-bottom:3px;}
+.fi-rv{font-size:11px;color:var(--lt);line-height:1.4;}
+
+/* FOOTER */
+.footer{background:var(--lt3);border-top:1px solid var(--blt);padding:20px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.ft-b{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--dk3);letter-spacing:0.14em;display:flex;align-items:center;gap:12px;}
+.ft-b em{color:var(--rg3);font-style:italic;}
+.ft-logo{height:20px;width:auto;display:block;opacity:0.85;flex-shrink:0;}
+.ft-logo-sep{width:1px;height:16px;background:rgba(17,16,16,0.14);flex-shrink:0;}
+.ft-r{font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(17,16,16,0.4);text-align:right;line-height:1.9;}
+
+/* UTILS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.hdk{padding:38px 48px;border-right:1px solid var(--bdk);}
+.hdk:last-child{border-right:none;}
+.hlt{padding:38px 48px;border-right:1px solid var(--blt);}
+.hlt:last-child{border-right:none;}
+.lnk-dk{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--rg);margin-top:14px;display:inline-block;text-decoration:none;transition:opacity 0.2s;}.lnk-dk:hover{opacity:0.7;}
+.lnk-lt{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--dk3);margin-top:14px;display:inline-block;text-decoration:none;transition:opacity 0.2s;}.lnk-lt:hover{opacity:0.6;}
+
+@media(max-width:860px){
+  .sb{display:none;}.main{margin-left:0;}
+  .hero,.three-col,.two-col,.final,.insights-grid,.rec-grid,.comp-portfolio,.kpi-grid{grid-template-columns:1fr;}
+  .hero-r,.cb,.cb-lt,.hdk,.hlt{border-right:none;border-bottom:1px solid var(--bdk);}
+  .p44,.p32,.hdk,.hlt,.cb,.cb-lt{padding:28px 20px;}
+  .hero-l{padding:28px 20px;}
+  .rm-grid{grid-template-columns:1fr;}
+  .adn-grid{grid-template-columns:repeat(2,1fr);}
+  .es-grid{grid-template-columns:1fr;}
+  .footer{padding:18px 20px;}
+  .final{padding:36px 20px;}
+}
+
+/* ── EXEC SUMMARY ── */
+.exec-sum{background:var(--lt4);border-bottom:1px solid var(--blt);padding:36px 48px;}
+.es-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:16px;overflow:visible;}
+.es-col{padding:20px 22px;border-radius:3px;overflow:visible;word-break:normal;}
+.es-col.green{background:rgba(106,175,122,0.1);border:1px solid rgba(106,175,122,0.2);}
+.es-col.red{background:rgba(168,90,90,0.08);border:1px solid rgba(168,90,90,0.16);}
+.es-col.amber{background:rgba(196,146,74,0.1);border:1px solid rgba(196,146,74,0.2);}
+.es-col-title{font-size:8px;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.es-col.green .es-col-title{color:var(--green);}
+.es-col.red .es-col-title{color:var(--red);}
+.es-col.amber .es-col-title{color:var(--amber);}
+.es-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:10px;color:var(--dk);line-height:1.5;}
+.es-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.es-col.green .es-dot{background:var(--green);}
+.es-col.red .es-dot{background:var(--red);}
+.es-col.amber .es-dot{background:var(--amber);}
+
+/* ── ADN COGNITIVO ── */
+.adn-section{background:var(--dk2);border-bottom:1px solid var(--bdk);padding:44px 48px;}
+.adn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:20px;}
+.adn-card{padding:28px 22px;border-radius:3px;text-align:center;position:relative;overflow:hidden;cursor:default;transition:all 0.3s var(--ez);}
+.adn-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 60%);pointer-events:none;}
+.adn-card:hover{transform:translateY(-3px);}
+.adn-card.c1{background:rgba(201,169,154,0.08);border:1px solid rgba(201,169,154,0.22);}
+.adn-card.c2{background:rgba(106,175,122,0.08);border:1px solid rgba(106,175,122,0.2);}
+.adn-card.c3{background:rgba(196,146,74,0.08);border:1px solid rgba(196,146,74,0.18);}
+.adn-card.c4{background:rgba(90,120,168,0.08);border:1px solid rgba(90,120,168,0.18);}
+.adn-ico{font-size:22px;margin-bottom:10px;}
+.adn-lbl{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:8px;}
+.adn-card.c1 .adn-lbl{color:var(--rg);}
+.adn-card.c2 .adn-lbl{color:var(--green);}
+.adn-card.c3 .adn-lbl{color:var(--amber);}
+.adn-card.c4 .adn-lbl{color:#7A9ACA;}
+.adn-val{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1;margin-bottom:4px;}
+.adn-card.c1 .adn-val{color:var(--rg);}
+.adn-card.c2 .adn-val{color:var(--green);}
+.adn-card.c3 .adn-val{color:var(--amber);}
+.adn-card.c4 .adn-val{color:#7A9ACA;}
+.adn-val em{font-size:24px;font-style:italic;}
+.adn-name{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--lt);margin-bottom:4px;}
+.adn-desc{font-size:10px;color:rgba(240,235,227,0.4);line-height:1.5;}
+.adn-bar-t{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin-top:10px;}
+.adn-bar-f{height:100%;border-radius:1px;transition:width 1.2s var(--ez);}
+.adn-card.c1 .adn-bar-f{background:linear-gradient(to right,var(--rg),var(--rg2));}
+.adn-card.c2 .adn-bar-f{background:var(--green);}
+.adn-card.c3 .adn-bar-f{background:var(--amber);}
+.adn-card.c4 .adn-bar-f{background:#7A9ACA;}
+
+/* ── ENHANCED CONTRAST for key sections ── */
+.kpi-card{background:var(--lt4);border:1px solid var(--blt);color:var(--dk);}
+.kpi-card:hover{background:white;border-color:var(--rg3);}
+.kpi-card::before{background:var(--rg);}
+.kc-ey{color:var(--sand);}
+.kc-val{color:var(--dk2) !important;}
+.kc-label{color:var(--dk) !important;}
+.kc-note{color:rgba(17,16,16,0.55) !important;}
+
+/* insight cards on dark — beige highlight */
+.ins-card{background:rgba(240,235,227,0.04);border:1px solid var(--bdk);}
+.ins-card:hover{background:rgba(240,235,227,0.07);border-color:rgba(201,169,154,0.3);}
+.ins-title{color:var(--cream) !important;}
+.ins-action{border-top:1px solid rgba(201,169,154,0.2) !important;color:var(--rg) !important;}
+
+/* rec cards — improved contrast */
+.rec{border-left:3px solid var(--rg3) !important;}
+.rec:hover{border-left-color:var(--rg) !important;background:var(--lt2) !important;}
+.rec-n{font-size:16px !important;color:var(--dk2) !important;}
+
+/* roadmap enhanced */
+.rm-ph{background:rgba(255,255,255,0.02);border:1px solid var(--bdk) !important;}
+.rm-ph:hover{background:rgba(240,235,227,0.06);}
+
+/* portfolio cards on dark — beige accent */
+.cp-card{background:rgba(240,235,227,0.04) !important;border:1px solid var(--bdk) !important;}
+.cp-card:hover{background:rgba(240,235,227,0.07) !important;border-color:rgba(201,169,154,0.25) !important;}
+.cp-name{color:var(--cream) !important;}
+.cp-def{color:rgba(240,235,227,0.5) !important;}
+.cp-opp{color:var(--rg) !important;border-top:1px solid rgba(201,169,154,0.15) !important;}
+
+
+/* LANG TOGGLE */
+.lang-toggle{position:fixed;top:16px;right:20px;z-index:300;display:flex;gap:2px;background:rgba(24,22,20,0.92);border:1px solid var(--bdk);border-radius:2px;padding:3px;backdrop-filter:blur(12px);}
+.lang-btn{padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;background:transparent;border:none;color:var(--sand);cursor:pointer;transition:all 0.25s;border-radius:1px;}
+.lang-btn.active{background:var(--rg);color:var(--dk);}
+.lang-btn:hover:not(.active){color:var(--lt);}
+/* hide by lang */
+[data-lang="en"]{display:none;}
+[data-lang="es"]{display:block;}
+span[data-lang="en"],span[data-lang="es"],a[data-lang]{display:inline;}
+.body-en [data-lang="en"]{display:block;}
+.body-en [data-lang="es"]{display:none;}
+.body-en span[data-lang="en"],.body-en span[data-lang="es"],.body-en a[data-lang]{display:inline;}
+
+/* SESSION SECTION */
+.sess-incl{background:var(--dk2);border-bottom:1px solid var(--bdk);}
+.sess-incl-inner{padding:44px 48px;}
+.sess-banner{
+  display:grid;grid-template-columns:1fr 260px;gap:0;
+  background:rgba(201,169,154,0.06);border:1px solid var(--bdk);
+  border-left:3px solid var(--rg);border-radius:3px;overflow:hidden;
+}
+.sess-left{padding:28px 32px;}
+.sess-tag{font-size:7px;letter-spacing:0.26em;text-transform:uppercase;color:var(--rg);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.sess-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--rg);flex-shrink:0;}
+.sess-title{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2vw,24px);font-weight:300;color:var(--cream);line-height:1.2;margin-bottom:10px;}
+.sess-title em{font-style:italic;color:var(--rg);}
+.sess-desc{font-size:11px;color:rgba(240,235,227,0.55);line-height:1.7;margin-bottom:0;}
+.sess-right{border-left:1px solid var(--bdk);padding:28px 24px;display:flex;flex-direction:column;gap:10px;justify-content:center;}
+.sess-detail{display:flex;flex-direction:column;gap:2px;}
+.sess-dl{font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sand);}
+.sess-dv{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);}
+@media(max-width:860px){
+  .sess-banner{grid-template-columns:1fr;}
+  .sess-right{border-left:none;border-top:1px solid var(--bdk);}
+  .sess-incl-inner{padding:28px 20px;}
+}
+
+.kc-human{font-size:11px;color:var(--dk);line-height:1.45;margin-bottom:8px;font-style:italic;padding:6px 10px;background:rgba(17,16,16,0.04);border-radius:2px;border-left:2px solid var(--rg3);}
+</style>
+</head>
+<body>
+
+<aside class="sb">
+  <div class="sb-brand">P<em>Y</em>LA</div>
+  <div class="sb-lvl">Level 02 · Org</div>
+  <nav class="sb-nav">
+    <a class="sba on" href="#hero"><span class="sba-d"></span>Cover</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-exec"><span class="sba-d"></span>Executive Summary</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-adn"><span class="sba-d"></span>Cognitive DNA</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-dist"><span class="sba-d"></span>Distribution</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-comp"><span class="sba-d"></span>Competencies</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-ind"><span class="sba-d"></span>Key Indicators</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-team"><span class="sba-d"></span>Teams</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-pat"><span class="sba-d"></span>Insights</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-road"><span class="sba-d"></span>Roadmap</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-rec"><span class="sba-d"></span>Recommendations</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-sess"><span class="sba-d"></span>Session</a>
+    <div class="sb-sep"></div>
+    <a class="sba" href="#s-port"><span class="sba-d"></span>Portfolio</a>
+  </nav>
+  <div class="sb-foot"><div>PYLA</div><div>Cognitive Science</div><div>Framework</div></div>
+</aside>
+
+<div class="lang-toggle">
+  <button class="lang-btn" onclick="setLang('es')">ES</button>
+  <button class="lang-btn active" onclick="setLang('en')">EN</button>
+</div>
+<main class="main">
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-l">
+    <div>
+      <p class="h-ey" id="h-ey-txt">PYLA Level 02 · Organizational Cognitive Intelligence Report</p>
+      <h1 class="h-title" id="h-h1-txt">Organizational<br><em>Cognitive Intelligence</em><br>Executive Report</h1>
+      <p class="h-sub" id="h-sub-txt">Collective clarity. Strategic direction. Sustainable impact.</p>
+      <div class="h-meta">
+        <div class="hm"><span class="hm-l" id="h-meta-org">Organization</span><span class="hm-v" id="h-org">—</span></div>
+        <div class="hm"><span class="hm-l" id="h-meta-part">Total Participants</span><span class="hm-v" id="h-total">—</span></div>
+        <div class="hm"><span class="hm-l" id="h-meta-date">Evaluation Date</span><span class="hm-v" id="h-date">—</span></div>
+        <div class="hm"><span class="hm-l" id="h-meta-sec">Sector</span><span class="hm-v" id="h-sector">—</span></div>
+      </div>
+    </div>
+    <div class="method-note"><span id="h-method">Pattern observation, trend identification and data correlation from PYLA Level 0. Grounded in psychopedagogy, metacognition and color psychology — validated in GJHSS 2023, double-blind study, 300+ participants, 86% accuracy.</span></div>
+  </div>
+  <div class="hero-r">
+    <div style="font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rg);margin-bottom:6px;" id="ki-title">Key Observations</div>
+    <div class="ki" id="ki-dom">
+      <div class="ki-lbl" id="ko-lbl-dom">Dominant Cognitive Profile</div>
+      <div class="ki-val" id="ki-dom-v" style="font-size:18px;">—</div>
+      <div class="ki-desc" id="ki-dom-d">—</div>
+    </div>
+    <div class="ki" id="ki-div">
+      <div class="ki-lbl" id="ko-lbl-div">Cognitive Diversity</div>
+      <div class="ki-val" id="ki-div-v">—<em>%</em></div>
+      <div class="ki-bar-t"><div class="ki-bar-f" id="ki-div-b" style="width:0%"></div></div>
+      <div class="ki-desc" id="ki-div-d">—</div>
+    </div>
+    <div class="ki" id="ki-align">
+      <div class="ki-lbl" id="ko-lbl-align">Alignment Index</div>
+      <div class="ki-val" id="ki-align-v">—<em>%</em></div>
+      <div class="ki-bar-t"><div class="ki-bar-f" id="ki-align-b" style="width:0%"></div></div>
+      <div class="ki-desc" id="ki-align-d">—</div>
+    </div>
+    <div class="ki green-ki" id="ki-health">
+      <div class="ki-lbl" id="ko-lbl-health">Organizational Health</div>
+      <div class="ki-val" id="ki-health-v" style="font-size:14px;">—</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- RESUMEN EJECUTIVO -->
+<section class="exec-sum" id="s-exec">
+  <div class="ey-lt" id="exec-ey">Executive Summary</div>
+  <h2 class="sh-lt" id="exec-h">Three strengths. Three risks. <em>Three priorities.</em></h2>
+  <div class="es-grid">
+    <div class="es-col green">
+      <div class="es-col-title" id="exec-str-title">◎ Main Strengths</div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-str1">High analytical precision — 38% of staff with systematic processing profile.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-str2">Strong collaboration disposition — 82% self-declare civic competencies.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-str3">High alignment index (71%) — most people operate where their profile is most efficient.</span></div>
+    </div>
+    <div class="es-col red">
+      <div class="es-col-title" id="exec-risk-title">◆ Identified Risks</div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-risk1">Low adaptability (54%) — risk in organizational transformation processes.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-risk2">Untapped leadership potential — 34% with natural strategic orientation in non-leadership roles.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-risk3">Low creative profile diversity (5%) — blind spot in disruptive innovation.</span></div>
+    </div>
+    <div class="es-col amber">
+      <div class="es-col-title" id="exec-pri-title">▲ Strategic Priorities</div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-pri1">Activate leadership pipeline with participants showing natural strategic orientation.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-pri2">Develop adaptability and mathematical logic — highest organizational impact gaps.</span></div>
+      <div class="es-item"><div class="es-dot"></div><span id="exec-pri3">Design teams using cognitive complementarity to increase innovation capacity.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ADN COGNITIVO ORGANIZACIONAL -->
+<section class="adn-section" id="s-adn">
+  <div class="ey-dk" id="adn-ey">Organizational Cognitive DNA</div>
+  <h2 class="sh-dk" id="adn-h">The <em>cognitive signature</em> of this organization.</h2>
+  <p style="font-size:10px;color:var(--sand);font-style:italic;margin-bottom:4px;" id="adn-sub">Four indicators derived directly from instrument data.</p>
+  <div class="adn-grid" id="adnGrid">
+    <!-- built by JS -->
+  </div>
+</section>
+
+<!-- S1: DISTRIBUCIÓN DE PERFILES -->
+<section class="sec dk" id="s-dist">
+  <div class="three-col">
+    <div class="cb sec" style="opacity:1;transform:none;">
+      <div class="ct" id="dist-ey">Profile Distribution</div>
+      <p style="font-size:9px;color:var(--sand);font-style:italic;margin-bottom:14px;" id="dist-sub">Distribution of natural cognitive processing across the organization.</p>
+      <div id="profBars"></div>
+      <a class="lnk-dk" href="#s-dist">View full distribution →</a>
+    </div>
+    <div class="cb sec" style="opacity:1;transform:none;">
+      <div class="ct" id="dist-map-ey">Cognitive Profile Map</div>
+      <p style="font-size:9px;color:var(--sand);font-style:italic;margin-bottom:8px;" id="dist-map-sub">Proportional distribution of cognitive processing patterns across the organization.</p>
+      <div style="display:flex;justify-content:center;"><canvas id="orgRadar" width="240" height="240"></canvas></div>
+      
+    </div>
+    <div class="cb sec" style="opacity:1;transform:none;">
+      <div class="ct" id="dist-grp-ey">Pattern Groups</div>
+      <div class="donut-wrap">
+        <canvas id="donutC" width="160" height="160"></canvas>
+        <div class="donut-legend" id="donutLeg"></div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<!-- S2: COMPETENCIES — real measured data -->
+<section class="sec lt p44" id="s-comp">
+  <div class="ey-lt" id="comp-ey">Generic Competencies</div>
+  <h2 class="sh-lt" id="comp-h">The <em>minimum competencies</em> required for any role.</h2>
+  <p class="note-lt" id="comp-note">Minimum competencies for effective performance in any role. Self-declared by participants. Reveals the collective self-concept of core capabilities and identifies where structured development is most needed. Tap any competency for its definition and organizational implications.</p>
+  <div class="three-col" style="margin-top:0;">
+    <div class="cb-lt sec" style="opacity:1;transform:none;">
+      <div class="ct-lt" id="comp-lvl-ey">Competency Levels</div>
+      <div id="compBars"></div>
+    </div>
+    <div class="cb-lt sec" style="opacity:1;transform:none;">
+      <div class="ct-lt" id="comp-dept-ey">Distribution by Department</div>
+      <p style="font-size:9px;color:rgba(17,16,16,0.45);font-style:italic;margin-bottom:10px;" id="dept-dist-sub">Competency levels by department \u2014 darker cells indicate stronger levels.</p>
+      <div class="dept-mini-wrap"><table class="ht dept-mini" id="deptCompTbl"></table></div>
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:4px;font-size:8px;color:var(--dk3);"><div style="width:9px;height:9px;border-radius:2px;background:rgba(106,175,122,0.28);border:1px solid rgba(106,175,122,0.3);flex-shrink:0;"></div><span id="dept-leg-green">Strength</span></div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:8px;color:var(--dk3);"><div style="width:9px;height:9px;border-radius:2px;background:rgba(196,146,74,0.22);border:1px solid rgba(196,146,74,0.3);flex-shrink:0;"></div><span id="dept-leg-amber">Opportunity</span></div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:8px;color:var(--dk3);"><div style="width:9px;height:9px;border-radius:2px;background:rgba(168,90,90,0.2);border:1px solid rgba(168,90,90,0.25);flex-shrink:0;"></div><span id="dept-leg-red">Priority</span></div>
+      </div>
+    </div>
+    <div class="cb-lt sec" style="opacity:1;transform:none;">
+      <div class="ct-lt" id="comp-gaps-ey">Gap Identification</div>
+      <p style="font-size:9px;color:rgba(17,16,16,0.45);font-style:italic;margin-bottom:12px;" id="comp-gaps-sub">Competencies below 50% are the highest-priority development opportunities.</p>
+      <div id="compGaps"></div>
+    </div>
+  </div>
+</section>
+
+<!-- S3: KEY INDICATORS — derived from real PYLA data -->
+<section class="sec lt p44" id="s-ind">
+  <div class="ey-lt" id="ind-ey">Key Organizational Indicators</div>
+  <h2 class="sh-lt" id="ind-h">Observable correlational <em>observations from the data.</em></h2>
+  <p class="note-lt" style="font-size:9px;" id="ind-note">What the data shows: correlational signals and directional trends — the evidence base the rest of this report builds on.</p>
+  <div class="kpi-grid" id="kpiGrid"></div>
+</section>
+
+<!-- S4: TEAM COMPARISON HEATMAP -->
+<section class="sec lt p44" id="s-team">
+  <div class="ey-lt" id="team-ey">Team Comparison</div>
+  <h2 class="sh-lt" id="team-h"><em>Cognitive distribution</em> by area.</h2>
+  <p class="note-lt" id="team-note">Dominant profile and alignment index by area — a department-level view of where cognitive strengths and development priorities concentrate.</p>
+  <div style="display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dk3);">
+    <div style="width:12px;height:12px;border-radius:2px;background:rgba(106,175,122,0.28);border:1px solid rgba(106,175,122,0.3);flex-shrink:0;"></div>
+    <span id="heat-leg-green">Consolidated strength</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dk3);">
+    <div style="width:12px;height:12px;border-radius:2px;background:rgba(196,146,74,0.22);border:1px solid rgba(196,146,74,0.3);flex-shrink:0;"></div>
+    <span id="heat-leg-amber">Development opportunity</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dk3);">
+    <div style="width:12px;height:12px;border-radius:2px;background:rgba(168,90,90,0.2);border:1px solid rgba(168,90,90,0.25);flex-shrink:0;"></div>
+    <span id="heat-leg-red">Priority intervention area</span>
+  </div>
+</div>
+<div class="heat-wrap"><table class="ht" id="heatTbl"></table></div>
+  
+</section>
+
+<!-- S5: PATTERN INSIGHTS — sector-contextualized -->
+<section class="sec dk p44" id="s-pat">
+  <div class="ey-dk" id="ins-ey">Strategic Insights</div>
+  <h2 class="sh-dk" id="ins-h">What the data <em>reveals for this sector.</em></h2>
+  <p class="note-dk" id="ins-note">What it means for this organization: the same cognitive distribution carries different implications depending on sector and context — this is the interpretive reading of the indicators.</p>
+  <div class="insights-grid" id="insightsGrid"></div>
+</section>
+
+<!-- S6: STRATEGIC ROADMAP -->
+<section class="sec dk p44" id="s-road">
+  <div class="ey-dk" id="road-ey">Strategic Roadmap</div>
+  <h2 class="sh-dk" id="road-h">Three phases. <em>Concrete actions.</em> Measurable outcomes.</h2>
+  <p class="note-dk" style="margin-bottom:20px;" id="road-note">How to act, in sequence: the bridge between the findings and their implementation, translated into a 30/60/90-day execution path.</p>
+  <div class="rm-grid" id="rmGrid"></div>
+  <div class="road-caveat" id="roadCaveat">This report is a complete, self-manageable framework from day one — the data is real, reliable, and actionable through the 30/60/90 plan exactly as delivered. The effectiveness of the results depends exclusively on the level of implementation the organization is willing to commit to. Advisory support or hands-on follow-up from a professional is available as an additional service, billed based on time invested.</div>
+</section>
+
+<!-- S7: RECOMMENDATIONS -->
+<section class="sec lt p44" id="s-rec">
+  <div class="ey-lt" id="rec-ey">Executive Recommendations</div>
+  <h2 class="sh-lt" id="rec-h">Six actions grounded in <em>cognitive intelligence data.</em></h2>
+  <p class="note-lt" style="margin-bottom:20px;" id="rec-note">What to decide now: six concrete decisions derived from the specific profiles of this organization — not generic frameworks.</p>
+  <div class="rec-grid" id="recGrid"></div>
+  <div class="rec-note-box" id="recIndivNote">Each participant already has their Level 0 report, showing whether their role matches their aptitude and aspiration — that's where each recommendation's specific candidates are identified. Going deeper with Level 1 is optional; it benefits the organization, but isn't required for this plan.</div>
+</section>
+
+
+<!-- S8b: INCLUDED SESSION -->
+<section class="sess-incl sec" id="s-sess">
+  <div class="sess-incl-inner">
+    <div class="ey-dk" id="sess-ey">Included with This Report</div>
+    <h2 class="sh-dk" id="sess-h">Delivery & <em>Socialization Session.</em></h2>
+    <p class="note-dk" style="margin-bottom:18px;" id="sess-note">This session is not a service offering. It is part of the Level 2 report — designed to ensure the findings translate into real organizational action.</p>
+    <div class="sess-banner">
+      <div class="sess-left">
+        <div class="sess-tag" id="sess-tag">Included with Level 2 Report</div>
+        <h3 class="sess-title" id="sess-title">PYLA <em>Delivery &amp; Socialization</em> Session</h3>
+        <p class="sess-desc" id="sess-desc">A facilitated 90-minute session with the leadership team to interpret the findings, resolve questions and define initial priorities. The goal is not to present data — it is to convert cognitive intelligence into organizational decisions.</p>
+      </div>
+      <div class="sess-right">
+        <div class="sess-detail">
+          <span class="sess-dl" id="sess-dur-l">Duration</span>
+          <span class="sess-dv" id="sess-dur-v">90 minutes</span>
+        </div>
+        <div class="sess-detail">
+          <span class="sess-dl" id="sess-fmt-l">Format</span>
+          <span class="sess-dv" id="sess-fmt-v">Video or in-person</span>
+        </div>
+        <div class="sess-detail">
+          <span class="sess-dl" id="sess-fac-l">Facilitated by</span>
+          <span class="sess-dv">Pilar R</span>
+        </div>
+        <div class="sess-detail">
+          <span class="sess-dl" id="sess-lang-l">Language</span>
+          <span class="sess-dv">EN / ES</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S8: DEVELOPMENT PORTFOLIO — what PYLA can support -->
+<section class="sec dk p44" id="s-port">
+  <div class="ey-dk" id="port-ey">Organizational Development Portfolio</div>
+  <h2 class="sh-dk" id="port-h">Where <em>PYLA supports</em> the next phase.</h2>
+  <p class="note-dk" style="margin-bottom:20px;" id="port-note">Services available to translate findings into sustained organizational action.</p>
+  <div class="comp-portfolio" id="portGrid"></div>
+</section>
+
+<!-- FINAL -->
+<div class="final">
+  <div>
+    <p class="fi-q">
+      <span id="final-q-txt"><span id="final-q-txt">"Cognitive clarity becomes organizational direction when individual patterns are transformed into collective intelligence."</span></span>
+      <cite id="final-cite-txt">— PYLA Cognitive Science Framework</cite>
+    </p>
+  </div>
+  <div class="fi-right" id="finalRows"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="ft-b"><img class="ft-logo" src="data:image/png;base64,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" alt="Pilar R. — Cognitive Structure"><div class="ft-logo-sep"></div>P<em>Y</em>LA · Cognitive Science Framework</div>
+  <div class="ft-r"><div id="footer-conf">Confidential Report</div><div id="footer-rights">All rights reserved.</div><div>pyla.yrelevate.com</div></div>
+</footer>
+
+</main>
+
+<script>
+function G(k){return new URLSearchParams(window.location.search).get(k)||'';}
+
+/* \u2500\u2500 SECTOR CONFIG
+   Each sector defines which profiles are strengths vs risks
+   and contextualizes all inferences accordingly \u2500\u2500 */
+var SECTORS={
+  technology:{label:'Technology',strength:[3,5],risk:[2,6],note:'In technology organizations, analytical and creative profiles are core assets. Relational and hierarchical profiles require deliberate integration.',noteEs:'En organizaciones tecnol\u00f3gicas, los perfiles anal\u00edticos y creativos son activos centrales. Los perfiles relacionales y jer\u00e1rquicos requieren una integraci\u00f3n deliberada.'},
+  services:{label:'Services',strength:[1,2],risk:[5,6],note:'In service organizations, relational and results-driven profiles generate the most natural output. High technical profiles need communication bridges.',noteEs:'En organizaciones de servicios, los perfiles relacionales y orientados a resultados generan el mayor rendimiento natural. Los perfiles altamente t\u00e9cnicos necesitan puentes de comunicaci\u00f3n.'},
+  operations:{label:'Operations & Manufacturing',strength:[4,5,6],risk:[3],note:'Operational organizations benefit from systematic, disciplined and precision-oriented profiles. Creative profiles are a strategic asset if channeled into process improvement.',noteEs:'Las organizaciones operativas se benefician de perfiles sistem\u00e1ticos, disciplinados y orientados a la precisi\u00f3n. Los perfiles creativos son un activo estrat\u00e9gico si se canalizan hacia la mejora de procesos.'},
+  education:{label:'Education',strength:[2,4],risk:[1,6],note:'Educational organizations thrive with empathetic and methodical profiles. Results-only and hierarchical profiles need relational development.',noteEs:'Las organizaciones educativas prosperan con perfiles emp\u00e1ticos y met\u00f3dicos. Los perfiles orientados solo a resultados y los jer\u00e1rquicos necesitan desarrollo relacional.'},
+  sales:{label:'Sales & Commercial',strength:[1,2],risk:[5,6],note:'Sales organizations need extroverted, results-driven and relational profiles. Analytical profiles are high-value in strategy and forecasting roles.',noteEs:'Las organizaciones comerciales necesitan perfiles extrovertidos, orientados a resultados y relacionales. Los perfiles anal\u00edticos son de alto valor en roles de estrategia y proyecci\u00f3n.'},
+  health:{label:'Health & Wellbeing',strength:[2,4],risk:[1,6],note:'Health organizations require empathetic, precise and systematic profiles. Speed-first and authority-based profiles need calibration to the care environment.',noteEs:'Las organizaciones de salud requieren perfiles emp\u00e1ticos, precisos y sistem\u00e1ticos. Los perfiles orientados a la velocidad y basados en autoridad necesitan calibrarse al entorno de cuidado.'}
+};
+
+var PROFILE_NAMES={
+  1:'Exact Sciences & Business',2:'Social Sciences & Humanities',
+  3:'Arts & Design',4:'Health & Agricultural Sciences',
+  5:'Engineering & Technology',6:'Defense & Security'
+};
+var PROFILE_SHORT={1:'Business',2:'Social',3:'Creative',4:'Health',5:'Engineering',6:'Defense'};
+var PROFILE_SHORT_ES={1:'Negocios',2:'Social',3:'Creativo',4:'Salud',5:'Ingenier\u00eda',6:'Defensa'};
+var PROFILE_COLORS=['rgba(201,169,154,0.85)','rgba(160,140,130,0.8)','rgba(196,146,74,0.8)','rgba(106,175,122,0.75)','rgba(90,120,168,0.8)','rgba(168,90,90,0.75)'];
+
+/* \u2500\u2500 DEMO ORG DATA
+   Replace with real aggregated PYLA Level 0 data \u2500\u2500 */
+var ORG={
+  name:G('org')||'Acme Corporation',
+  total:parseInt(G('total'))||86,
+  sector:G('sector')||'technology',
+  /* Real data: count of each profile from colorApt responses */
+  profileDist:[
+    {id:5,pct:38},{id:1,pct:27},{id:3,pct:16},{id:4,pct:11},{id:2,pct:8}
+  ],
+  /* Real: % where colorApt === standInt */
+  alignmentPct:71,
+  /* Real: count hierarchyApt=strategic / total */
+  leadershipPct:34,
+  /* Inferred: % of profiles 1+4+5+6 (execution-oriented) */
+  executionPct:76,
+  /* Inferred: % profiles 4+5 + mathCompetency */
+  criticalThinkingPct:61,
+  /* Real: competency selection percentages */
+  competencies:[
+    {id:'literacy',name:'Lectoescritura',pct:78,def:'Capacidad m\u00ednima de comunicaci\u00f3n \u2014 comprensi\u00f3n, expresi\u00f3n y documentaci\u00f3n. Base para cualquier rol organizacional.',hint:'Nivel s\u00f3lido \u2014 mantener y reforzar mediante pr\u00e1cticas continuas de redacci\u00f3n y comunicaci\u00f3n organizacional.'},
+    {id:'math',name:'Matem\u00e1ticas y L\u00f3gica',pct:65,def:'Razonamiento cuantitativo y pensamiento l\u00f3gico-formal. Se relaciona con la capacidad de procesamiento anal\u00edtico y la toma de decisiones basada en evidencia.',hint:'Oportunidad de desarrollo: programas de capacidad anal\u00edtica y toma de decisiones basada en evidencia.'},
+    {id:'civic',name:'Competencias C\u00edvicas',pct:82,def:'Trabajo en equipo, respeto por las normas colectivas y convivencia organizacional. Base de la cultura de colaboraci\u00f3n.',hint:'Nivel s\u00f3lido \u2014 mantener y reforzar aprovechando esta base en iniciativas de colaboraci\u00f3n interfuncional.'},
+    {id:'adapt',name:'Adaptabilidad',pct:54,def:'Tolerancia al cambio, flexibilidad ante nuevos contextos y resiliencia en las transiciones. Indicador de la preparaci\u00f3n organizacional ante procesos de transformaci\u00f3n.',hint:'Oportunidad de desarrollo: programas de gesti\u00f3n del cambio y flexibilidad cognitiva.'},
+    {id:'respect',name:'Respeto y Tolerancia',pct:88,def:'Base para la diversidad y la inclusi\u00f3n. Permite que equipos cognitivamente diversos funcionen con eficacia.',hint:'Fortaleza consolidada. Sostiene las iniciativas de diversidad cognitiva presentes en la organizaci\u00f3n.'}
+  ],
+  /* Real: department data from responses */
+  departments:[
+    {n:'Sales',dom:1,domN:'Business',align:78,comp:[82,58,85,48,90]},
+    {n:'Operations',dom:5,domN:'Engineering',align:84,comp:[65,88,78,52,82]},
+    {n:'Leadership',dom:5,domN:'Engineering',align:88,comp:[75,82,92,71,88]},
+    {n:'Administration',dom:1,domN:'Business',align:73,comp:[80,62,76,44,84]},
+    {n:'Product & Tech',dom:5,domN:'Engineering',align:86,comp:[70,94,80,68,78]}
+  ],
+  /* Roadmap \u2014 derived from patterns */
+  roadmap:[
+    {d:'D\u00eda 30',n:'30',obj:'Alineaci\u00f3n del Hallazgo',items:['El framework sugiere comenzar por compartir estos hallazgos con el equipo directivo \u2014 es la base para cualquier decisi\u00f3n que siga.','Los datos se\u00f1alan a los departamentos con mayor brecha de alineaci\u00f3n como el punto de partida m\u00e1s eficiente; ya est\u00e1n identificados en la secci\u00f3n de Equipos de este reporte.','Las brechas de competencia identificadas en este reporte ya est\u00e1n priorizadas \u2014 conviene traducirlas en un mapa interno de desarrollo antes de avanzar a la siguiente fase.'],kl:'Resultado observable',kt:'El equipo directivo cuenta con una lectura com\u00fan de los datos, y los tres departamentos prioritarios ya est\u00e1n identificados para actuar.'},
+    {d:'D\u00eda 60',n:'60',obj:'Activaci\u00f3n de Capacidades',items:['El framework sugiere iniciar el desarrollo de competencias en las \u00e1reas de mayor brecha \u2014 la adaptabilidad y la l\u00f3gica matem\u00e1tica concentran la mayor oportunidad seg\u00fan este reporte.','Los datos indican que la complementariedad cognitiva entre perfiles puede fortalecer a los equipos interfuncionales; vale la pena considerarla al formar o ajustar equipos de trabajo.','Conviene establecer un mecanismo simple de retroalimentaci\u00f3n \u2014 una revisi\u00f3n breve y peri\u00f3dica \u2014 para verificar que las iniciativas de esta fase est\u00e9n generando el efecto esperado.'],kl:'Resultado observable',kt:'Dos o m\u00e1s iniciativas de desarrollo en marcha, con una primera validaci\u00f3n pr\u00e1ctica de la complementariedad entre equipos.'},
+    {d:'D\u00eda 90',n:'90',obj:'Direcci\u00f3n Estructural',items:['El framework sugiere revisar si el \u00edndice de alineaci\u00f3n mejor\u00f3 frente a la medici\u00f3n inicial \u2014 es la se\u00f1al m\u00e1s directa de que el plan est\u00e1 funcionando.','Los datos indican que un 34% de la organizaci\u00f3n muestra orientaci\u00f3n estrat\u00e9gica natural sin estar en un rol de liderazgo. El framework sugiere revisar los reportes Nivel 0 de este grupo para identificar a qui\u00e9nes aplica espec\u00edficamente, antes de decidir c\u00f3mo activarlos.','Con esta informaci\u00f3n, la organizaci\u00f3n est\u00e1 en posici\u00f3n de definir su propia estrategia de talento \u2014 apoyada en datos, no en supuestos.'],kl:'Resultado observable',kt:'Un cambio medible en el \u00edndice de alineaci\u00f3n, y una primera identificaci\u00f3n clara de a qui\u00e9n activar dentro del pipeline de liderazgo.'}
+  ],
+  recommendations:[
+    {i:'\u25c8',n:'Estrategia de Ubicaci\u00f3n de Talento',b:'Alinear los roles con los perfiles cognitivos para reducir el costo energ\u00e9tico y aumentar el rendimiento natural. El \u00edndice de alineaci\u00f3n muestra d\u00f3nde esta oportunidad es mayor.'},
+    {i:'\u25b2',n:'Pipeline de Liderazgo',b:'Los datos identifican participantes con orientaci\u00f3n estrat\u00e9gica natural en roles no directivos. Activar este potencial latente de manera deliberada.'},
+    {i:'\u25c9',n:'Desarrollo de Competencias',b:'La baja adaptabilidad (54%) y la l\u00f3gica matem\u00e1tica (65%) son los objetivos de desarrollo de mayor prioridad en toda la organizaci\u00f3n.'},
+    {i:'\u25c7',n:'Dise\u00f1o de Diversidad Cognitiva',b:'El uso estrat\u00e9gico de la complementariedad de perfiles en la composici\u00f3n de equipos aumenta tanto la capacidad de innovaci\u00f3n como la confiabilidad en la ejecuci\u00f3n.'},
+    {i:'\u25c6',n:'Arquitectura de Comunicaci\u00f3n',b:'Las organizaciones con alta concentraci\u00f3n de perfiles anal\u00edticos necesitan puentes de comunicaci\u00f3n expl\u00edcitos para traducir el resultado t\u00e9cnico en un lenguaje organizacional accesible.'},
+    {i:'\u25cb',n:'Redise\u00f1o Basado en Alineaci\u00f3n',b:'Con un 71% de alineaci\u00f3n, existe un 29% de oportunidad para redise\u00f1ar roles de modo que las personas operen en el dominio donde su cognici\u00f3n es m\u00e1s eficiente.'}
+  ],
+  portfolio:[
+    {i:'\u25c8',n:'Programa de Desarrollo de Competencias',d:'Programas estructurados enfocados en las brechas de competencias espec\u00edficas identificadas en este reporte. Dise\u00f1ados para los perfiles cognitivos presentes en la organizaci\u00f3n.',opp:'Prioridad: Adaptabilidad + Matem\u00e1ticas y L\u00f3gica.'},
+    {i:'\u25b2',n:'Programa de Activaci\u00f3n de Liderazgo',d:'Dise\u00f1ado para desarrollar a los participantes con orientaci\u00f3n estrat\u00e9gica natural que actualmente ocupan roles t\u00e1cticos u operativos.',opp:'Oportunidad identificada: '+Math.round(86*0.34)+' participantes con orientaci\u00f3n de liderazgo latente.'},
+    {i:'\u25c6',n:'Taller de Diversidad Cognitiva',d:'Sesiones de dise\u00f1o de equipos que aprovechan la complementariedad de perfiles para construir unidades organizacionales m\u00e1s resilientes e innovadoras.',opp:'Recomendado para departamentos con un \u00edndice de diversidad bajo.'}
+  ]
+};
+
+/* \u2500\u2500 BUILDERS \u2500\u2500 */
+function initMeta(){
+  document.getElementById('h-org').textContent=ORG.name;
+  document.getElementById('h-total').textContent=ORG.total;
+  document.getElementById('h-sector').textContent=SECTORS[ORG.sector]?SECTORS[ORG.sector].label:ORG.sector;
+  document.getElementById('h-date').textContent=new Date().toLocaleDateString('en-US',{day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
+}
+
+function buildHeroKI(lang){
+  var l=lang||currentLang||'en';
+  var isEN=l==='en';
+  var kiTitle=document.getElementById('ki-title');
+  if(kiTitle)kiTitle.textContent=isEN?'Key Observations':'Observaciones Clave';
+  var lbls=isEN
+    ?{dom:'Dominant Cognitive Profile',div:'Cognitive Diversity',align:'Alignment Index',health:'Organizational Health'}
+    :{dom:'Perfil Cognitivo Dominante',div:'Diversidad Cognitiva',align:'\u00cdndice de Alineaci\u00f3n',health:'Salud Organizacional'};
+  document.getElementById('ko-lbl-dom').textContent=lbls.dom;
+  document.getElementById('ko-lbl-div').textContent=lbls.div;
+  document.getElementById('ko-lbl-align').textContent=lbls.align;
+  document.getElementById('ko-lbl-health').textContent=lbls.health;
+
+  var dom=ORG.profileDist[0];
+  var domName=isEN?PROFILE_NAMES[dom.id]:(({1:'Ciencias Exactas y Administrativas',2:'Ciencias Sociales y Humanas',3:'Artes y Dise\u00f1o',4:'Ciencias de la Salud y Agrarias',5:'Ingenier\u00eda y Computaci\u00f3n',6:'Defensa y Seguridad'})[dom.id]||dom.id);
+  document.getElementById('ki-dom-v').textContent=domName;
+  document.getElementById('ki-dom-d').textContent=isEN
+    ?dom.pct+'% of participants have this as their dominant cognitive aptitude profile.'
+    :dom.pct+'% de los participantes tiene este perfil como su aptitud cognitiva dominante.';
+
+  var div=ORG.profileDist.length>=5?Math.round(100-(ORG.profileDist[0].pct-20)):68;
+  document.getElementById('ki-div-v').innerHTML=div+'<em>%</em>';
+  document.getElementById('ki-div-d').textContent=isEN
+    ?(div>=70?'High diversity \u2014 multiple cognitive profiles present.':div>=50?'Moderate diversity \u2014 some concentration of profiles.':'Low diversity \u2014 significant concentration in one profile.')
+    :(div>=70?'Diversidad alta \u2014 m\u00faltiples perfiles cognitivos presentes.':div>=50?'Diversidad moderada \u2014 cierta concentraci\u00f3n de perfiles.':'Diversidad baja \u2014 concentraci\u00f3n significativa en un solo perfil.');
+
+  document.getElementById('ki-align-v').innerHTML=ORG.alignmentPct+'<em>%</em>';
+  document.getElementById('ki-align-d').textContent=isEN
+    ?'Participants where aptitude and interest align in the same domain \u2014 natural fit between how they process and where they are motivated.'
+    :'Participantes donde aptitud e inter\u00e9s se alinean en el mismo dominio \u2014 ajuste natural entre c\u00f3mo procesan y hacia d\u00f3nde est\u00e1n motivados.';
+
+  var health=isEN
+    ?(ORG.alignmentPct>=70?'Strong \u2014 High aptitude-interest alignment index.':'Moderate \u2014 Development opportunities clearly identified.')
+    :(ORG.alignmentPct>=70?'S\u00f3lida \u2014 \u00cdndice de alineaci\u00f3n aptitud-inter\u00e9s alto.':'Moderada \u2014 Oportunidades de desarrollo claramente identificadas.');
+  document.getElementById('ki-health-v').textContent=health;
+
+  setTimeout(function(){
+    var db=document.getElementById('ki-div-b');if(db)db.style.width=div+'%';
+    var ab=document.getElementById('ki-align-b');if(ab)ab.style.width=ORG.alignmentPct+'%';
+  },600);
+}
+
+function buildProfileBars(lang){
+  var el=document.getElementById('profBars');if(!el)return;
+  var l=lang||currentLang||'en';
+  var sc=SECTORS[ORG.sector]||SECTORS.technology;
+  var strengthTag=l==='en'?'Strength':'Fortaleza';
+  var monitorTag=l==='en'?'Monitor':'Monitorear';
+  var subText=l==='en'?' of '+ORG.total+' participants':' de '+ORG.total+' participantes';
+  el.innerHTML=ORG.profileDist.map(function(p){
+    var isStr=sc.strength.indexOf(p.id)>-1;
+    var isRsk=sc.risk.indexOf(p.id)>-1;
+    var tag=isStr?'<span style="font-size:7px;color:var(--green);margin-left:4px;letter-spacing:0.1em;text-transform:uppercase;">'+strengthTag+'</span>':isRsk?'<span style="font-size:7px;color:var(--red);margin-left:4px;letter-spacing:0.1em;text-transform:uppercase;">'+monitorTag+'</span>':'';
+    var col=PROFILE_COLORS[p.id-1]||'rgba(201,169,154,0.7)';
+    var pname=l==='en'?PROFILE_SHORT[p.id]:PROFILE_SHORT_ES[p.id];
+    return '<div class="prof-bar-row"><div class="pbr-top"><span class="pbr-name">'+pname+tag+'</span><span class="pbr-pct">'+p.pct+'%</span></div><div class="pbr-track"><div class="pbr-fill" data-w="'+p.pct+'" style="width:0%;background:'+col+'"></div></div><div class="pbr-sub">'+p.pct+subText+'</div></div>';
+  }).join('');
+}
+
+function drawRadar(lang){
+  var l=lang||currentLang||'en';
+  var c=document.getElementById('orgRadar');if(!c)return;
+  var W=240,H=240,dpr=window.devicePixelRatio||1;
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';
+  var ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+  var cx=W/2,cy=H/2,R=88,n=6;
+  var vals=ORG.profileDist.slice(0,6).map(function(p){return p.pct;});
+  while(vals.length<6)vals.push(5);
+  var lbls=[1,2,3,4,5,6].map(function(id){return l==='en'?PROFILE_SHORT[id]:PROFILE_SHORT_ES[id];});
+  ctx.clearRect(0,0,W,H);
+  for(var ring=1;ring<=4;ring++){ctx.beginPath();for(var i=0;i<n;i++){var a=(i/n)*Math.PI*2-Math.PI/2;ctx.lineTo(cx+Math.cos(a)*R*ring/4,cy+Math.sin(a)*R*ring/4);}ctx.closePath();ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;ctx.stroke();}
+  for(var i=0;i<n;i++){var a=(i/n)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.stroke();}
+  ctx.beginPath();
+  for(var i=0;i<n;i++){var a=(i/n)*Math.PI*2-Math.PI/2;var r=R*Math.min(vals[i],40)/40;if(i===0)ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);else ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}
+  ctx.closePath();ctx.fillStyle='rgba(201,169,154,0.12)';ctx.fill();ctx.strokeStyle='rgba(201,169,154,0.52)';ctx.lineWidth=1.5;ctx.stroke();
+  for(var i=0;i<n;i++){
+    var a=(i/n)*Math.PI*2-Math.PI/2;var r=R*Math.min(vals[i],40)/40;
+    var x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='rgba(201,169,154,0.8)';ctx.fill();
+    var lx=cx+Math.cos(a)*(R+14),ly=cy+Math.sin(a)*(R+14);
+    ctx.font='8px DM Sans';ctx.fillStyle='rgba(240,235,227,0.38)';ctx.textAlign='center';
+    ctx.fillText(lbls[i],lx,ly+2);
+    ctx.font='bold 8px DM Sans';ctx.fillStyle='rgba(201,169,154,0.75)';
+    ctx.fillText(vals[i]+'%',lx,ly+11);
+  }
+}
+
+function drawDonut(lang){
+  var l=lang||currentLang||'en';
+  var c=document.getElementById('donutC');if(!c)return;
+  var W=160,H=160,dpr=window.devicePixelRatio||1;
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';
+  var ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+  var cx=W/2,cy=H/2,R=62,ri=38;
+  var data=ORG.profileDist;var total=data.reduce(function(s,d){return s+d.pct;},0);
+  var ang=-Math.PI/2;
+  data.forEach(function(d,i){
+    var sw=(d.pct/total)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,ang,ang+sw);ctx.closePath();
+    ctx.fillStyle=PROFILE_COLORS[d.id-1];ctx.fill();
+    ctx.beginPath();ctx.arc(cx,cy,ri,0,Math.PI*2);ctx.fillStyle='#181614';ctx.fill();
+    ang+=sw;
+  });
+  ctx.font='bold 13px Cormorant Garamond';ctx.fillStyle='rgba(201,169,154,0.8)';ctx.textAlign='center';ctx.fillText(ORG.total,cx,cy+4);
+  ctx.font='7px DM Sans';ctx.fillStyle='rgba(240,235,227,0.35)';ctx.fillText('TOTAL',cx,cy+13);
+  var leg=document.getElementById('donutLeg');if(!leg)return;
+  leg.innerHTML=data.map(function(d){
+    var pname=l==='en'?PROFILE_SHORT[d.id]:PROFILE_SHORT_ES[d.id];
+    return '<div class="dl"><div class="dl-dot" style="background:'+PROFILE_COLORS[d.id-1]+'"></div><span class="dl-n">'+pname+'</span><span class="dl-p">'+d.pct+'%</span></div>';
+  }).join('');
+}
+
+function buildCompBars(lang){
+  var el=document.getElementById('compBars');if(!el)return;
+  var l=lang||currentLang||'en';
+  var defs_en={literacy:'Minimum communication capacity - comprehension, expression and documentation.',math:'Quantitative reasoning and logical-formal thinking. Maps to analytical processing capacity.',civic:'Teamwork, respect for collective norms and organizational coexistence. Foundation of collaboration culture.',adapt:'Tolerance for change, flexibility in new contexts and resilience in transitions.',respect:'Foundation for diversity and inclusion. Enables cognitively diverse teams to function effectively.'};
+  el.innerHTML=ORG.competencies.map(function(c,i){
+    var nm=l==='en'?(COMP_NAMES_EN[c.id]||c.name):c.name;
+    var df=l==='en'?(defs_en[c.id]||c.def):c.def;
+    var ht=l==='en'?(COMP_HINTS_EN[c.id]||c.hint):c.hint;
+    return '<div class="comp-row" onclick="toggleComp(this)"><div class="cr-top"><span class="cr-name">'+nm+'</span><span class="cr-pct">'+c.pct+'%</span></div><div class="cr-track"><div class="cr-fill" data-w="'+c.pct+'" style="width:0%"></div></div><div class="cr-def">'+df+'</div><div class="cr-hint">\u2192 '+ht+'</div></div>';
+  }).join('');
+}
+function toggleComp(el){document.querySelectorAll('.comp-row').forEach(function(r){r.classList.remove('sel');});el.classList.toggle('sel');}
+
+var COMP_NAMES_EN={literacy:'Reading & Writing',math:'Mathematics & Logic',civic:'Civic Competencies',adapt:'Adaptability',respect:'Respect & Tolerance'};
+var COMP_HINTS_EN={literacy:'Solid level \u2014 maintain and reinforce through ongoing writing and documentation practices.',math:'Development opportunity: analytical capacity and evidence-based decision making.',civic:'Solid level \u2014 maintain and reinforce by leveraging this base in cross-functional collaboration initiatives.',adapt:'Development opportunity: change management and cognitive flexibility programs.',respect:'Consolidated strength. Supports the cognitive diversity initiatives present in the organization.'};
+function compTier(pct,l){
+  if(pct<50)return{cls:'var(--red)',tag:l==='en'?'Strategic Priority':'Prioridad Estrat\u00e9gica'};
+  if(pct<70)return{cls:'var(--amber)',tag:l==='en'?'Development Opportunity':'Oportunidad de Desarrollo'};
+  if(pct<85)return{cls:'var(--rg)',tag:l==='en'?'Maintain & Reinforce':'Mantener y Reforzar'};
+  return{cls:'var(--green)',tag:l==='en'?'Consolidated Strength':'Fortaleza Consolidada'};
+}
+function buildCompGaps(lang){
+  var el=document.getElementById('compGaps');if(!el)return;
+  var l=lang||currentLang||'en';
+  var sorted=ORG.competencies.slice().sort(function(a,b){return a.pct-b.pct;});
+  el.innerHTML=sorted.map(function(c){
+    var tier=compTier(c.pct,l);
+    var nm=l==='en'?(COMP_NAMES_EN[c.id]||c.name):c.name;
+    var ht=l==='en'?(COMP_HINTS_EN[c.id]||c.hint):c.hint;
+    var lbl=l==='en'?'declared':'declarado';
+    return '<div style="margin-bottom:12px;padding:10px 12px;background:rgba(17,16,16,0.04);border-radius:2px;border:1px solid var(--blt);border-left:2px solid '+tier.cls+';"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;"><span style="font-size:11px;color:var(--dk);font-weight:400;">'+nm+'</span><span style="font-size:8px;padding:2px 6px;border-radius:2px;background:rgba(17,16,16,0.06);color:'+tier.cls+';">'+tier.tag+'</span></div><div style="font-size:10px;color:rgba(17,16,16,0.45);">'+c.pct+'% '+lbl+' \u00b7 '+ht+'</div></div>';
+  }).join('');
+}
+
+function buildKPIGrid(lang){
+  var el=document.getElementById('kpiGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var indicators=l==='en'?[
+    {ey:'Natural strategic orientation',val:ORG.leadershipPct+'%',bar:ORG.leadershipPct,bc:'rg',label:'Leadership Potential',human:'People with a natural orientation toward strategic and leadership functions.',note:'Participants with natural cognitive orientation toward strategic roles. Identifies where leadership development potential exists.'},
+    {ey:'Operational orientation and structural discipline',val:ORG.executionPct+'%',bar:ORG.executionPct,bc:'rg',label:'Execution Tendency',human:'Collective capacity to convert ideas and plans into concrete actions.',note:'Participants with profiles oriented toward precise delivery, discipline and structure. Correlated with operational performance.'},
+    {ey:'Systematic analysis and logical reasoning',val:ORG.criticalThinkingPct+'%',bar:ORG.criticalThinkingPct,bc:'am',label:'Critical Thinking Indicator',human:'Capacity for structured, evidence-based analysis and problem solving.',note:'Participants combining analytical-systematic profile with self-declared quantitative competency. Indicator of structured problem-solving capacity.'},
+    {ey:'Self-declared competency',val:ORG.competencies.find(function(c){return c.id==='adapt';}).pct+'%',bar:ORG.competencies.find(function(c){return c.id==='adapt';}).pct,bc:'am',label:'Organizational Adaptability',human:'Readiness to embrace change, new contexts and organizational transitions.',note:'Participants who identify adaptability as a developed competency. Indicates cultural readiness for change initiatives.'},
+    {ey:'Collective coexistence competency',val:ORG.competencies.find(function(c){return c.id==='civic';}).pct+'%',bar:ORG.competencies.find(function(c){return c.id==='civic';}).pct,bc:'gr',label:'Collaboration Readiness',human:'Foundation for cross-functional teamwork and collective initiative.',note:'Participants self-declaring civic and coexistence competencies. Foundation of cross-functional collaboration initiatives.'},
+    {ey:'Aptitude and functional interest alignment',val:ORG.alignmentPct+'%',bar:ORG.alignmentPct,bc:'gr',label:'Role-Profile Alignment',human:'People working in areas aligned with their natural way of processing information.',note:'Participants where cognitive aptitude and functional interest coincide in the same domain - indicating natural role fit.'}
+  ]:[
+    {ey:'Orientaci\u00f3n estrat\u00e9gica natural',val:ORG.leadershipPct+'%',bar:ORG.leadershipPct,bc:'rg',label:'Potencial de Liderazgo',human:'Personas con una orientaci\u00f3n natural hacia funciones estrat\u00e9gicas y de liderazgo.',note:'Participantes con orientaci\u00f3n cognitiva natural hacia roles estrat\u00e9gicos. Identifica d\u00f3nde existe potencial de desarrollo de liderazgo en la organizaci\u00f3n.'},
+    {ey:'Orientaci\u00f3n operativa y disciplina estructural',val:ORG.executionPct+'%',bar:ORG.executionPct,bc:'rg',label:'Tendencia a la Ejecuci\u00f3n',human:'Capacidad colectiva para convertir ideas y planes en acciones concretas.',note:'Participantes con perfiles orientados a la entrega precisa, la disciplina y la estructura. Correlacionado con desempe\u00f1o operativo en entornos de alta exigencia.'},
+    {ey:'An\u00e1lisis sistem\u00e1tico y razonamiento l\u00f3gico',val:ORG.criticalThinkingPct+'%',bar:ORG.criticalThinkingPct,bc:'am',label:'Indicador de Pensamiento Cr\u00edtico',human:'Capacidad de an\u00e1lisis estructurado y resoluci\u00f3n de problemas basada en evidencia.',note:'Participantes que combinan perfil anal\u00edtico-sistem\u00e1tico con capacidad l\u00f3gico-cuantitativa autodeclarada. Indicador de capacidad de resoluci\u00f3n estructurada de problemas.'},
+    {ey:'Competencia autodeclarada',val:ORG.competencies.find(function(c){return c.id==='adapt';}).pct+'%',bar:ORG.competencies.find(function(c){return c.id==='adapt';}).pct,bc:'am',label:'Adaptabilidad Organizacional',human:'Disposici\u00f3n para asumir el cambio, nuevos contextos y transiciones organizacionales.',note:'Participantes que identifican la adaptabilidad como competencia desarrollada. Indica la preparaci\u00f3n cultural de la organizaci\u00f3n ante iniciativas de cambio.'},
+    {ey:'Competencia de convivencia colectiva',val:ORG.competencies.find(function(c){return c.id==='civic';}).pct+'%',bar:ORG.competencies.find(function(c){return c.id==='civic';}).pct,bc:'gr',label:'Preparaci\u00f3n para la Colaboraci\u00f3n',human:'Base para el trabajo en equipo interfuncional y la iniciativa colectiva.',note:'Participantes que autodeclaran competencias c\u00edvicas y de convivencia \u2014 trabajo en equipo, normas colectivas, coexistencia. Base de las iniciativas de colaboraci\u00f3n interfuncional.'},
+    {ey:'Alineaci\u00f3n entre aptitud e inter\u00e9s funcional',val:ORG.alignmentPct+'%',bar:ORG.alignmentPct,bc:'gr',label:'Alineaci\u00f3n Rol-Perfil',human:'Personas que trabajan en \u00e1reas alineadas con su forma natural de procesar informaci\u00f3n.',note:'Participantes donde la aptitud cognitiva y el inter\u00e9s funcional coinciden en el mismo dominio \u2014 indicando ajuste natural entre c\u00f3mo procesan y hacia d\u00f3nde est\u00e1n motivados.'}
+  ];
+  el.innerHTML=indicators.map(function(ind){
+    return '<div class="kpi-card"><div class="kc-ey">'+ind.ey+'</div><div class="kc-val">'+ind.val+'</div><div class="kc-label">'+ind.label+'</div>'+(ind.human?'<div class="kc-human">'+ind.human+'</div>':'')+'<div class="kc-bar-t"><div class="kc-bar-f '+ind.bc+'" data-w="'+ind.bar+'" style="width:0%"></div></div><div class="kc-note">'+ind.note+'</div></div>';
+  }).join('');
+}
+
+function buildHeatmap(){
+  var tbl=document.getElementById('heatTbl');if(!tbl)return;
+  var comps=ORG.competencies.map(function(c){var nm=c.name;if(nm==='Lectoescritura')return 'Lectura';if(nm==='Matem\u00e1ticas y L\u00f3gica')return 'Matem\u00e1ticas';if(nm==='Competencias C\u00edvicas')return 'C\u00edvicas';if(nm==='Adaptabilidad')return 'Adaptabilidad';if(nm==='Respeto y Tolerancia')return 'Respeto';return nm.split(' ').slice(0,2).join(' ');});
+  var th='<tr><th class="rh">Department</th><th>Dominant Profile</th><th>Alignment</th>'+comps.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';
+  var rows=ORG.departments.map(function(d){
+    var compCells=d.comp.map(function(v){var cls=v>=75?'hh':v>=58?'hm2':'hl';return '<td class="'+cls+'">'+v+'%</td>';}).join('');
+    var aCls=d.align>=80?'hh':d.align>=68?'hm2':'hl';
+    return '<tr><td class="dept-cell">'+d.n+'</td><td style="background:rgba(201,169,154,0.12);color:var(--dk3);border-radius:2px;font-size:10px;text-align:center;">'+d.domN+'</td><td class="'+aCls+'" style="font-weight:400;">'+d.align+'%</td>'+compCells+'</tr>';
+  }).join('');
+  tbl.innerHTML=th+rows;
+}
+
+function buildDeptCompTable(lang){
+  var tbl=document.getElementById('deptCompTbl');if(!tbl)return;
+  var l=lang||currentLang||'en';
+  var headers=l==='en'?['Department','Literacy','Math','Civic','Adapt.','Respect']:['Departamento','Lectura','Matem.','C\u00edvicas','Adaptab.','Respeto'];
+  var th='<tr>'+headers.map(function(h,i){return '<th'+(i===0?' class="rh"':'')+'>'+h+'</th>';}).join('')+'</tr>';
+  var rows=ORG.departments.map(function(d){
+    var cells=d.comp.map(function(v){var cls=v>=75?'hh':v>=58?'hm2':'hl';return '<td class="'+cls+'">'+v+'%</td>';}).join('');
+    return '<tr><td class="dept-cell">'+d.n+'</td>'+cells+'</tr>';
+  }).join('');
+  tbl.innerHTML=th+rows;
+}
+
+function buildInsights(lang){
+  var el=document.getElementById('insightsGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var sc=SECTORS[ORG.sector]||SECTORS.technology;
+  var dom=ORG.profileDist[0];
+  var pname=l==='en'?({1:'Exact Sciences & Business',2:'Social Sciences',3:'Arts & Design',4:'Health Sciences',5:'Engineering & Technology',6:'Defense & Security'}[dom.id]||dom.id):(({"1":'Ciencias Exactas y Administrativas',"2":'Ciencias Sociales y Humanas',"3":'Artes y Dise\u00f1o',"4":'Ciencias de la Salud y Agrarias',"5":'Ingenier\u00eda y Computaci\u00f3n',"6":'Defensa y Seguridad'})[String(dom.id)]||dom.id);
+  var insights=l==='en'?[
+    {i:'\u25c8',title:'Dominant Profile in Context',body:'With '+dom.pct+'% '+pname+' profiles, this organization has strong processing capacity in this domain. '+sc.note,action:'Leverage this profile in roles and processes that require its natural strengths.'},
+    {i:'\u25c6',title:'Alignment Opportunity',body:'An alignment index of '+ORG.alignmentPct+'% means '+(100-ORG.alignmentPct)+'% of participants have a gap between where they process best and where they are motivated. This is a structural design opportunity, not a people problem.',action:'Map roles and people in the misalignment group. Redesign or reassign where feasible.'},
+    {i:'\u25b2',title:'Leadership Potential Not Activated',body:ORG.leadershipPct+'% of participants have natural cognitive orientation toward strategic roles. If most of them sit in operational or tactical positions, there is latent leadership capacity available.',action:'Identify participants with natural strategic orientation in non-leadership roles. Design a deliberate development path. Focus on Profiles 5 and 6, where this gap is most pronounced.'},
+    {i:'\u25cb',title:'Adaptability Gap',body:'Only '+ORG.competencies.find(function(c){return c.id==='adapt';}).pct+'% self-declare adaptability. In a sector experiencing continuous transformation, this is the highest-priority gap identified in this report.',action:'Prioritize cognitive flexibility and change management programs.'}
+  ]:[
+    {i:'\u25c8',title:'Patr\u00f3n Dominante en Contexto',body:'Con un '+dom.pct+'% de perfiles de '+pname+', esta organizaci\u00f3n tiene una fuerte capacidad de procesamiento en este dominio. '+sc.noteEs,action:'Aprovechar este patr\u00f3n en roles y procesos que requieren sus fortalezas naturales.'},
+    {i:'\u25c6',title:'Oportunidad de Alineaci\u00f3n',body:'Un \u00edndice de alineaci\u00f3n del '+ORG.alignmentPct+'% significa que el '+(100-ORG.alignmentPct)+'% de los participantes tiene una brecha entre d\u00f3nde procesan mejor y d\u00f3nde est\u00e1n motivados. No es un problema de personas \u2014 es una oportunidad de dise\u00f1o estructural.',action:'Mapear los roles y personas espec\u00edficas en el grupo de desalineaci\u00f3n. Redise\u00f1ar o reasignar donde sea viable.'},
+    {i:'\u25b2',title:'Potencial de Liderazgo No Activado',body:ORG.leadershipPct+'% de los participantes muestra orientaci\u00f3n estrat\u00e9gica natural. Si la mayor\u00eda ocupa roles operativos o t\u00e1cticos, hay capacidad de liderazgo latente disponible.',action:'Identificar participantes con orientaci\u00f3n estrat\u00e9gica natural en roles no directivos. Dise\u00f1ar un camino de desarrollo deliberado. Enfoque en perfiles 5 y 6, donde esta brecha es m\u00e1s pronunciada.'},
+    {i:'\u25cb',title:'Brecha de Adaptabilidad',body:'Solo el '+ORG.competencies.find(function(c){return c.id==='adapt';}).pct+'% autodeclara adaptabilidad. En un sector que experimenta transformaci\u00f3n continua, esta es la brecha de mayor prioridad identificada en este reporte.',action:'Priorizar programas de flexibilidad cognitiva y gesti\u00f3n del cambio.'}
+  ];
+  el.innerHTML=insights.map(function(ins){
+    return '<div class="ins-card"><div class="ins-top"><span class="ins-ico">'+ins.i+'</span><span class="ins-title">'+ins.title+'</span></div><div class="ins-body">'+ins.body+'</div><div class="ins-action">\u2192 '+ins.action+'</div></div>';
+  }).join('');
+}
+
+function buildRoadmap(lang){
+  var el=document.getElementById('rmGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var roadmap_en=[
+    {d:'Day 30',n:'30',obj:'Findings Alignment',items:['The framework suggests starting by sharing these findings with the leadership team \u2014 it is the foundation for any decision that follows.','The data points to the departments with the highest alignment gap as the most efficient starting point; they are already identified in the Teams section of this report.','The competency gaps identified in this report are already prioritized \u2014 it is worth translating them into an internal development map before moving to the next phase.'],kl:'Observable outcome',kt:'Leadership has a shared reading of the data, and the three priority departments are already identified and ready for action.'},
+    {d:'Day 60',n:'60',obj:'Capability Activation',items:['The framework suggests starting competency development in the highest-gap areas \u2014 adaptability and mathematical logic concentrate the greatest opportunity according to this report.','The data indicates that cognitive complementarity between profiles can strengthen cross-functional teams; it is worth considering when forming or adjusting work teams.','It is worth setting up a simple feedback mechanism \u2014 a brief, periodic check-in \u2014 to verify that this phase\u2019s initiatives are producing the expected effect.'],kl:'Observable outcome',kt:'Two or more development initiatives underway, with an initial practical validation of cross-team complementarity.'},
+    {d:'Day 90',n:'90',obj:'Structural Direction',items:['The framework suggests reviewing whether the alignment index improved relative to the initial measurement \u2014 it is the clearest signal that the plan is working.','The data indicates that 34% of the organization shows natural strategic orientation without being in a leadership role. The framework suggests reviewing this group\u2019s Level 0 reports to identify specifically who this applies to, before deciding how to activate them.','With this information, the organization is in a position to define its own talent strategy \u2014 grounded in data, not assumptions.'],kl:'Observable outcome',kt:'A measurable shift in the alignment index, and a clear initial identification of who to activate within the leadership pipeline.'}
+  ];
+  var data=l==='en'?roadmap_en:ORG.roadmap;
+  el.innerHTML=data.map(function(ph){
+    var items=ph.items.map(function(it){return '<div class="rm-item"><span class="rm-ck">\u2713</span>'+it+'</div>';}).join('');
+    return '<div class="rm-ph"><div class="rm-head"><div class="rm-bg">'+ph.n+'</div><span class="rm-d">'+ph.d+'</span><div class="rm-o">'+ph.obj+'</div></div><div class="rm-body">'+items+'<div class="rm-kpi"><div class="rm-kl">'+ph.kl+'</div><div class="rm-kt">'+ph.kt+'</div></div></div></div>';
+  }).join('');
+}
+
+function buildRec(lang){
+  var el=document.getElementById('recGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var recs_en=[
+    {i:'\u25c8',n:'Talent Placement Strategy',b:'Align roles with cognitive profiles to reduce energy cost and increase natural output. The alignment index shows where this opportunity is largest.'},
+    {i:'\u25b2',n:'Leadership Pipeline',b:'The data identifies participants with natural strategic orientation in non-leadership roles. Activate this latent potential deliberately.'},
+    {i:'\u25c9',n:'Competency Development',b:'Low adaptability (54%) and mathematics/logic (65%) are the highest-priority development targets across the organization.'},
+    {i:'\u25c7',n:'Cognitive Diversity Design',b:'Strategic use of profile complementarity in team composition increases both innovation capacity and execution reliability.'},
+    {i:'\u25c6',n:'Communication Architecture',b:'High analytical-profile organizations need explicit communication bridges to translate technical output into accessible organizational language.'},
+    {i:'\u25cb',n:'Alignment-Based Redesign',b:'At 71% alignment, there is a 29% opportunity to redesign roles so people operate in the domain where their cognition is most efficient.'}
+  ];
+  var data=l==='en'?recs_en:ORG.recommendations;
+  el.innerHTML=data.map(function(r){
+    return '<div class="rec"><div class="rec-top"><span class="rec-ico">'+r.i+'</span><span class="rec-n">'+r.n+'</span></div><div class="rec-b">'+r.b+'</div></div>';
+  }).join('');
+}
+
+function buildPortfolio(lang){
+  var el=document.getElementById('portGrid');if(!el)return;
+  var l=lang||currentLang||'es';
+  var port_en=[
+    {i:'\u25c8',n:'Competency Development Program',b:'Structured programs targeting the specific competency gaps identified in this report. Designed for the cognitive profiles present in the organization.',opp:'Prioritize: Adaptability + Mathematics & Logic.'},
+    {i:'\u25b2',n:'Leadership Activation Program',d:'Designed to develop participants with natural strategic orientation currently in tactical or operational roles.',opp:'Opportunity identified: '+Math.round(ORG.total*0.34)+' participants with latent leadership orientation.'},
+    {i:'\u25c6',n:'Cognitive Diversity Workshop',d:'Team design sessions that leverage profile complementarity to build more resilient and innovative organizational units.',opp:'Recommended for departments with a low diversity index.'}
+  ];
+  var data=l==='en'?port_en:ORG.portfolio;
+  el.innerHTML=data.map(function(p){
+    return '<div class="cp-card"><div class="cp-top"><span class="cp-ico">'+p.i+'</span><span class="cp-name">'+p.n+'</span></div><div class="cp-def">'+p.d+'</div><div class="cp-opp">\u2192 '+p.opp+'</div></div>';
+  }).join('');
+}
+
+function buildFinalRows(lang){
+  var el=document.getElementById('finalRows');if(!el)return;
+  var l=lang||currentLang||'en';
+  var rows=l==='en'?[
+    {l:'Organization',v:ORG.name},
+    {l:'Total Participants',v:ORG.total+' evaluated'},
+    {l:'Alignment Index',v:ORG.alignmentPct+'% natural aptitude-profile fit'},
+    {l:'Highest Priority',v:'Adaptability development + leadership activation'},
+    {l:'Immediate Next Step',v:'PYLA Delivery & Socialization Session \u2014 included with this report'}
+  ]:[
+    {l:'Organizaci\u00f3n',v:ORG.name},
+    {l:'Total de Participantes',v:ORG.total+' evaluados'},
+    {l:'\u00cdndice de Alineaci\u00f3n',v:ORG.alignmentPct+'% de ajuste natural entre aptitud y perfil'},
+    {l:'Prioridad M\u00e1s Alta',v:'Desarrollo de adaptabilidad + activaci\u00f3n de liderazgo'},
+    {l:'Pr\u00f3ximo Paso Inmediato',v:'Sesi\u00f3n de Entrega y Socializaci\u00f3n PYLA \u2014 incluida con este reporte'}
+  ];
+  el.innerHTML=rows.map(function(r){
+    return '<div class="fi-row"><div class="fi-rl">'+r.l+'</div><div class="fi-rv">'+r.v+'</div></div>';
+  }).join('');
+}
+
+/* ANIMATE ALL BARS */
+var animated=false;
+function animBars(){
+  if(animated)return;animated=true;
+  document.querySelectorAll('[data-w]').forEach(function(b,i){
+    setTimeout(function(){b.style.transition='width 1s cubic-bezier(0.22,1,0.36,1)';b.style.width=b.getAttribute('data-w')+'%';},i*55);
+  });
+}
+
+/* SCROLL REVEAL */
+var rd={};
+function initReveal(){
+  var els=document.querySelectorAll('.sec');
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('vis');
+        if(!rd[e.target.id]){rd[e.target.id]=true;setTimeout(animBars,200);}
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.06});
+  els.forEach(function(s){obs.observe(s);});
+}
+
+/* SCROLL SPY */
+function initSpy(){
+  var links=document.querySelectorAll('.sba');
+  var ids=['hero','s-exec','s-adn','s-dist','s-comp','s-ind','s-team','s-pat','s-road','s-rec','s-sess','s-port'];
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+80,active='hero';
+    ids.forEach(function(id){var el=document.getElementById(id);if(el&&el.offsetTop<=sy)active=id;});
+    links.forEach(function(lk){lk.classList.toggle('on',lk.getAttribute('href')==='#'+active);});
+  },{passive:true});
+}
+
+
+function buildADN(lang){
+  var el=document.getElementById('adnGrid');if(!el)return;
+  var l=lang||currentLang||'en';
+  var dom=ORG.profileDist[0];
+  var div=ORG.profileDist.length>=5?Math.round(100-(ORG.profileDist[0].pct-20)):68;
+  var pname=l==='en'?(PROFILE_NAMES[dom.id]||'\u2014'):(({1:'Ciencias Exactas y Administrativas',2:'Ciencias Sociales y Humanas',3:'Artes y Dise\u00f1o',4:'Ciencias de la Salud y Agrarias',5:'Ingenier\u00eda y Computaci\u00f3n',6:'Defensa y Seguridad'})[dom.id]||'\u2014');
+  var items=l==='en'?[
+    {cls:'c1',ico:'\u25c8',lbl:'Dominant Cognitive Aptitude',val:'',name:pname,desc:dom.pct+'% of participants share this cognitive aptitude profile.',bar:dom.pct,isText:true},
+    {cls:'c2',ico:'\u25ce',lbl:'Cognitive Diversity',val:div+'%',name:div>=70?'High':'Moderate',desc:div>=70?'Multiple profiles present \u2014 high potential adaptability.':'Moderate concentration \u2014 some predictable blind spots.',bar:div,isText:false},
+    {cls:'c3',ico:'\u25b2',lbl:'Alignment Index',val:ORG.alignmentPct+'%',name:ORG.alignmentPct>=70?'High':'Moderate',desc:'Participants where aptitude and interest coincide in the same domain.',bar:ORG.alignmentPct,isText:false},
+    {cls:'c4',ico:'\u25c6',lbl:'Organizational Health',val:'',name:ORG.alignmentPct>=70?'Strong':'Moderate',desc:ORG.alignmentPct>=70?'High alignment index \u2014 most people operate where their cognitive profile is most efficient.':'Development opportunities clearly identified in the data.',bar:ORG.alignmentPct,isText:true}
+  ]:[
+    {cls:'c1',ico:'\u25c8',lbl:'Aptitud Cognitiva Dominante',val:'',name:pname,desc:dom.pct+'% de los participantes comparte este perfil de aptitud cognitiva.',bar:dom.pct,isText:true},
+    {cls:'c2',ico:'\u25ce',lbl:'Diversidad Cognitiva',val:div+'%',name:div>=70?'Alta':'Moderada',desc:div>=70?'M\u00faltiples perfiles presentes \u2014 alto potencial de adaptabilidad.':'Concentraci\u00f3n moderada \u2014 algunos puntos ciegos previsibles.',bar:div,isText:false},
+    {cls:'c3',ico:'\u25b2',lbl:'\u00cdndice de Alineaci\u00f3n',val:ORG.alignmentPct+'%',name:ORG.alignmentPct>=70?'Alto':'Moderado',desc:'Participantes cuya aptitud e inter\u00e9s coinciden en el mismo dominio.',bar:ORG.alignmentPct,isText:false},
+    {cls:'c4',ico:'\u25c6',lbl:'Salud Organizacional',val:'',name:ORG.alignmentPct>=70?'S\u00f3lida':'Moderada',desc:ORG.alignmentPct>=70?'\u00cdndice de alineaci\u00f3n alto \u2014 la mayor\u00eda opera donde su perfil cognitivo es m\u00e1s eficiente.':'Oportunidades de desarrollo claramente identificadas en los datos.',bar:ORG.alignmentPct,isText:true}
+  ];
+  el.innerHTML=items.map(function(it){
+    var valHtml=it.isText?'':('<div class="adn-val">'+it.val+'</div>');
+    return '<div class="adn-card '+it.cls+'"><div class="adn-ico">'+it.ico+'</div><div class="adn-lbl">'+it.lbl+'</div>'+valHtml+'<div class="adn-name">'+it.name+'</div><div class="adn-desc">'+it.desc+'</div><div class="adn-bar-t"><div class="adn-bar-f" data-w="'+it.bar+'" style="width:0%"></div></div></div>';
+  }).join('');
+}
+
+
+
+/* BILINGUAL TOGGLE */
+var TRANS = {
+  es: {
+  sb_cover: 'Portada',
+  sb_exec: 'Resumen Ejecutivo',
+  sb_adn: 'ADN Cognitivo',
+  sb_dist: 'Distribuci\u00f3n',
+  sb_comp: 'Competencias',
+  sb_ind: 'Indicadores Clave',
+  sb_team: 'Equipos',
+  sb_pat: 'Hallazgos',
+  sb_road: 'Hoja de Ruta',
+  sb_rec: 'Recomendaciones',
+  sb_port: 'Portafolio',
+  hero_ey: 'PYLA Nivel 02 \u00b7 Reporte de Inteligencia Cognitiva Organizacional',
+  hero_h1: 'Inteligencia',
+  hero_h2: 'Cognitiva Organizacional',
+  hero_h3: 'Reporte Ejecutivo',
+  hero_sub: 'Claridad colectiva. Direcci\u00f3n estrat\u00e9gica. Impacto sostenible.',
+  meta_org: 'Organizaci\u00f3n',
+  meta_part: 'Total Participantes',
+  meta_date: 'Fecha de Evaluaci\u00f3n',
+  meta_sec: 'Sector',
+  method: 'Observaci\u00f3n de tendencias, identificaci\u00f3n de inclinaciones y correlaci\u00f3n de datos derivados de PYLA Nivel 0. Fundamentado en psicopedagog\u00eda, metacognici\u00f3n y psicolog\u00eda del color \u2014 validado en GJHSS 2023, estudio doble ciego, 300+ participantes, 86% de precisi\u00f3n. Dise\u00f1ado como insumo para la toma de decisiones organizacionales, no solo como reporte de resultados.',
+  ko_dom: 'Perfil Cognitivo Dominante',
+  ko_div: 'Diversidad Cognitiva',
+  ko_align: '\u00cdndice de Alineaci\u00f3n',
+  ko_health: 'Salud Organizacional',
+  exec_ey: 'Resumen Ejecutivo',
+  exec_h: 'Tres fortalezas. Tres riesgos. <em>Tres prioridades.</em>',
+  exec_str_title: '\u25ce Fortalezas Principales',
+  exec_str1: 'Alta precisi\u00f3n anal\u00edtica \u2014 38% del personal con perfil de procesamiento sistem\u00e1tico.',
+  exec_str2: 'Fuerte disposici\u00f3n a la colaboraci\u00f3n \u2014 82% autodeclara competencias c\u00edvicas.',
+  exec_str3: 'Alto \u00edndice de alineaci\u00f3n (71%) \u2014 la mayor\u00eda opera donde su perfil es m\u00e1s eficiente.',
+  exec_risk_title: '\u25c6 Riesgos Identificados',
+  exec_risk1: 'Baja adaptabilidad (54%) \u2014 riesgo ante procesos de transformaci\u00f3n organizacional.',
+  exec_risk2: 'Potencial de liderazgo no activado \u2014 34% con orientaci\u00f3n estrat\u00e9gica natural en roles no directivos.',
+  exec_risk3: 'Baja diversidad en perfiles creativos (5%) \u2014 punto ciego en innovaci\u00f3n disruptiva.',
+  exec_pri_title: '\u25b2 Prioridades Estrat\u00e9gicas',
+  exec_pri1: 'Activar pipeline de liderazgo con participantes de orientaci\u00f3n estrat\u00e9gica natural.',
+  exec_pri2: 'Desarrollar adaptabilidad y l\u00f3gica matem\u00e1tica \u2014 brechas de mayor impacto organizacional.',
+  exec_pri3: 'Dise\u00f1ar equipos usando complementariedad cognitiva para aumentar capacidad de innovaci\u00f3n.',
+  adn_ey: 'ADN Cognitivo Organizacional',
+  adn_h: 'La <em>huella cognitiva</em> de esta organizaci\u00f3n.',
+  adn_sub: 'Cuatro indicadores derivados directamente de los datos del instrumento.',
+  dist_ey: 'Distribuci\u00f3n de Perfiles Cognitivos',
+  dist_map: 'Mapa de Perfiles Cognitivos',
+  dist_groups: 'Grupos de Perfiles',
+  dist_sub: 'Distribuci\u00f3n del procesamiento cognitivo natural en la organizaci\u00f3n.',
+  dist_map_sub: 'Distribuci\u00f3n proporcional de procesamiento cognitivo en la organizaci\u00f3n.',
+  lnk_full: 'Ver distribuci\u00f3n completa \u2192',
+  lnk_ind: 'Ver indicadores derivados \u2192',
+  lnk_team: 'Ver distribuci\u00f3n por equipo \u2192',
+  strength_tag: 'Fortaleza',
+  monitor_tag: 'Monitorear',
+  comp_ey: 'Competencias Gen\u00e9ricas',
+  comp_h: 'Las <em>competencias m\u00ednimas</em> requeridas para cualquier cargo.',
+  comp_note: 'Competencias m\u00ednimas para el desempe\u00f1o efectivo en cualquier cargo. Autodeclaradas por los participantes. Indica el autoconcepto colectivo de capacidades clave e identifica d\u00f3nde el desarrollo es m\u00e1s necesario. Toque cualquier competencia para ver su definici\u00f3n e implicaciones organizacionales.',
+  comp_lvl: 'Niveles de Competencia',
+  comp_dept: 'Distribuci\u00f3n por Departamento',
+  comp_gaps: 'Brechas Identificadas',
+  comp_gaps_sub: 'Las competencias por debajo del 50% son las oportunidades de desarrollo de mayor prioridad.',
+  dept_dist_sub: 'Niveles de competencia por departamento \u2014 las celdas m\u00e1s oscuras indican niveles m\u00e1s s\u00f3lidos.',
+  dept_leg_green: 'Fortaleza', dept_leg_amber: 'Oportunidad', dept_leg_red: 'Prioridad',
+  gap_priority: 'Prioritario',
+  gap_develop: 'Desarrollar',
+  ind_ey: 'Indicadores Organizacionales Clave',
+  ind_h: 'Observaciones correlacionales <em>desde los datos.</em>',
+  ind_note: 'Lo que muestran los datos: se\u00f1ales correlacionales y tendencias direccionales \u2014 la base de evidencia sobre la que se construye el resto del reporte.',
+  team_ey: 'Comparaci\u00f3n por Equipos',
+  team_h: '<em>Distribuci\u00f3n cognitiva</em> por \u00e1rea.',
+  team_note: 'Perfil dominante e \u00edndice de alineaci\u00f3n por \u00e1rea \u2014 una vista por departamento de d\u00f3nde se concentran las fortalezas cognitivas y las prioridades de desarrollo. Los datos mostrados aqu\u00ed son ilustrativos.',
+  lnk_insights: 'Ver hallazgos estrat\u00e9gicos \u2192',
+  col_dept: 'Departamento',
+  col_dom: 'Perfil Dominante',
+  col_align: 'Alineaci\u00f3n',
+  ins_ey: 'Hallazgos Estrat\u00e9gicos',
+  ins_h: 'Lo que los datos <em>revelan para este sector.</em>',
+  ins_note: 'Lo que significa para esta organizaci\u00f3n: la misma distribuci\u00f3n cognitiva tiene implicaciones distintas seg\u00fan el sector y el contexto \u2014 esta es la lectura interpretativa de los indicadores.',
+  sess_ey: 'Incluida con Este Reporte',
+  sess_h: 'Sesi\u00f3n de Entrega y <em>Socializaci\u00f3n.</em>',
+  sess_note: 'Esta sesi\u00f3n no es un servicio adicional. Es parte del Reporte Nivel 2 \u2014 dise\u00f1ada para asegurar que los hallazgos se traduzcan en acci\u00f3n organizacional real.',
+  sess_tag: 'Incluida con Reporte Nivel 2',
+  sess_title: 'PYLA <em>Entrega y Socializaci\u00f3n</em>',
+  sess_desc: 'Sesi\u00f3n facilitada de 90 minutos con el equipo directivo para interpretar los hallazgos, resolver preguntas y definir prioridades iniciales. El objetivo no es presentar datos \u2014 es convertir la inteligencia cognitiva en decisiones organizacionales.',
+  sess_dur_l: 'Duraci\u00f3n', sess_dur_v: '90 minutos',
+  sess_fmt_l: 'Formato', sess_fmt_v: 'Video o presencial',
+  sess_fac_l: 'Facilitado por', sess_lang_l: 'Idioma',
+  heat_green: 'Fortaleza consolidada', heat_amber: 'Oportunidad de desarrollo', heat_red: '\u00c1rea de atenci\u00f3n prioritaria',
+  road_ey: 'Hoja de Ruta Estrat\u00e9gica',
+  road_h: 'Tres fases. <em>Acciones concretas.</em> Resultados medibles.',
+  road_note: 'C\u00f3mo actuar, en secuencia: el puente entre los hallazgos y su implementaci\u00f3n, traducidos en una ruta de ejecuci\u00f3n a 30/60/90 d\u00edas.',
+  road_caveat: 'Este reporte es un framework completo y autogestionable desde el primer d\u00eda \u2014 los datos son reales, confiables y accionables seg\u00fan el plan 30/60/90 tal como se entregan. La efectividad de los resultados depende exclusivamente del nivel de implementaci\u00f3n que la organizaci\u00f3n est\u00e9 dispuesta a asumir. La asesor\u00eda o el acompa\u00f1amiento puntual de un profesional est\u00e1 disponible como servicio adicional, con costo seg\u00fan el tiempo invertido.',
+  rec_ey: 'Recomendaciones Ejecutivas',
+  rec_h: 'Seis acciones derivadas de <em>los datos de inteligencia cognitiva.</em>',
+  rec_note: 'Qu\u00e9 decidir ahora: seis decisiones concretas derivadas de los perfiles espec\u00edficos de esta organizaci\u00f3n \u2014 no de marcos gen\u00e9ricos.',
+  rec_indiv_note: 'Cada participante ya tiene su reporte Nivel 0, donde se ve si su rol coincide con su aptitud y aspiraci\u00f3n \u2014 ah\u00ed se identifica a qui\u00e9n aplica cada recomendaci\u00f3n. Profundizar con el Nivel 1 es opcional; beneficia a la organizaci\u00f3n, pero no es necesario para este plan.',
+  port_ey: 'Portafolio de Desarrollo',
+  port_h: 'D\u00f3nde <em>PYLA acompa\u00f1a</em> la pr\u00f3xima fase.',
+  port_note: 'Servicios disponibles para traducir los hallazgos en acci\u00f3n organizacional sostenida.',
+  final_q: '"La claridad cognitiva se convierte en direcci\u00f3n organizacional cuando los patrones individuales se transforman en inteligencia colectiva."',
+  final_cite: '\u2014 PYLA Cognitive Science Framework',
+  footer_conf: 'Reporte Confidencial',
+  footer_rights: 'Todos los derechos reservados.'
+},
+  en: {
+  sb_cover: 'Cover',
+  sb_exec: 'Executive Summary',
+  sb_adn: 'Cognitive DNA',
+  sb_dist: 'Distribution',
+  sb_comp: 'Competencies',
+  sb_ind: 'Key Indicators',
+  sb_team: 'Teams',
+  sb_pat: 'Insights',
+  sb_road: 'Roadmap',
+  sb_rec: 'Recommendations',
+  sb_port: 'Portfolio',
+  hero_ey: 'PYLA Level 02 \u00b7 Organizational Cognitive Intelligence Report',
+  hero_h1: 'Organizational',
+  hero_h2: 'Cognitive Intelligence',
+  hero_h3: 'Executive Report',
+  hero_sub: 'Collective clarity. Strategic direction. Sustainable impact.',
+  meta_org: 'Organization',
+  meta_part: 'Total Participants',
+  meta_date: 'Evaluation Date',
+  meta_sec: 'Sector',
+  method: 'Pattern observation, trend identification and data correlation from PYLA Level 0. Grounded in psychopedagogy, metacognition and color psychology \u2014 validated in GJHSS 2023, double-blind study, 300+ participants, 86% accuracy. Designed as input for organizational decision-making, not only as a results report.',
+  ko_dom: 'Dominant Cognitive Profile',
+  ko_div: 'Cognitive Diversity',
+  ko_align: 'Alignment Index',
+  ko_health: 'Organizational Health',
+  exec_ey: 'Executive Summary',
+  exec_h: 'Three strengths. Three risks. <em>Three priorities.</em>',
+  exec_str_title: '\u25ce Main Strengths',
+  exec_str1: 'High analytical precision \u2014 38% of staff with systematic processing profile.',
+  exec_str2: 'Strong collaboration disposition \u2014 82% self-declare civic competencies.',
+  exec_str3: 'High alignment index (71%) \u2014 most people operate where their profile is most efficient.',
+  exec_risk_title: '\u25c6 Identified Risks',
+  exec_risk1: 'Low adaptability (54%) \u2014 risk in organizational transformation processes.',
+  exec_risk2: 'Untapped leadership potential \u2014 34% with natural strategic orientation in non-leadership roles.',
+  exec_risk3: 'Low creative profile diversity (5%) \u2014 blind spot in disruptive innovation.',
+  exec_pri_title: '\u25b2 Strategic Priorities',
+  exec_pri1: 'Activate leadership pipeline with participants showing natural strategic orientation.',
+  exec_pri2: 'Develop adaptability and mathematical logic \u2014 highest organizational impact gaps.',
+  exec_pri3: 'Design teams using cognitive complementarity to increase innovation capacity.',
+  adn_ey: 'Organizational Cognitive DNA',
+  adn_h: 'The <em>cognitive signature</em> of this organization.',
+  adn_sub: 'Four indicators derived directly from instrument data.',
+  dist_ey: 'Cognitive Profile Distribution',
+  dist_map: 'Cognitive Profile Map',
+  dist_groups: 'Profile Groups',
+  dist_sub: 'Distribution of natural cognitive processing across the organization.',
+  dist_map_sub: 'Proportional distribution of cognitive processing patterns.',
+  lnk_full: 'View full distribution \u2192',
+  lnk_ind: 'View derived indicators \u2192',
+  lnk_team: 'View team distribution \u2192',
+  strength_tag: 'Strength',
+  monitor_tag: 'Monitor',
+  comp_ey: 'Generic Competencies',
+  comp_h: 'The <em>minimum competencies</em> required for any role.',
+  comp_note: 'Minimum competencies for effective performance in any role. Self-declared by participants. Reveals the collective self-concept of core capabilities and identifies where structured development is most needed. Tap any competency for its definition and organizational implications.',
+  comp_lvl: 'Competency Levels',
+  comp_dept: 'Distribution by Department',
+  comp_gaps: 'Gap Identification',
+  comp_gaps_sub: 'Competencies below 50% are the highest-priority development opportunities.',
+  dept_dist_sub: 'Competency levels by department \u2014 darker cells indicate stronger levels.',
+  dept_leg_green: 'Strength', dept_leg_amber: 'Opportunity', dept_leg_red: 'Priority',
+  gap_priority: 'Priority',
+  gap_develop: 'Develop',
+  ind_ey: 'Key Organizational Indicators',
+  ind_h: 'Observable correlational <em>observations from the data.</em>',
+  ind_note: 'What the data shows: correlational signals and directional trends \u2014 the evidence base the rest of this report builds on.',
+  team_ey: 'Team Comparison',
+  team_h: '<em>Cognitive distribution</em> by area.',
+  team_note: 'Dominant profile and alignment index by area \u2014 a department-level view of where cognitive strengths and development priorities concentrate. Data shown here is illustrative.',
+  lnk_insights: 'View strategic insights \u2192',
+  col_dept: 'Department',
+  col_dom: 'Dominant Profile',
+  col_align: 'Alignment',
+  ins_ey: 'Strategic Insights',
+  ins_h: 'What the data <em>reveals for this sector.</em>',
+  ins_note: 'What it means for this organization: the same cognitive distribution carries different implications depending on sector and context \u2014 this is the interpretive reading of the indicators.',
+  sess_ey: 'Included with This Report',
+  sess_h: 'Delivery &amp; <em>Socialization Session.</em>',
+  sess_note: 'This session is not a service offering. It is part of the Level 2 report \u2014 designed to ensure the findings translate into real organizational action.',
+  sess_tag: 'Included with Level 2 Report',
+  sess_title: 'PYLA <em>Delivery &amp; Socialization</em> Session',
+  sess_desc: 'A facilitated 90-minute session with the leadership team to interpret findings, resolve questions and define initial priorities. The goal is not to present data \u2014 it is to convert cognitive intelligence into organizational decisions.',
+  sess_dur_l: 'Duration', sess_dur_v: '90 minutes',
+  sess_fmt_l: 'Format', sess_fmt_v: 'Video or in-person',
+  sess_fac_l: 'Facilitated by', sess_lang_l: 'Language',
+  heat_green: 'Consolidated strength', heat_amber: 'Development opportunity', heat_red: 'Priority intervention area',
+  road_ey: 'Strategic Roadmap',
+  road_h: 'Three phases. <em>Concrete actions.</em> Measurable outcomes.',
+  road_note: 'How to act, in sequence: the bridge between the findings and their implementation, translated into a 30/60/90-day execution path.',
+  road_caveat: 'This report is a complete, self-manageable framework from day one \u2014 the data is real, reliable, and actionable through the 30/60/90 plan exactly as delivered. The effectiveness of the results depends exclusively on the level of implementation the organization is willing to commit to. Advisory support or hands-on follow-up from a professional is available as an additional service, billed based on time invested.',
+  rec_ey: 'Executive Recommendations',
+  rec_h: 'Six actions grounded in <em>cognitive intelligence data.</em>',
+  rec_note: 'What to decide now: six concrete decisions derived from the specific profiles of this organization \u2014 not generic frameworks.',
+  rec_indiv_note: 'Each participant already has their Level 0 report, showing whether their role matches their aptitude and aspiration \u2014 that\u2019s where each recommendation\u2019s specific candidates are identified. Going deeper with Level 1 is optional; it benefits the organization, but isn\u2019t required for this plan.',
+  port_ey: 'Development Portfolio',
+  port_h: 'Where <em>PYLA supports</em> the next phase.',
+  port_note: 'Services available to translate findings into sustained organizational action.',
+  final_q: '"Cognitive clarity becomes organizational direction when individual patterns are transformed into collective intelligence."',
+  final_cite: '\u2014 PYLA Cognitive Science Framework',
+  footer_conf: 'Confidential Report',
+  footer_rights: 'All rights reserved.'
+}
+};
+
+var currentLang = 'en';
+
+function setLang(l) {
+  currentLang = l;
+  document.querySelectorAll('.lang-btn').forEach(function(b){
+    b.classList.toggle('active', b.textContent.trim() === l.toUpperCase());
+  });
+  var T = TRANS[l];
+  if(!T) return;
+  function s(id,v){var e=document.getElementById(id);if(e&&v!==undefined)e.textContent=v;}
+  function sh(id,v){var e=document.getElementById(id);if(e&&v!==undefined)e.innerHTML=v;}
+  function sb(href,v){
+    document.querySelectorAll('.sba').forEach(function(lk){
+      if(lk.getAttribute('href')==='#'+href){
+        var d=lk.querySelector('.sba-d');
+        lk.textContent=v;
+        if(d)lk.insertBefore(d,lk.firstChild);
+      }
+    });
+  }
+  sb('hero',T.sb_cover); sb('s-exec',T.sb_exec); sb('s-adn',T.sb_adn);
+  sb('s-dist',T.sb_dist); sb('s-comp',T.sb_comp); sb('s-ind',T.sb_ind);
+  sb('s-team',T.sb_team); sb('s-pat',T.sb_pat); sb('s-road',T.sb_road);
+  sb('s-rec',T.sb_rec); sb('s-port',T.sb_port);
+  s('h-ey-txt',T.hero_ey);
+  sh('h-h1-txt',T.hero_h1+'<br><em>'+T.hero_h2+'</em><br>'+T.hero_h3);
+  s('h-sub-txt',T.hero_sub);
+  s('h-meta-org',T.meta_org); s('h-meta-part',T.meta_part);
+  s('h-meta-date',T.meta_date); s('h-meta-sec',T.meta_sec);
+  s('h-method',T.method);
+  s('ko-lbl-dom',T.ko_dom); s('ko-lbl-div',T.ko_div);
+  s('ko-lbl-align',T.ko_align); s('ko-lbl-health',T.ko_health);
+  s('exec-ey',T.exec_ey); sh('exec-h',T.exec_h);
+  s('exec-str-title',T.exec_str_title);
+  s('exec-str1',T.exec_str1); s('exec-str2',T.exec_str2); s('exec-str3',T.exec_str3);
+  s('exec-risk-title',T.exec_risk_title);
+  s('exec-risk1',T.exec_risk1); s('exec-risk2',T.exec_risk2); s('exec-risk3',T.exec_risk3);
+  s('exec-pri-title',T.exec_pri_title);
+  s('exec-pri1',T.exec_pri1); s('exec-pri2',T.exec_pri2); s('exec-pri3',T.exec_pri3);
+  s('adn-ey',T.adn_ey); sh('adn-h',T.adn_h); s('adn-sub',T.adn_sub);
+  s('dist-ey',T.dist_ey); s('dist-map-ey',T.dist_map); s('dist-grp-ey',T.dist_groups);
+  s('dist-sub',T.dist_sub); s('dist-map-sub',T.dist_map_sub);
+  s('comp-ey',T.comp_ey); sh('comp-h',T.comp_h); s('comp-note',T.comp_note);
+  s('comp-lvl-ey',T.comp_lvl); s('comp-dept-ey',T.comp_dept);
+  s('comp-gaps-ey',T.comp_gaps); s('comp-gaps-sub',T.comp_gaps_sub);
+  s('dept-dist-sub',T.dept_dist_sub);
+  s('dept-leg-green',T.dept_leg_green); s('dept-leg-amber',T.dept_leg_amber); s('dept-leg-red',T.dept_leg_red);
+  s('ind-ey',T.ind_ey); sh('ind-h',T.ind_h); s('ind-note',T.ind_note);
+  s('team-ey',T.team_ey); sh('team-h',T.team_h); s('team-note',T.team_note);
+  s('ins-ey',T.ins_ey); sh('ins-h',T.ins_h); s('ins-note',T.ins_note);
+  s('sess-ey',T.sess_ey); sh('sess-h',T.sess_h); s('sess-note',T.sess_note);
+  s('sess-tag',T.sess_tag); sh('sess-title',T.sess_title); s('sess-desc',T.sess_desc);
+  s('sess-dur-l',T.sess_dur_l); s('sess-dur-v',T.sess_dur_v);
+  s('sess-fmt-l',T.sess_fmt_l); s('sess-fmt-v',T.sess_fmt_v);
+  s('sess-fac-l',T.sess_fac_l); s('sess-lang-l',T.sess_lang_l);
+  s('heat-leg-green',T.heat_green); s('heat-leg-amber',T.heat_amber); s('heat-leg-red',T.heat_red);
+  s('road-ey',T.road_ey); sh('road-h',T.road_h); s('road-note',T.road_note);
+  s('roadCaveat',T.road_caveat);
+  s('rec-ey',T.rec_ey); sh('rec-h',T.rec_h); s('rec-note',T.rec_note);
+  s('recIndivNote',T.rec_indiv_note);
+  s('port-ey',T.port_ey); sh('port-h',T.port_h); s('port-note',T.port_note);
+  s('final-q-txt',T.final_q); s('final-cite-txt',T.final_cite);
+  s('footer-conf',T.footer_conf); s('footer-rights',T.footer_rights);
+  rebuildDynamic(l, T);
+}
+
+function rebuildDynamic(l, T) {
+  buildHeroKI(l);
+  buildADN(l);
+  buildCompBars(l);
+  buildCompGaps(l);
+  buildKPIGrid(l);
+  buildInsights(l);
+  buildRoadmap(l);
+  buildRec(l);
+  buildPortfolio(l);
+  buildFinalRows(l);
+  buildProfileBars(l);
+  drawRadar(l);
+  drawDonut(l);
+  buildDeptCompTable(l);
+  var colHeaders=l==='en'?[T.col_dept,T.col_dom,T.col_align,'Literacy','Math','Civic','Adaptability','Respect']:[T.col_dept,T.col_dom,T.col_align,'Lectura','Matem.','Civicas','Adaptab.','Respeto'];
+  var tbl=document.getElementById('heatTbl');
+  if(tbl){
+    var th='<tr>'+colHeaders.map(function(c,i){return '<th'+(i===0?' class="rh"':'')+'>'+c+'</th>';}).join('')+'</tr>';
+    var rows=ORG.departments.map(function(d){
+      var cells=d.comp.map(function(v){var cls=v>=75?'hh':v>=58?'hm2':'hl';return '<td class="'+cls+'">'+v+'%</td>';}).join('');
+      var ac=d.align>=80?'hh':d.align>=68?'hm2':'hl';
+      var dn=d.n; var dm=l==='en'?(PROFILE_SHORT[d.dom]||d.domN):d.domN;
+      return '<tr><td class="dept-cell">'+dn+'</td><td style="background:rgba(201,169,154,.12);color:var(--dk3);border-radius:2px;font-size:10px;text-align:center;">'+dm+'</td><td class="'+ac+'" style="font-weight:400;">'+d.align+'%</td>'+cells+'</tr>';
+    }).join('');
+    tbl.innerHTML=th+rows;
+  }
+}
+
+(function init(){
+  initMeta();buildHeroKI('en');buildADN('en');
+  buildProfileBars('en');drawRadar('en');drawDonut('en');
+  buildCompBars('en');buildCompGaps('en');
+  buildKPIGrid('en');buildHeatmap();buildDeptCompTable('en');buildInsights('en');
+  buildRoadmap('en');buildRec('en');buildPortfolio('en');buildFinalRows('en');
+  setTimeout(animBars,800);
+  initReveal();initSpy();
+})();
+</script>
+</body>
+</html>
