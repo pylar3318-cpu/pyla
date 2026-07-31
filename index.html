@@ -3105,6 +3105,7 @@ function sendTestData() {
     role:         state.role         || '',
     organization: state.organization || '',
     department:   state.department   || '',
+    licenseId:    state.licenseId    || '',
     lang:         l,
     language:     l,
     phase1:       state.colorApt     || '',
@@ -3141,18 +3142,33 @@ function validateToken(token) {
     const padded = token.replace(/-/g, '+').replace(/_/g, '/');
     const raw = atob(padded);
     const parts = raw.split('|');
-    if (parts.length !== 4) return { valid: false };
-    const [type, expiry, uses, hash] = parts;
-    const expected = simpleHash(`${type}|${expiry}|${uses}|${TOKEN_SECRET}`);
-    if (hash !== expected) return { valid: false };
-    if (Date.now() > parseInt(expiry)) return { valid: false, expired: true };
-    return { valid: true, type, uses: parseInt(uses) };
+
+    // Formato nuevo (5 partes): incluye ID de licencia para conteo real de usos
+    if (parts.length === 5) {
+      const [type, expiry, uses, licenseId, hash] = parts;
+      const expected = simpleHash(`${type}|${expiry}|${uses}|${licenseId}|${TOKEN_SECRET}`);
+      if (hash !== expected) return { valid: false };
+      if (Date.now() > parseInt(expiry)) return { valid: false, expired: true };
+      return { valid: true, type, uses: parseInt(uses), licenseId };
+    }
+
+    // Formato anterior (4 partes): tokens generados antes del sistema de conteo,
+    // se mantienen funcionando exactamente como hoy (sin límite de usos aplicado)
+    if (parts.length === 4) {
+      const [type, expiry, uses, hash] = parts;
+      const expected = simpleHash(`${type}|${expiry}|${uses}|${TOKEN_SECRET}`);
+      if (hash !== expected) return { valid: false };
+      if (Date.now() > parseInt(expiry)) return { valid: false, expired: true };
+      return { valid: true, type, uses: parseInt(uses), licenseId: null };
+    }
+
+    return { valid: false };
   } catch(e) {
     return { valid: false };
   }
 }
 
-function checkTokenOnLoad() {
+async function checkTokenOnLoad() {
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
   if (!token) return;
@@ -3160,6 +3176,23 @@ function checkTokenOnLoad() {
   if (!result.valid) {
     if (result.expired) showTokenExpired();
     else window.location.href = 'https://pyla.yrelevate.com';
+    return;
+  }
+
+  state.licenseId = result.licenseId || '';
+
+  // Conteo real de usos — solo aplica a licencias grupales con ID (formato nuevo)
+  if (result.type === 'grupal' && result.uses > 1 && result.licenseId) {
+    try {
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
+      const resp = await fetch(SCRIPT_URL + '?licenseId=' + encodeURIComponent(result.licenseId));
+      const data = await resp.json();
+      if (typeof data.count === 'number' && data.count >= result.uses) {
+        showLicenseLimitReached();
+      }
+    } catch(e) {
+      // Fallo de red al verificar: se deja pasar (fail-open), decisión confirmada por Pilar
+    }
   }
 }
 
@@ -3176,6 +3209,29 @@ function showTokenExpired() {
         <p style="font-size:13px;color:#7A7068;line-height:1.7;margin-bottom:32px;">
           Access to this PYLA assessment is no longer available.<br>
           Please request a new link to complete your evaluation.
+        </p>
+        <a href="https://pyla.yrelevate.com" style="display:inline-block;padding:14px 32px;
+             background:#1C1C1C;color:#FDFAF7;font-size:11px;letter-spacing:0.18em;
+             text-transform:uppercase;text-decoration:none;border-radius:2px;">
+          Learn about PYLA
+        </a>
+      </div>
+    </div>`;
+}
+
+function showLicenseLimitReached() {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;
+         background:linear-gradient(150deg,#FDFAF7 0%,#F7F3EE 55%,#EDE4D8 100%);
+         font-family:'DM Sans',sans-serif;text-align:center;padding:48px 24px;">
+      <div style="max-width:420px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.14em;
+             color:#1C1C1C;margin-bottom:32px;">P<em style="color:#C9A99A;font-style:italic;">Y</em>LA</div>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;
+             color:#1C1C1C;margin-bottom:16px;">This link has reached its limit</h1>
+        <p style="font-size:13px;color:#7A7068;line-height:1.7;margin-bottom:32px;">
+          This access link has already been used the maximum number of times.<br>
+          Please contact the person who shared it with you for a new link.
         </p>
         <a href="https://pyla.yrelevate.com" style="display:inline-block;padding:14px 32px;
              background:#1C1C1C;color:#FDFAF7;font-size:11px;letter-spacing:0.18em;

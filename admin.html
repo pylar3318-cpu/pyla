@@ -422,6 +422,18 @@ function simpleHash(str) {
   return Math.abs(hash).toString(36);
 }
 
+// ── ID ÚNICO DE LICENCIA (para conteo real de usos) ────────────
+function generateLicenseId() {
+  const existing = JSON.parse(localStorage.getItem('pyla_tokens') || '[]')
+    .map(t => t.licenseId).filter(Boolean);
+  let id;
+  do {
+    const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+    id = 'PYLA-' + rand;
+  } while (existing.includes(id));
+  return id;
+}
+
 // ── GENERAR TOKEN ─────────────────────────────────────────────
 function generateToken() {
   const type = document.getElementById('token-type').value;
@@ -433,9 +445,10 @@ function generateToken() {
   const duration = hours * 60 * 60 * 1000;
   const expiry = Date.now() + duration;
 
-  const payload = `${type}|${expiry}|${uses}|${TOKEN_SECRET}`;
+  const licenseId = generateLicenseId();
+  const payload = `${type}|${expiry}|${uses}|${licenseId}|${TOKEN_SECRET}`;
   const hash = simpleHash(payload);
-  const raw = `${type}|${expiry}|${uses}|${hash}`;
+  const raw = `${type}|${expiry}|${uses}|${licenseId}|${hash}`;
   const token = btoa(raw).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
   const landing = document.getElementById('token-landing').value.trim();
   const landingParam = landing ? '&landing=' + encodeURIComponent(landing) : '';
@@ -455,10 +468,11 @@ function generateToken() {
     `Tipo: <strong>${type}</strong> · ` +
     (type === 'grupal' ? `Usos: <strong>${uses}</strong> · ` : '') +
     `Vence: <strong>${expiryStr}</strong>` +
-    (note ? ` · Nota: <strong>${note}</strong>` : '');
+    (note ? ` · Nota: <strong>${note}</strong>` : '') +
+    ` · ID: <strong>${licenseId}</strong>`;
 
   // Guardar en historial
-  saveToHistory({ type, uses, note, expiry, url, hours, landing });
+  saveToHistory({ type, uses, note, expiry, url, hours, landing, licenseId });
   renderHistory();
 }
 
@@ -502,6 +516,7 @@ function renderHistory() {
           <div class="history-type">
             ${item.type}
             ${item.type === 'grupal' ? `· ${item.uses} usos` : ''}
+            ${item.licenseId ? `· ID: ${item.licenseId}` : ''}
             ${item.note ? `· ${item.note}` : ''}
             ${item.landing ? `· <span style="color:var(--text-light)">${item.landing}</span>` : ''}
             <span class="${isActive ? 'badge-active' : 'badge-expired'}">
