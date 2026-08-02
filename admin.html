@@ -80,6 +80,16 @@ body {
   margin-bottom: 16px;
 }
 .field-input:focus { border-color: var(--rose-gold); }
+textarea.field-input { resize: vertical; min-height: 64px; font-size: 13px; line-height: 1.6; }
+.field-hint {
+  font-size: 11px;
+  color: var(--text-light);
+  font-style: italic;
+  margin-top: -10px;
+  margin-bottom: 14px;
+  text-align: left;
+  line-height: 1.5;
+}
 .btn {
   width: 100%;
   padding: 14px;
@@ -337,6 +347,19 @@ body {
     </div>
   </div>
 
+  <div class="form-row" id="camp-group" style="display:none;">
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <label class="field-label">Organización (opcional — activa el reporte B2B)</label>
+      <input class="field-input" type="text" id="camp-org"
+             placeholder="Ej. Constructora del Valle">
+      <label class="field-label">Departamentos (opcional, separados por comas)</label>
+      <textarea class="field-input" id="camp-depts" rows="2"
+                placeholder="Ej. Ventas, Operaciones, Liderazgo, Recursos Humanos"></textarea>
+      <p class="field-hint">Si llenas estos dos campos, el mismo link incluye el sistema de organización/departamento. Si los dejas vacíos, se genera solo el link de acceso normal.</p>
+      <button type="button" onclick="useGenericDepts()" style="width:auto;align-self:flex-start;padding:8px 16px;background:transparent;color:var(--rose-gold);border:1px solid var(--rose-gold);font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-bottom:16px;transition:all 0.3s ease;" onmouseover="this.style.background='var(--rose-gold)';this.style.color='var(--warm-white)';" onmouseout="this.style.background='transparent';this.style.color='var(--rose-gold)';">Usar lista genérica</button>
+    </div>
+  </div>
+
   <div class="form-row">
     <div class="form-group">
       <label class="field-label">Nota / Referencia (opcional)</label>
@@ -385,6 +408,7 @@ body {
 const ADMIN_PASSWORD = 'PYLA2026admin'; // Cambia esto por tu clave
 const BASE_URL = 'https://pyla.yrelevate.com/?token=';
 const TOKEN_SECRET = 'PYLA2026CR'; // Debe ser igual al del index.html
+const CAMP_SECRET = 'PYLACAMP2026B2B'; // Debe ser igual al de index.html y admin-campaigns.html
 
 // ── LOGIN ─────────────────────────────────────────────────────
 function login() {
@@ -409,6 +433,14 @@ function toggleUses() {
   const type = document.getElementById('token-type').value;
   document.getElementById('uses-group').style.display =
     type === 'grupal' ? 'flex' : 'none';
+  document.getElementById('camp-group').style.display =
+    type === 'grupal' ? 'flex' : 'none';
+}
+
+// ── LISTA GENÉRICA DE DEPARTAMENTOS (igual a admin-campaigns.html) ─────
+function useGenericDepts() {
+  const generic = 'Liderazgo, Ventas, Operaciones, Recursos Humanos, Marketing, Finanzas y Administración, Tecnología, Atención al Cliente';
+  document.getElementById('camp-depts').value = generic;
 }
 
 // ── HASH ──────────────────────────────────────────────────────
@@ -452,7 +484,24 @@ function generateToken() {
   const token = btoa(raw).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
   const landing = document.getElementById('token-landing').value.trim();
   const landingParam = landing ? '&landing=' + encodeURIComponent(landing) : '';
-  const url = BASE_URL + token + landingParam;
+
+  // Campaña (organización/departamentos) — opcional, solo si ambos campos están llenos
+  const orgRaw = type === 'grupal' ? document.getElementById('camp-org').value.trim() : '';
+  const deptsRaw = type === 'grupal' ? document.getElementById('camp-depts').value.trim() : '';
+  let campParam = '';
+  let deptList = [];
+  if (orgRaw && deptsRaw) {
+    const org = encodeURIComponent(orgRaw);
+    deptList = deptsRaw.split(',').map(d => d.trim()).filter(d => d.length > 0);
+    const depts = deptList.map(d => encodeURIComponent(d)).join(',');
+    const campPayload = `${org}::${depts}::${expiry}::${CAMP_SECRET}`;
+    const campHash = simpleHash(campPayload);
+    const campRaw = `${org}::${depts}::${expiry}::${campHash}`;
+    const campToken = btoa(campRaw).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    campParam = '&camp=' + campToken;
+  }
+
+  const url = BASE_URL + token + landingParam + campParam;
 
   // Mostrar resultado
   document.getElementById('token-result').style.display = 'block';
@@ -469,10 +518,11 @@ function generateToken() {
     (type === 'grupal' ? `Usos: <strong>${uses}</strong> · ` : '') +
     `Vence: <strong>${expiryStr}</strong>` +
     (note ? ` · Nota: <strong>${note}</strong>` : '') +
-    ` · ID: <strong>${licenseId}</strong>`;
+    ` · ID: <strong>${licenseId}</strong>` +
+    (orgRaw && deptsRaw ? ` · Organización: <strong>${orgRaw}</strong> · Departamentos: <strong>${deptList.join(', ')}</strong>` : '');
 
   // Guardar en historial
-  saveToHistory({ type, uses, note, expiry, url, hours, landing, licenseId });
+  saveToHistory({ type, uses, note, expiry, url, hours, landing, licenseId, org: orgRaw || null, depts: deptList.length ? deptList : null });
   renderHistory();
 }
 
@@ -517,6 +567,7 @@ function renderHistory() {
             ${item.type}
             ${item.type === 'grupal' ? `· ${item.uses} usos` : ''}
             ${item.licenseId ? `· ID: ${item.licenseId}` : ''}
+            ${item.org ? `· Org: ${item.org}` : ''}
             ${item.note ? `· ${item.note}` : ''}
             ${item.landing ? `· <span style="color:var(--text-light)">${item.landing}</span>` : ''}
             <span class="${isActive ? 'badge-active' : 'badge-expired'}">
