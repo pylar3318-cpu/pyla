@@ -352,11 +352,14 @@ textarea.field-input { resize: vertical; min-height: 64px; font-size: 13px; line
       <label class="field-label">Organización (opcional — activa el reporte B2B)</label>
       <input class="field-input" type="text" id="camp-org"
              placeholder="Ej. Constructora del Valle">
-      <label class="field-label">Departamentos (opcional, separados por comas)</label>
+      <label class="field-label">Departamentos — Español (opcional, separados por comas)</label>
       <textarea class="field-input" id="camp-depts" rows="2"
                 placeholder="Ej. Ventas, Operaciones, Liderazgo, Recursos Humanos"></textarea>
-      <p class="field-hint">Si llenas estos dos campos, el mismo link incluye el sistema de organización/departamento. Si los dejas vacíos, se genera solo el link de acceso normal.</p>
-      <button type="button" onclick="useGenericDepts()" style="width:auto;align-self:flex-start;padding:8px 16px;background:transparent;color:var(--rose-gold);border:1px solid var(--rose-gold);font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-bottom:16px;transition:all 0.3s ease;" onmouseover="this.style.background='var(--rose-gold)';this.style.color='var(--warm-white)';" onmouseout="this.style.background='transparent';this.style.color='var(--rose-gold)';">Usar lista genérica</button>
+      <label class="field-label">Departments — English (opcional, mismo orden que arriba)</label>
+      <textarea class="field-input" id="camp-depts-en" rows="2"
+                placeholder="Ej. Sales, Operations, Leadership, Human Resources"></textarea>
+      <p class="field-hint">Si dejas el campo en inglés vacío, se usa el texto en español para ambos idiomas. Si lo llenas, cada persona ve su departamento en el idioma que elija — pero internamente se guarda siempre igual, para que el reporte no separe "Ventas" y "Sales" como si fueran cosas distintas.</p>
+      <button type="button" onclick="useGenericDepts()" style="width:auto;align-self:flex-start;padding:8px 16px;background:transparent;color:var(--rose-gold);border:1px solid var(--rose-gold);font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-bottom:16px;transition:all 0.3s ease;" onmouseover="this.style.background='var(--rose-gold)';this.style.color='var(--warm-white)';" onmouseout="this.style.background='transparent';this.style.color='var(--rose-gold)';">Usar lista genérica (ES + EN)</button>
     </div>
   </div>
 
@@ -439,8 +442,10 @@ function toggleUses() {
 
 // ── LISTA GENÉRICA DE DEPARTAMENTOS (igual a admin-campaigns.html) ─────
 function useGenericDepts() {
-  const generic = 'Liderazgo, Ventas, Operaciones, Recursos Humanos, Marketing, Finanzas y Administración, Tecnología, Atención al Cliente';
-  document.getElementById('camp-depts').value = generic;
+  const genericEs = 'Liderazgo, Ventas, Operaciones, Recursos Humanos, Marketing, Finanzas y Administración, Tecnología, Atención al Cliente';
+  const genericEn = 'Leadership, Sales, Operations, Human Resources, Marketing, Finance & Administration, Technology, Customer Service';
+  document.getElementById('camp-depts').value = genericEs;
+  document.getElementById('camp-depts-en').value = genericEn;
 }
 
 // ── HASH ──────────────────────────────────────────────────────
@@ -488,12 +493,21 @@ function generateToken() {
   // Campaña (organización/departamentos) — opcional, solo si ambos campos están llenos
   const orgRaw = type === 'grupal' ? document.getElementById('camp-org').value.trim() : '';
   const deptsRaw = type === 'grupal' ? document.getElementById('camp-depts').value.trim() : '';
+  const deptsEnRaw = type === 'grupal' ? document.getElementById('camp-depts-en').value.trim() : '';
   let campParam = '';
   let deptList = [];
   if (orgRaw && deptsRaw) {
     const org = encodeURIComponent(orgRaw);
     deptList = deptsRaw.split(',').map(d => d.trim()).filter(d => d.length > 0);
-    const depts = deptList.map(d => encodeURIComponent(d)).join(',');
+    const deptListEn = deptsEnRaw
+      ? deptsEnRaw.split(',').map(d => d.trim()).filter(d => d.length > 0)
+      : [];
+    // Cada departamento viaja como "Español|English". Si no hay inglés o el conteo no coincide,
+    // se usa el mismo texto en español para ambos idiomas (nunca bloquea la generación del link).
+    const depts = deptList.map((d, i) => {
+      const en = deptListEn[i] || d;
+      return encodeURIComponent(d) + '|' + encodeURIComponent(en);
+    }).join(',');
     const campPayload = `${org}::${depts}::${expiry}::${CAMP_SECRET}`;
     const campHash = simpleHash(campPayload);
     const campRaw = `${org}::${depts}::${expiry}::${campHash}`;
