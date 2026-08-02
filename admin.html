@@ -440,7 +440,7 @@ function toggleUses() {
     type === 'grupal' ? 'flex' : 'none';
 }
 
-// ── LISTA GENÉRICA DE DEPARTAMENTOS (igual a admin-campaigns.html) ─────
+// ── LISTA GENÉRICA DE DEPARTAMENTOS ─────────────────────────
 function useGenericDepts() {
   const genericEs = 'Liderazgo, Ventas, Operaciones, Recursos Humanos, Marketing, Finanzas y Administración, Tecnología, Atención al Cliente';
   const genericEn = 'Leadership, Sales, Operations, Human Resources, Marketing, Finance & Administration, Technology, Customer Service';
@@ -459,7 +459,7 @@ function simpleHash(str) {
   return Math.abs(hash).toString(36);
 }
 
-// ── ID ÚNICO DE LICENCIA (para conteo real de usos) ────────────
+// ── ID ÚNICO DE LICENCIA ───────────────────────────────────────
 function generateLicenseId() {
   const existing = JSON.parse(localStorage.getItem('pyla_tokens') || '[]')
     .map(t => t.licenseId).filter(Boolean);
@@ -492,22 +492,20 @@ async function generateToken() {
   const landing = document.getElementById('token-landing').value.trim();
   const landingParam = landing ? '&landing=' + encodeURIComponent(landing) : '';
 
-  // Campaña (organización/departamentos) — opcional, solo si ambos campos están llenos
   const orgRaw = type === 'grupal' ? document.getElementById('camp-org').value.trim() : '';
   const deptsRaw = type === 'grupal' ? document.getElementById('camp-depts').value.trim() : '';
   const deptsEnRaw = type === 'grupal' ? document.getElementById('camp-depts-en').value.trim() : '';
   let campParam = '';
   let deptList = [];
+
   if (orgRaw && deptsRaw) {
     deptList = deptsRaw.split(',').map(d => d.trim()).filter(d => d.length > 0);
     const deptListEn = deptsEnRaw
       ? deptsEnRaw.split(',').map(d => d.trim()).filter(d => d.length > 0)
       : [];
 
-    // Construir array de pares ES/EN para enviar al Sheet
     const deptPayload = deptList.map((d, i) => ({ es: d, en: deptListEn[i] || d }));
 
-    // Indicar en el botón que está procesando
     const btn = document.querySelector('.btn-generate');
     const originalText = btn.textContent;
     btn.textContent = 'Guardando campaña...';
@@ -546,7 +544,6 @@ async function generateToken() {
 
   const url = BASE_URL + token + landingParam + campParam;
 
-  // Mostrar resultado
   document.getElementById('token-result').style.display = 'block';
   document.getElementById('token-url-display').textContent = url;
 
@@ -562,9 +559,9 @@ async function generateToken() {
     `Vence: <strong>${expiryStr}</strong>` +
     (note ? ` · Nota: <strong>${note}</strong>` : '') +
     ` · ID: <strong>${licenseId}</strong>` +
-    (orgRaw && deptsRaw ? ` · Organización: <strong>${orgRaw}</strong> · Departamentos: <strong>${deptList.join(', ')}</strong>` : '');
+    (orgRaw && deptsRaw ? ` · Organización: <strong>${orgRaw}</strong> · Departamentos: <strong>${deptList.join(', ')}</strong>` : '') +
+    (orgRaw && deptsRaw ? `<br><a href="https://pyla.yrelevate.com/PYLA-Level2-B2B-v5-FINAL.html?licenseId=${licenseId}" target="_blank" style="color:var(--rose-gold);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">Ver reporte B2B →</a>` : '');
 
-  // Guardar en historial
   saveToHistory({ type, uses, note, expiry, url, hours, landing, licenseId, org: orgRaw || null, depts: deptList.length ? deptList : null });
   renderHistory();
 }
@@ -583,7 +580,6 @@ function copyToken() {
 function saveToHistory(data) {
   const history = JSON.parse(localStorage.getItem('pyla_tokens') || '[]');
   history.unshift(data);
-  // Máximo 50 tokens en historial
   if (history.length > 50) history.pop();
   localStorage.setItem('pyla_tokens', JSON.stringify(history));
 }
