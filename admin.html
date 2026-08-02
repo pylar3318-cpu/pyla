@@ -618,6 +618,12 @@ function renderHistory() {
             </span>
           </div>
           <div class="history-url">${item.url}</div>
+          ${item.type === 'grupal' && item.org && item.licenseId ? `
+            <a href="https://pyla.yrelevate.com/PYLA-Level2-B2B-v5-FINAL.html?licenseId=${item.licenseId}"
+               target="_blank"
+               style="display:inline-block;margin-top:8px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--rose-gold);text-decoration:none;border-bottom:1px solid var(--rose-gold-light);">
+              Ver reporte B2B →
+            </a>` : ''}
         </div>
         <div class="history-expiry">
           Vence<br>${expiryStr}
