@@ -1916,6 +1916,7 @@ function setLang(l) {
   if (state.currentModule >= 2) buildStandGrid();
   if (state.currentModule >= 3) buildGenericGrid();
   if (state.currentModule >= 4) buildHierarchyGrids();
+  buildDeptDropdown();
   // Regenerate results if already on results screen
   if (state.currentModule >= 5) generateResults();
   buildSidebars();
@@ -3257,10 +3258,38 @@ function validateCampaignToken(token) {
     const expected = simpleHash(`${org}::${depts}::${expiry}::${CAMP_SECRET}`);
     if (hash !== expected) return { valid: false };
     if (Date.now() > parseInt(expiry)) return { valid: false, expired: true };
-    return { valid: true, org: decodeURIComponent(org), departments: depts.split(',').map(d => decodeURIComponent(d)) };
+    // Cada departamento puede venir como "Español|English" (nuevo) o solo un texto (links antiguos, retrocompatible)
+    const departments = depts.split(',').map(entry => {
+      const pipeIdx = entry.indexOf('|');
+      if (pipeIdx === -1) {
+        const d = decodeURIComponent(entry);
+        return { es: d, en: d };
+      }
+      const esPart = decodeURIComponent(entry.substring(0, pipeIdx));
+      const enPart = decodeURIComponent(entry.substring(pipeIdx + 1));
+      return { es: esPart, en: enPart };
+    });
+    return { valid: true, org: decodeURIComponent(org), departments: departments };
   } catch(e) {
     return { valid: false };
   }
+}
+
+function buildDeptDropdown() {
+  const deptGroup = document.getElementById('deptFieldGroup');
+  const deptSelect = document.getElementById('userDepartment');
+  if (!deptGroup || !deptSelect || !state.campaignDepartments) return;
+  const previousValue = deptSelect.value;
+  const placeholder = lang.current === 'es' ? 'Selecciona tu departamento' : 'Select your department';
+  deptSelect.innerHTML = '<option value="">' + placeholder + '</option>' +
+    state.campaignDepartments.map(d => {
+      const display = lang.current === 'es' ? d.es : d.en;
+      // El value siempre es el nombre en español (canónico) — así el reporte B2B nunca separa
+      // "Ventas" y "Sales" como si fueran departamentos distintos, sin importar qué idioma vio cada persona.
+      return '<option value="' + d.es + '">' + display + '</option>';
+    }).join('');
+  if (previousValue) deptSelect.value = previousValue;
+  deptGroup.style.display = 'block';
 }
 
 function checkCampaignOnLoad() {
@@ -3271,14 +3300,8 @@ function checkCampaignOnLoad() {
     const result = validateCampaignToken(camp);
     if (!result.valid) return; // enlace inválido o vencido: se ignora en silencio, el test sigue funcionando normal para la persona
     state.organization = result.org;
-    const deptGroup = document.getElementById('deptFieldGroup');
-    const deptSelect = document.getElementById('userDepartment');
-    if (deptGroup && deptSelect) {
-      const placeholder = lang.current === 'es' ? 'Selecciona tu departamento' : 'Select your department';
-      deptSelect.innerHTML = '<option value="">' + placeholder + '</option>' +
-        result.departments.map(d => '<option value="' + d + '">' + d + '</option>').join('');
-      deptGroup.style.display = 'block';
-    }
+    state.campaignDepartments = result.departments;
+    buildDeptDropdown();
   } catch(e) {}
 }
 window.addEventListener('DOMContentLoaded', checkCampaignOnLoad);
