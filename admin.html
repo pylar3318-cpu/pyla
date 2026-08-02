@@ -472,7 +472,9 @@ function generateLicenseId() {
 }
 
 // ── GENERAR TOKEN ─────────────────────────────────────────────
-function generateToken() {
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
+
+async function generateToken() {
   const type = document.getElementById('token-type').value;
   const uses = type === 'grupal'
     ? parseInt(document.getElementById('token-uses').value) || 30
@@ -497,22 +499,49 @@ function generateToken() {
   let campParam = '';
   let deptList = [];
   if (orgRaw && deptsRaw) {
-    const org = encodeURIComponent(orgRaw);
     deptList = deptsRaw.split(',').map(d => d.trim()).filter(d => d.length > 0);
     const deptListEn = deptsEnRaw
       ? deptsEnRaw.split(',').map(d => d.trim()).filter(d => d.length > 0)
       : [];
-    // Cada departamento viaja como "Español|English". Si no hay inglés o el conteo no coincide,
-    // se usa el mismo texto en español para ambos idiomas (nunca bloquea la generación del link).
-    const depts = deptList.map((d, i) => {
-      const en = deptListEn[i] || d;
-      return encodeURIComponent(d) + '|' + encodeURIComponent(en);
-    }).join(',');
-    const campPayload = `${org}::${depts}::${expiry}::${CAMP_SECRET}`;
-    const campHash = simpleHash(campPayload);
-    const campRaw = `${org}::${depts}::${expiry}::${campHash}`;
-    const campToken = btoa(campRaw).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-    campParam = '&camp=' + campToken;
+
+    // Construir array de pares ES/EN para enviar al Sheet
+    const deptPayload = deptList.map((d, i) => ({ es: d, en: deptListEn[i] || d }));
+
+    // Indicar en el botón que está procesando
+    const btn = document.querySelector('.btn-generate');
+    const originalText = btn.textContent;
+    btn.textContent = 'Guardando campaña...';
+    btn.disabled = true;
+
+    try {
+      const resp = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          type: 'create_campaign',
+          org: orgRaw,
+          departments: deptPayload,
+          expiry: expiry,
+          licenseId: licenseId
+        })
+      });
+      const respData = await resp.json();
+      if (respData.status === 'ok' && respData.campId) {
+        campParam = '&camp=' + respData.campId;
+      } else {
+        alert('No se pudo crear la campaña en el sistema. Intenta de nuevo.\n' + (respData.message || ''));
+        btn.textContent = originalText;
+        btn.disabled = false;
+        return;
+      }
+    } catch (err) {
+      alert('Error de conexión al guardar la campaña. Verifica tu internet e intenta de nuevo.');
+      btn.textContent = originalText;
+      btn.disabled = false;
+      return;
+    }
+
+    btn.textContent = originalText;
+    btn.disabled = false;
   }
 
   const url = BASE_URL + token + landingParam + campParam;
