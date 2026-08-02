@@ -3292,16 +3292,30 @@ function buildDeptDropdown() {
   deptGroup.style.display = 'block';
 }
 
-function checkCampaignOnLoad() {
+async function checkCampaignOnLoad() {
   try {
     const params = new URLSearchParams(window.location.search);
     const camp = params.get('camp');
     if (!camp) return;
-    const result = validateCampaignToken(camp);
-    if (!result.valid) return; // enlace inválido o vencido: se ignora en silencio, el test sigue funcionando normal para la persona
-    state.organization = result.org;
-    state.campaignDepartments = result.departments;
-    buildDeptDropdown();
+
+    if (camp.startsWith('CAMP-')) {
+      // Formato nuevo (ID corto) — obtener datos desde el Sheet
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
+      const resp = await fetch(SCRIPT_URL + '?campId=' + encodeURIComponent(camp));
+      const data = await resp.json();
+      if (!data.found) return;
+      if (data.expiry && Date.now() > parseInt(data.expiry)) return; // vencido
+      state.organization = data.org;
+      state.campaignDepartments = data.departments; // array [{es, en}] guardado por admin
+      buildDeptDropdown();
+    } else {
+      // Formato anterior (token largo en base64) — validar localmente como siempre
+      const result = validateCampaignToken(camp);
+      if (!result.valid) return; // enlace inválido o vencido: se ignora en silencio
+      state.organization = result.org;
+      state.campaignDepartments = result.departments;
+      buildDeptDropdown();
+    }
   } catch(e) {}
 }
 window.addEventListener('DOMContentLoaded', checkCampaignOnLoad);
