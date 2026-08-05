@@ -629,7 +629,7 @@ function saveToHistory(data) {
   // Guardar en Sheet (async, fire-and-forget) — nuevo v4
   fetch(SCRIPT_URL, {
     method: 'POST',
-    body: JSON.stringify({ ...data, type: 'save_token' })
+    body: JSON.stringify({ ...data, type: 'save_token', tokenType: data.type })
   })
   .then(r => r.json())
   .then(d => {
