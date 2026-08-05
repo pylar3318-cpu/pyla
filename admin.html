@@ -302,6 +302,13 @@ textarea.field-input { resize: vertical; min-height: 64px; font-size: 13px; line
   font-style: italic;
   padding: 16px 0;
 }
+.history-loading {
+  font-size: 11px;
+  color: var(--text-light);
+  font-style: italic;
+  padding: 16px 0;
+  letter-spacing: 0.08em;
+}
 </style>
 </head>
 <body>
@@ -412,13 +419,21 @@ const ADMIN_PASSWORD = 'PYLA2026admin'; // Cambia esto por tu clave
 const BASE_URL = 'https://pyla.yrelevate.com/?token=';
 const TOKEN_SECRET = 'PYLA2026CR'; // Debe ser igual al del index.html
 const CAMP_SECRET = 'PYLACAMP2026B2B'; // Debe ser igual al de index.html y admin-campaigns.html
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
+
+// Tokens cargados desde el Sheet (fuente de verdad)
+let sheetTokens = [];
 
 // ── LOGIN ─────────────────────────────────────────────────────
-function login() {
+async function login() {
   const pass = document.getElementById('admin-pass').value;
   if (pass === ADMIN_PASSWORD) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
+    // Mostrar tokens locales inmediatamente mientras carga el Sheet
+    renderHistory();
+    // Cargar desde Sheet y re-renderizar
+    await loadTokensFromSheet();
     renderHistory();
   } else {
     document.getElementById('login-error').style.display = 'block';
@@ -429,6 +444,32 @@ function logout() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('admin-panel').style.display = 'none';
   document.getElementById('admin-pass').value = '';
+  sheetTokens = [];
+}
+
+// ── CARGAR HISTORIAL DESDE SHEET (nuevo v4) ───────────────────
+async function loadTokensFromSheet() {
+  document.getElementById('token-history').innerHTML =
+    '<p class="history-loading">Cargando historial desde el sistema...</p>';
+  try {
+    const resp = await fetch(SCRIPT_URL + '?getTokens=true');
+    const data = await resp.json();
+    sheetTokens = data.tokens || [];
+  } catch (e) {
+    sheetTokens = [];
+  }
+}
+
+// ── COMBINAR TOKENS: Sheet + localStorage (retrocompatibilidad) ─
+function getMergedTokens() {
+  const fromLocal = JSON.parse(localStorage.getItem('pyla_tokens') || '[]');
+  // Tokens en Sheet son la fuente de verdad; agregar del local solo los que no estén en Sheet
+  const sheetIds = new Set(sheetTokens.map(t => t.licenseId).filter(Boolean));
+  const localOnly = fromLocal.filter(t => t.licenseId && !sheetIds.has(t.licenseId));
+  const merged = [...sheetTokens, ...localOnly];
+  // Más reciente primero (por expiry descendente)
+  merged.sort((a, b) => b.expiry - a.expiry);
+  return merged;
 }
 
 // ── TOGGLE USES ───────────────────────────────────────────────
@@ -461,19 +502,19 @@ function simpleHash(str) {
 
 // ── ID ÚNICO DE LICENCIA ───────────────────────────────────────
 function generateLicenseId() {
-  const existing = JSON.parse(localStorage.getItem('pyla_tokens') || '[]')
+  const fromLocal = JSON.parse(localStorage.getItem('pyla_tokens') || '[]')
     .map(t => t.licenseId).filter(Boolean);
+  const fromSheet = sheetTokens.map(t => t.licenseId).filter(Boolean);
+  const existing = new Set([...fromLocal, ...fromSheet]);
   let id;
   do {
     const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
     id = 'PYLA-' + rand;
-  } while (existing.includes(id));
+  } while (existing.has(id));
   return id;
 }
 
 // ── GENERAR TOKEN ─────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygrwKH8GJc4wGO687d3emVn0AacAKKCxjgAJQyw0MhYfS0cne4Rq55bqHr5ZdFjoKOGA/exec';
-
 async function generateToken() {
   const type = document.getElementById('token-type').value;
   const uses = type === 'grupal'
@@ -562,7 +603,8 @@ async function generateToken() {
     (orgRaw && deptsRaw ? ` · Organización: <strong>${orgRaw}</strong> · Departamentos: <strong>${deptList.join(', ')}</strong>` : '') +
     (orgRaw && deptsRaw ? `<br><a href="https://pyla.yrelevate.com/PYLA-Level2-B2B-v5-FINAL.html?licenseId=${licenseId}" target="_blank" style="color:var(--rose-gold);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">Ver reporte B2B →</a>` : '');
 
-  saveToHistory({ type, uses, note, expiry, url, hours, landing, licenseId, org: orgRaw || null, depts: deptList.length ? deptList : null });
+  const tokenData = { type, uses, note, expiry, url, hours, landing, licenseId, org: orgRaw || null, depts: deptList.length ? deptList : null };
+  saveToHistory(tokenData);
   renderHistory();
 }
 
@@ -578,14 +620,31 @@ function copyToken() {
 
 // ── HISTORIAL ─────────────────────────────────────────────────
 function saveToHistory(data) {
+  // Guardar en localStorage (inmediato)
   const history = JSON.parse(localStorage.getItem('pyla_tokens') || '[]');
   history.unshift(data);
   if (history.length > 50) history.pop();
   localStorage.setItem('pyla_tokens', JSON.stringify(history));
+
+  // Guardar en Sheet (async, fire-and-forget) — nuevo v4
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ ...data, type: 'save_token' })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.status === 'ok') {
+      // Agregar al array en memoria para que generateLicenseId lo detecte
+      sheetTokens.unshift(data);
+    }
+  })
+  .catch(() => {
+    // Fallo silencioso — el token ya está en localStorage
+  });
 }
 
 function renderHistory() {
-  const history = JSON.parse(localStorage.getItem('pyla_tokens') || '[]');
+  const history = getMergedTokens();
   const container = document.getElementById('token-history');
 
   if (history.length === 0) {
