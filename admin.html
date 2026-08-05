@@ -643,6 +643,27 @@ function saveToHistory(data) {
   });
 }
 
+// ── ELIMINAR TOKEN ────────────────────────────────────────────
+async function deleteToken(licenseId) {
+  if (!confirm(`¿Eliminar token ${licenseId}? Esta acción no se puede deshacer.`)) return;
+
+  // Eliminar del Sheet (async, fire-and-forget)
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ type: 'delete_token', licenseId })
+  }).catch(() => {});
+
+  // Eliminar de memoria
+  sheetTokens = sheetTokens.filter(t => t.licenseId !== licenseId);
+
+  // Eliminar de localStorage
+  const history = JSON.parse(localStorage.getItem('pyla_tokens') || '[]')
+    .filter(t => t.licenseId !== licenseId);
+  localStorage.setItem('pyla_tokens', JSON.stringify(history));
+
+  renderHistory();
+}
+
 function renderHistory() {
   const history = getMergedTokens();
   const container = document.getElementById('token-history');
@@ -679,6 +700,12 @@ function renderHistory() {
                style="display:inline-block;margin-top:8px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--rose-gold);text-decoration:none;border-bottom:1px solid var(--rose-gold-light);">
               Ver reporte B2B →
             </a>` : ''}
+          ${item.licenseId ? `
+            <button onclick="deleteToken('${item.licenseId}')"
+              style="display:inline-block;margin-top:8px;margin-left:${item.type === 'grupal' && item.org ? '16px' : '0'};background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-light);padding:0;transition:color 0.2s ease;"
+              onmouseover="this.style.color='#C44A4A'" onmouseout="this.style.color='var(--text-light)'">
+              Eliminar
+            </button>` : ''}
         </div>
         <div class="history-expiry">
           Vence<br>${expiryStr}
