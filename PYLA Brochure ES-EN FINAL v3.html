@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script>document.documentElement.classList.add('js');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PYLA — Framework de Dirección Cognitiva</title>
@@ -707,6 +708,9 @@ body {
 }
 .lang-content { display: none; }
 .lang-content.active-lang { display: block; }
+/* Si el navegador no ejecuta JavaScript (ej. Quick Look de iOS al abrir un archivo compartido),
+   se muestra el español por defecto en vez de dejar la página en blanco. */
+html:not(.js) #lang-es { display: block; }
 @media print {
   .lang-toggle-wrap { display: none; }
 }
