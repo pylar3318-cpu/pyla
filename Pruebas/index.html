@@ -2576,7 +2576,7 @@ function downloadReport() {
         .cta-block { display: none !important; }
         @media print {
           * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          @page { size: Letter; margin: 0.5in 0.45in 0.7in; @bottom-center { content: counter(page); font-family: Georgia, serif; font-size: 8pt; letter-spacing: .18em; color: #9a8f80; } }
+          @page { size: Letter; margin: 0.5in 0.45in 0.7in; @top-left { content: ""; } @top-center { content: ""; } @top-right { content: ""; } @bottom-left { content: ""; } @bottom-right { content: ""; } @bottom-center { content: counter(page); font-family: Georgia, serif; font-size: 8pt; letter-spacing: .18em; color: #9a8f80; } }
           html, body { background: #fff !important; }
           .results-layout { max-width: none; padding: 24px 28px; background: #F7F3EE; }
           .results-layout > * { break-inside: avoid; page-break-inside: avoid; }
@@ -2722,8 +2722,8 @@ function generateResults() {
       hTactical: "Tactical · Manager · Team Lead · Department Head · Coordinator",
       hOperational: "Operational · Specialist · Analyst · Associate · Individual Contributor",
       hGapMsg: "There is a natural distance between where your strengths currently operate and where your aspirations point. This gap is not a barrier — it is a development path. Your full PYLA report maps the steps between where you are and where you are capable of going.",
-      threeWayGapMsg: (role) => `You are currently in <strong>${role}</strong>. Comparing this against your natural performance level and your aspirational level reveals where you stand today relative to where your strengths and your ambitions point. The Level 1 and Level 2 reports map the concrete steps to close that distance.`,
-      roleAboveAspirationMsg: (role) => `You are currently in <strong>${role}</strong> — a role positioned above the level your aspiration points to. This is not uncommon, and it is not a contradiction: it often signals that what you are seeking is not a higher position, but a closer match between your daily work and what genuinely drives you. The Level 1 and Level 2 reports explore that distinction — purpose versus title — in more depth.`,
+      threeWayGapMsg: (role) => `You are currently in <strong>${role}</strong>. Comparing this against your natural performance level and your aspirational level reveals where you stand today relative to where your strengths and your ambitions point. The Level 1 report maps the concrete steps to close that distance.`,
+      roleAboveAspirationMsg: (role) => `You are currently in <strong>${role}</strong> — a role positioned above the level your aspiration points to. This is not uncommon, and it is not a contradiction: it often signals that what you are seeking is not a higher position, but a closer match between your daily work and what genuinely drives you. The Level 1 report explores that distinction — purpose versus title — in more depth.`,
       roleAlignedMsg: (role) => `You are currently in <strong>${role}</strong> — and your aspiration points to the same level. This is not a plateau: it is a signal that your direction is clear. The work is not about climbing to a different level, but about deepening your impact and consolidating your advantage where you already operate. The Level 1 report maps exactly where that depth lives in your specific cognitive profile.`,
       directionLabel: "Cognitive Direction",
       careersLabel: "Aligned Professional Paths",
@@ -2754,8 +2754,8 @@ function generateResults() {
       hTactical: "Táctico · Gerente · Líder de Equipo · Jefe de Área · Coordinador",
       hOperational: "Operativo · Especialista · Analista · Asociado · Profesional Individual",
       hGapMsg: "Existe una distancia natural entre donde operan actualmente tus fortalezas y hacia donde apuntan tus aspiraciones. Esta brecha no es una barrera — es un camino de desarrollo. Tu reporte completo PYLA traza los pasos entre donde estás y hasta dónde eres capaz de llegar.",
-      threeWayGapMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong>. Comparar esto con tu nivel de desempeño natural y tu nivel aspiracional revela dónde estás hoy en relación con hacia dónde apuntan tus fortalezas y tus ambiciones. Los reportes Nivel 1 y Nivel 2 trazan los pasos concretos para cerrar esa distancia.`,
-      roleAboveAspirationMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — un cargo posicionado por encima del nivel hacia el que apunta tu aspiración. Esto no es inusual, y no es una contradicción: con frecuencia indica que lo que buscas no es un cargo más alto, sino una mayor cercanía entre tu trabajo diario y lo que genuinamente te impulsa. Los reportes Nivel 1 y Nivel 2 exploran esa distinción — propósito versus título — con mayor profundidad.`,
+      threeWayGapMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong>. Comparar esto con tu nivel de desempeño natural y tu nivel aspiracional revela dónde estás hoy en relación con hacia dónde apuntan tus fortalezas y tus ambiciones. El reporte Nivel 1 traza los pasos concretos para cerrar esa distancia.`,
+      roleAboveAspirationMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — un cargo posicionado por encima del nivel hacia el que apunta tu aspiración. Esto no es inusual, y no es una contradicción: con frecuencia indica que lo que buscas no es un cargo más alto, sino una mayor cercanía entre tu trabajo diario y lo que genuinamente te impulsa. El reporte Nivel 1 explora esa distinción — propósito versus título — con mayor profundidad.`,
       roleAlignedMsg: (role) => `Actualmente te encuentras en <strong>${role}</strong> — y tu aspiración apunta al mismo nivel. Esto no es un techo: es una señal de que tu dirección ya es clara. El trabajo no es sobre escalar a un nivel distinto, sino sobre profundizar tu impacto y consolidar tu ventaja donde ya operas. El Reporte Nivel 1 mapea exactamente dónde vive esa profundidad en tu perfil cognitivo específico.`,
       directionLabel: "Dirección Cognitiva",
       careersLabel: "Caminos Profesionales Afines",
