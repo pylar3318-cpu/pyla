@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de enlaces PYLA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow working column. Paste a Sheets row on top, edit the parsed fields in a grid, copy the finished link at the bottom. */
+:root{
+  --bg:#F6F4F1; --surface:#FFFFFF; --fg:#241F1C; --muted:#6E655E; --line:#E3DDD6;
+  --accent:#9A6B52; --accent-fg:#FFFFFF; --ok:#2F7A4F; --warn:#9A5B12; --code-bg:#EFEAE4;
+  --f-display:'Fraunces',Georgia,serif; --f-body:'Instrument Sans',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1816; --surface:#26221F; --fg:#F1ECE6; --muted:#A39A91; --line:#3A3430;
+    --accent:#D4A28A; --accent-fg:#1B1816; --ok:#6FCB94; --warn:#E3B36A; --code-bg:#2E2926; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1816; --surface:#26221F; --fg:#F1ECE6; --muted:#A39A91; --line:#3A3430;
+  --accent:#D4A28A; --accent-fg:#1B1816; --ok:#6FCB94; --warn:#E3B36A; --code-bg:#2E2926; color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 56px}
+main{max-width:720px;margin-inline:auto;display:flex;flex-direction:column;gap:28px}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(26px,5vw,34px);line-height:1.15;margin:0;text-wrap:balance}
+.lede{color:var(--muted);margin:6px 0 0;max-width:60ch}
+section{display:flex;flex-direction:column;gap:10px}
+h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0}
+textarea,input,select{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 11px;width:100%;box-sizing:border-box;min-width:0}
+textarea{font-family:var(--f-mono);font-size:13px;min-height:84px;resize:vertical}
+textarea:focus,input:focus,select:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:500}
+label small{font-weight:400;color:var(--muted)}
+.wide{grid-column:1/-1}
+.status{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px}
+.pill{padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface)}
+.pill.ok{color:var(--ok);border-color:currentColor}
+.pill.warn{color:var(--warn);border-color:currentColor}
+.out{background:var(--code-bg);border-radius:8px;padding:14px;font-family:var(--f-mono);font-size:12.5px;word-break:break-all;line-height:1.55;user-select:all}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+button,.btn{font:inherit;font-weight:600;border-radius:6px;padding:10px 16px;cursor:pointer;text-decoration:none;display:inline-block;border:1px solid var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-fg)}
+.btn.ghost,button.ghost{background:transparent;color:var(--accent)}
+.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.msg{min-height:20px;font-size:13px;color:var(--ok);margin:0}
+.cols{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;font-size:12.5px;width:100%}
+th,td{padding:6px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+</style>
+
+</head>
+<body>
+<main>
+  <header>
+    <h1>Generador de enlaces PYLA Level 1</h1>
+    <p class="lede">Pega una fila de tu hoja de cálculo y obtén el enlace del reporte. Todo se calcula en esta página y no se guarda ni se envía a ningún lado.</p>
+  </header>
+
+  <section>
+    <h2>1 · Pega la fila</h2>
+    <textarea id="row" spellcheck="false" aria-label="Fila copiada de Sheets" placeholder="Pega aquí la fila copiada desde Sheets"></textarea>
+    <p class="hint">Selecciona la fila completa en Sheets, cópiala y pégala aquí. Debe venir separada por tabulaciones, que es lo normal al copiar de Sheets.</p>
+    <div class="cols"><table aria-label="Columnas que se usan">
+      <tr><th>Col 1</th><th>Col 3</th><th>Col 4</th><th>Col 5</th><th>Col 6</th><th>Col 8</th><th>Col 9</th></tr>
+      <tr><td>Nombre</td><td>Rol</td><td>Idioma</td><td>Color</td><td>Segundo número</td><td>Nivel (ha)</td><td>Interés (hi)</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>2 · Revisa los datos</h2>
+    <div class="grid">
+      <label>Nombre<input id="n" type="text" autocomplete="off"></label>
+      <label>Rol actual<input id="r" type="text" autocomplete="off"></label>
+      <label>Color <small>(1 a 6)</small><input id="c" type="number" min="1" max="6" step="1"></label>
+      <label>Segundo número <small>(s)</small><input id="s" type="number" min="1" step="1"></label>
+      <label>Nivel (ha)
+        <select id="ha"><option>strategic</option><option>tactical</option><option>operational</option></select>
+      </label>
+      <label>Interés (hi)
+        <select id="hi"><option>strategic</option><option>tactical</option><option>operational</option></select>
+      </label>
+      <label>Idioma
+        <select id="l"><option value="es">es (español)</option><option value="en">en (inglés)</option></select>
+      </label>
+      <label>Dirección base <small>(normalmente no se cambia)</small><input id="base" type="text" value="https://pyla.yrelevate.com/pyla-report-level1-v4.html" spellcheck="false"></label>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <h2>3 · Tu enlace</h2>
+    <div class="out" id="out" tabindex="0"></div>
+    <div class="actions">
+      <button class="primary" id="copy" type="button">Copiar enlace</button>
+      <a class="btn ghost" id="open" href="#" target="_blank" rel="noopener">Abrir reporte</a>
+    </div>
+    <p class="msg" id="msg" role="status"></p>
+    <p class="hint">Cualquiera que tenga este enlace puede ver el reporte, porque no verifica pagos. Envíalo solo a quien corresponde.</p>
+  </section>
+</main>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var LEVELS=['strategic','tactical','operational'];
+  var f={n:$('n'),r:$('r'),c:$('c'),s:$('s'),ha:$('ha'),hi:$('hi'),l:$('l'),base:$('base')};
+
+  function parse(){
+    var raw=$('row').value.replace(/\r/g,'').split('\n').filter(function(x){return x.trim()})[0]||'';
+    var p=raw.split('\t').map(function(x){return x.trim()});
+    var warn=[];
+    if(raw && p.length<9) warn.push('La fila tiene '+p.length+' columnas y se esperan al menos 9. Revisa que la copiaste completa desde Sheets.');
+    var lv=function(v){v=(v||'').toLowerCase();return LEVELS.indexOf(v)>-1?v:null};
+    f.n.value=p[0]||'';
+    f.r.value=p[2]||'';
+    f.l.value=((p[3]||'').toLowerCase()==='en')?'en':'es';
+    f.c.value=p[4]||'';
+    f.s.value=p[5]||'';
+    var ha=lv(p[7]),hi=lv(p[8]);
+    if(raw && !ha) warn.push('El nivel de la columna 8 no es strategic, tactical ni operational.');
+    if(raw && !hi) warn.push('El interés de la columna 9 no es strategic, tactical ni operational.');
+    f.ha.value=ha||'strategic';
+    f.hi.value=hi||'strategic';
+    build(warn);
+  }
+
+  function build(extra){
+    var warn=extra||[];
+    var c=parseInt(f.c.value,10),s=parseInt(f.s.value,10);
+    if(!f.n.value.trim()) warn.push('Falta el nombre.');
+    if(!f.r.value.trim()) warn.push('Falta el rol.');
+    if(!(c>=1&&c<=6)) warn.push('El color debe ser un número del 1 al 6.');
+    if(!(s>=1)) warn.push('Falta el segundo número.');
+    var q=['n='+encodeURIComponent(f.n.value.trim()),
+           'r='+encodeURIComponent(f.r.value.trim()),
+           'c='+(c||''),'s='+(s||''),
+           'ha='+f.ha.value,'hi='+f.hi.value,'l='+f.l.value].join('&');
+    var url=f.base.value.trim()+'?'+q;
+    $('out').textContent=url;
+    $('open').href=url;
+    $('open').setAttribute('aria-disabled',warn.length?'true':'false');
+    var st=$('status');st.innerHTML='';
+    var add=function(t,cls){var e=document.createElement('span');e.className='pill '+cls;e.textContent=t;st.appendChild(e)};
+    if(warn.length){warn.forEach(function(w){add(w,'warn')})}
+    else{
+      add('Datos completos','ok');
+      add(f.ha.value===f.hi.value?'Nivel y orientación coinciden: no se mostrará Development Signal':'Nivel y orientación distintos: se mostrará Development Signal','');
+    }
+  }
+
+  $('row').addEventListener('input',parse);
+  ['n','r','c','s','ha','hi','l','base'].forEach(function(k){
+    f[k].addEventListener('input',function(){build([])});
+    f[k].addEventListener('change',function(){build([])});
+  });
+
+  $('copy').addEventListener('click',function(){
+    var url=$('out').textContent,m=$('msg');
+    var fallback=function(){
+      var r=document.createRange();r.selectNodeContents($('out'));
+      var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
+      m.textContent='Enlace seleccionado. Cópialo con Ctrl+C o con mantener presionado.';
+    };
+    try{
+      navigator.clipboard.writeText(url).then(function(){m.textContent='Enlace copiado.'},fallback);
+    }catch(e){fallback()}
+  });
+
+  parse();
+})();
+</script>
+
+</body>
+</html>
